@@ -1,0 +1,1580 @@
+
+
+
+
+#include <stdlib.h> 
+#include <stdio.h>
+#include <string.h>
+#include <omp.h>
+#include <math.h>
+#include <mpi.h>
+
+#include <fstream>
+#include <iostream>
+#include <algorithm>
+#include <cstdlib>
+
+using namespace std;
+
+
+unsigned int iswap(unsigned int i) {    
+  union
+  {
+    unsigned int i;
+    unsigned char b[4];
+  } dat1, dat2;
+  
+  dat1.i = i;
+  dat2.b[0] = dat1.b[3];
+  dat2.b[1] = dat1.b[2];
+  dat2.b[2] = dat1.b[1];
+  dat2.b[3] = dat1.b[0];
+  return dat2.i;
+} 
+
+
+float fswap(float f) {    
+  union
+  {
+    float f;
+    unsigned char b[8];
+  } dat1, dat2;
+  
+  dat1.f = f;
+  dat2.b[0] = dat1.b[3];
+  dat2.b[1] = dat1.b[2];
+  dat2.b[2] = dat1.b[1];
+  dat2.b[3] = dat1.b[0];
+  
+  return dat2.f;
+  
+}
+
+
+double dswap(double f) {    
+  union
+  {
+    double f;
+    unsigned char b[8];
+  } dat1, dat2;
+  
+  dat1.f = f;
+  dat2.b[0] = dat1.b[7];
+  dat2.b[1] = dat1.b[6];
+  dat2.b[2] = dat1.b[5];
+  dat2.b[3] = dat1.b[4];
+  dat2.b[4] = dat1.b[3];
+  dat2.b[5] = dat1.b[2];
+  dat2.b[6] = dat1.b[1];
+  dat2.b[7] = dat1.b[0];
+  return dat2.f;
+}
+
+
+
+struct Prop
+{
+
+	int Node_index;
+
+	double Vx; 
+	double Vy;
+	double Vz;
+
+};
+
+struct Array
+{
+	Prop *content;
+	unsigned int size;
+};
+
+
+int compareX( const void *a, const void *b )
+{
+
+	return ( (Prop*)a)->Vx > ( (Prop*)b)->Vx ?1:-1;
+
+};
+
+int compareY( const void *a, const void *b )
+{
+
+	return ( (Prop*)a)->Vy > ( (Prop*)b)->Vy ?1:-1;
+
+};
+
+
+int compareZ( const void *a, const void *b )
+{
+
+	return ( (Prop*)a)->Vz > ( (Prop*)b)->Vz ?1:-1;
+
+};
+
+
+
+
+#define min(a,b) (((a)<(b))?(a):(b)) 
+#define max(a,b) (((a)>(b))?(a):(b)) 
+
+#include "Resolution.h"
+#include "BCM_Immersed_boundary.h"
+
+extern int Ncube;    
+extern int N_wallcube;    
+
+void BCM_Immersed_boundary
+	(
+	// ================================================================================ //
+	int myid,
+	int ncube,
+	int n_wallcube,
+
+	int *NBC,
+
+	double Xmin, 
+	double Xmax,
+	double Ymin, 
+	double Ymax, 
+	double Zmin, 
+	double Zmax, 
+
+	double (*cube_size) = new double[Ncube],
+	int (*csl) = new int[Ncube],
+
+	double (*Xcube) = new double[Ncube],
+	double (*Ycube) = new double[Ncube],
+	double (*Zcube) = new double[Ncube],
+
+	double (*Xcnt)[X_size] = new double[Ncube][X_size],
+	double (*Ycnt)[Y_size] = new double[Ncube][Y_size],
+	double (*Zcnt)[Z_size] = new double[Ncube][Z_size],
+
+	int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
+
+	int (*wallcube) = new int[N_wallcube]
+// ================================================================================ //
+)
+
+{
+
+#include "BCM.h"
+#include "prm.h"
+
+	char file_name[100];
+
+	double V[64]; // Vandermonde matrix //
+
+	double sur_x[9];
+	double sur_y[9];
+	double sur_z[9];
+
+	double weight[8];
+
+
+	int itri, Ntri, count_index, Scount_index, Ecount_index;
+
+	int N_share_node, i_share_node;
+
+	double temp;
+
+	double Nx, Ny, Nz, V1x, V1y,V1z, V2x, V2y, V2z, V3x, V3y, V3z;
+
+	int pitri;
+
+	double pV1x, pV1y, pV1z, pV2x, pV2y, pV2z, pV3x, pV3y, pV3z;
+
+	char str[1024];
+
+	double size_min;
+
+	char str_endloop[1024] = "endloop";
+	char str_normal[1024] = "normal";
+
+
+	FILE *fptr;
+	FILE *fptr_plus,*fptr_minus;
+	fptr = fopen("BCM_STL_fine.stl","r");
+	//fptr = fopen("BCM_STL_bin.stl","rb");
+
+
+	count_index = 0;
+
+	// ---- calculate how many vertices ---- //
+	// ========================================= //
+
+	
+	Ntri = 0;
+
+	while (!feof(fptr)) {
+		
+		fscanf(fptr,"%s",str); 
+		if(strstr(str_endloop,str) != NULL) Ntri = Ntri+1;
+		
+		fgets(str, 1024, fptr);
+
+	}
+
+	rewind(fptr);    // ---- back to the beginning of the file ---- //
+
+	printf("triangle number = %d\n\n",Ntri);
+
+	// ========================================= //
+
+	int Ntemp, NNtemp, N_line = 15;
+
+	double *tri_ = new double[Ntri*N_line+1];  
+	
+	itri = 0;
+
+
+	// ---- ( Nx, Ny, Nz, V1x, V1y,V1z, V2x, V2y, V2z, V3x, V3y, V3z) * nver ---- //
+	
+	while (!feof(fptr)) {
+
+		fscanf(fptr,"%s",str); 
+
+		if(strstr(str_normal,str) != NULL) {
+
+			itri = itri + 1;
+
+			fscanf(fptr,"%lf%lf%lf%s%s%s%lf%lf%lf%s%lf%lf%lf%s%lf%lf%lf",
+				&Nx,&Ny,&Nz,str,str,str,&V1x,&V1y,&V1z,str,&V2x,&V2y,&V2z,str,&V3x,&V3y,&V3z);
+
+			// ==== ( Nx, Ny, Nz, V1x, V1y,V1z, V2x, V2y, V2z, V3x, V3y, V3z) ==== //
+
+			Ntemp = (itri-1)*N_line;
+
+			tri_[Ntemp+1] = Nx;
+			tri_[Ntemp+2] = Ny;
+			tri_[Ntemp+3] = Nz;
+
+			tri_[Ntemp+4] = 0.;  // ---- switch turn on ---- //
+
+			tri_[Ntemp+5] = V1x;
+			tri_[Ntemp+6] = V1y;
+			tri_[Ntemp+7] = V1z;
+
+			tri_[Ntemp+8] = 0.;  // ---- switch turn on ---- //
+
+			tri_[Ntemp+ 9] = V2x;
+			tri_[Ntemp+10] = V2y;
+			tri_[Ntemp+11] = V2z;
+
+			tri_[Ntemp+12] = 0.;  // ---- switch turn on ---- //
+
+			tri_[Ntemp+13] = V3x;
+			tri_[Ntemp+14] = V3y;
+			tri_[Ntemp+15] = V3z;
+
+		}
+
+	}
+
+	fclose(fptr);
+
+	
+	
+	 //Ntri = 0;
+
+	 //char title[80];
+
+	 //fread(title, 80, 1, fptr);
+	 //fread(&Ntri, 4, 1, fptr);
+
+	 //printf("triangle number = %d\n\n",Ntri);
+
+	 //// ========================================= //
+
+	 //int Ntemp, NNtemp, N_line = 15;
+
+	 //float v[12];
+
+	 //double *tri_ = new double[Ntri*N_line+1];  
+
+	 //itri = 0;
+	
+	 //float enidan_temp;
+
+
+	 //// ---- ( Nx, Ny, Nz, V1x, V1y,V1z, V2x, V2y, V2z, V3x, V3y, V3z) * nver ---- //
+
+	 //unsigned short uint16; 
+
+	 //// Every Face is 50 Bytes: Normal(3*float), Vertices(9*float), 2 Bytes Spacer
+
+	 //for (itri = 0; itri < Ntri; ++itri) {
+
+		// for (i = 0; i < 12; ++i) {
+
+		//	 fread((void*)&enidan_temp, sizeof(float), 1, fptr);
+
+		//	 v[i] = fswap(enidan_temp); 
+		//	
+		// }
+
+		// Ntemp = (itri)*N_line;
+
+		// tri_[Ntemp+1] = v[0];
+		// tri_[Ntemp+2] = v[1];
+		// tri_[Ntemp+3] = v[2];
+
+		// tri_[Ntemp+5] = v[3];
+		// tri_[Ntemp+6] = v[4];
+		// tri_[Ntemp+7] = v[5];
+
+		// tri_[Ntemp+9] = v[6];
+		// tri_[Ntemp+10] = v[7];
+		// tri_[Ntemp+11] = v[8];
+
+		// tri_[Ntemp+13] = v[9];
+		// tri_[Ntemp+14] = v[10];
+		// tri_[Ntemp+15] = v[11];
+
+		// fread((void*)&uint16, sizeof(unsigned short), 1, fptr); // spacer between successive faces
+
+	 //}
+
+	 //fclose(fptr);
+
+
+
+
+	// ------------------------------------------ //
+	// ---- calculate the cell smallest size ---- //
+
+	for (icube = 1; icube < ncube; icube++) {  
+
+		if (csl[icube] == 0) {
+
+			temp = cube_size[icube]/NcubeX;
+			break;
+
+		}
+	}
+
+	// ---- calculate the cell smallest size ---- //
+	// ------------------------------------------ //
+
+
+
+
+	// ---------------------------------------------- //
+	// ------- Node_num = 0 inside the domain ------- //
+
+	int *Node_num = new int[Ntri*3+1]; 
+
+#pragma omp parallel for 
+	for (itri = 1; itri <= 3*Ntri; itri++) {
+
+		Node_num[itri] = -1;
+
+	}
+
+
+#pragma omp parallel for private(Ntemp,NNtemp,pV1x,pV1y,pV1z,pV2x,pV2y,pV2z,pV3x,pV3y,pV3z,dx,dy,dz,count_index)
+
+	for (itri = 1; itri <= Ntri; itri++) {
+
+		Ntemp = (itri-1)*N_line;
+		NNtemp = (itri-1)*3;
+
+		pV1x = tri_[Ntemp+5];
+		pV1y = tri_[Ntemp+6];
+		pV1z = tri_[Ntemp+7];
+
+		count_index = 0;
+		for (icube = 1; icube < ncube; icube++) {  
+
+			dx = cube_size[icube]/NcubeX;
+			dy = cube_size[icube]/NcubeY;
+			dz = cube_size[icube]/NcubeZ;
+
+			if (pV1x >= Xcube[icube]-1.5*dx & pV1x <= Xcube[icube]+cube_size[icube]+1.5*dx &
+				pV1y >= Ycube[icube]-1.5*dy & pV1y <= Ycube[icube]+cube_size[icube]+1.5*dy &
+				pV1z >= Zcube[icube]-1.5*dz & pV1z <= Zcube[icube]+cube_size[icube]+1.5*dz ) {
+
+					Node_num[NNtemp+1] = 0;
+
+			}
+
+		}
+
+		pV2x = tri_[Ntemp+9];
+		pV2y = tri_[Ntemp+10];
+		pV2z = tri_[Ntemp+11];
+
+		count_index = 0;
+		for (icube = 1; icube < ncube; icube++) {  
+
+			dx = cube_size[icube]/NcubeX;
+			dy = cube_size[icube]/NcubeY;
+			dz = cube_size[icube]/NcubeZ;
+
+			if (pV2x >= Xcube[icube]-1.5*dx & pV2x <= Xcube[icube]+cube_size[icube]+1.5*dx &
+				pV2y >= Ycube[icube]-1.5*dy & pV2y <= Ycube[icube]+cube_size[icube]+1.5*dy &
+				pV2z >= Zcube[icube]-1.5*dz & pV2z <= Zcube[icube]+cube_size[icube]+1.5*dz ) {
+
+					Node_num[NNtemp+1] = 0;
+					Node_num[NNtemp+2] = 0;
+
+			}
+
+		}
+
+		pV3x = tri_[Ntemp+13];
+		pV3y = tri_[Ntemp+14];
+		pV3z = tri_[Ntemp+15];
+
+		for (icube = 1; icube < ncube; icube++) {  
+
+			dx = cube_size[icube]/NcubeX;
+			dy = cube_size[icube]/NcubeY;
+			dz = cube_size[icube]/NcubeZ;
+
+			if (pV3x >= Xcube[icube]-1.5*dx & pV3x <= Xcube[icube]+cube_size[icube]+1.5*dx &
+				pV3y >= Ycube[icube]-1.5*dy & pV3y <= Ycube[icube]+cube_size[icube]+1.5*dy &
+				pV3z >= Zcube[icube]-1.5*dz & pV3z <= Zcube[icube]+cube_size[icube]+1.5*dz ) {
+
+					Node_num[NNtemp+1] = 0;
+					Node_num[NNtemp+2] = 0;
+					Node_num[NNtemp+3] = 0;
+
+			}
+
+		}
+
+	}
+
+#pragma omp barrier
+	
+	// ------- Node_num = 0 inside the domain ------- //
+	// ---------------------------------------------- //
+
+
+
+
+	// ------------------------------------------------------------------------------- //
+	// ------------------ calculate how many triangles in this rank ------------------ //
+
+	count_index = 0;
+
+#pragma omp parallel for private(NNtemp) reduction(+:count_index)
+
+	for (itri = 1; itri <= Ntri; itri++) {
+
+		NNtemp = (itri-1)*3;
+
+		if (Node_num[NNtemp+1] == 0) {
+
+			count_index = count_index+1;
+
+		}
+
+	}
+
+	// ------------------ calculate how many triangles in this rank ------------------ //
+	// ------------------------------------------------------------------------------- //
+
+
+
+
+	// ----------------------------------------------------------------------------- //
+	// ------------------ remove the triangles outside the domain ------------------ //
+
+	double *tri = new double[count_index*N_line+1];  
+
+	count_index = 0;
+
+	for (itri = 1; itri <= Ntri; itri++) {
+
+		NNtemp = (itri-1)*N_line;
+
+
+		if (Node_num[(itri-1)*3+1] == 0) {
+
+			count_index = count_index+1;
+			Ntemp = (count_index-1)*N_line;
+
+			tri[Ntemp+1] = tri_[NNtemp+1];
+			tri[Ntemp+2] = tri_[NNtemp+2];
+			tri[Ntemp+3] = tri_[NNtemp+3];
+
+			tri[Ntemp+4] = 0.;  // ---- switch turn on ---- //
+
+			tri[Ntemp+5] = tri_[NNtemp+5];
+			tri[Ntemp+6] = tri_[NNtemp+6];
+			tri[Ntemp+7] = tri_[NNtemp+7];
+
+			tri[Ntemp+8] = 0.;  // ---- switch turn on ---- //
+
+			tri[Ntemp+9] = tri_[NNtemp+9];
+			tri[Ntemp+10] = tri_[NNtemp+10];
+			tri[Ntemp+11] = tri_[NNtemp+11];
+
+			tri[Ntemp+12] = 0.;  // ---- switch turn on ---- //
+
+			tri[Ntemp+13] = tri_[NNtemp+13];
+			tri[Ntemp+14] = tri_[NNtemp+14];
+			tri[Ntemp+15] = tri_[NNtemp+15];
+
+
+		}
+
+	}
+
+	delete[] Node_num;
+	delete[] tri_;
+
+	// ------------------ remove the triangles outside the domain ------------------ //
+	// ----------------------------------------------------------------------------- //
+
+
+
+
+	int Np = 3*count_index;    // ---- Each triangle has 3 vertexies ---- //
+
+	Ntri = count_index;    // ---- triangle numbers inside the domain ---- //
+
+	int itri_index = 0;
+	int *pNode = new int[Np+1];    // ---- nodes serial number (share the same vertex) ---- //
+	int *pNode_inf = new int[Ntri+1];    // ---- nodes information (end) ---- //
+
+	int index = 0;
+	int *ptri_number = new int[Ntri+1];    // ---- how many triangles share the same vertex ---- //
+
+	double *pvertex = new double[Ntri*3+1];    // ---- vertex serial number ---- //
+
+	double tri0,tri1,tri2,tri3;
+
+	int N0,N1,N2,N3;
+
+
+
+	
+
+
+	int ii,jj,kk;
+
+	int Ngc = 0;
+
+
+	for (icube = 1; icube < ncube; icube++) {  
+
+		if (csl[icube] == 0) {
+
+			for (i = 0; i <= nxxx; i++) {
+				for (j = 0; j <= nyyy; j++) {
+					for (k = 0; k <= nzzz; k++) { 
+
+						if (FWS[icube][i][j][k] == IGHOST)
+							Ngc = Ngc+1;
+
+					}
+				}
+			}
+
+		}
+	}
+
+
+	// ======================================== //
+
+
+
+
+	int igc, jgc, kgc;
+
+	double dmin = MAX;
+	double dis;
+
+
+	int *GC = new int[Ngc*4+1];
+	double *GCcnt = new double[Ngc*3+1];
+
+	// ---- (icube, i, j, k, xcnt, ycnt ,zctn) ---- //
+
+
+	//// ================  calculate the ghost cells ================ //
+
+
+	int icount;
+
+	Ngc = 0;
+	for (icube = 1; icube < ncube; icube++) {  
+
+		if (csl[icube] == 0) {
+
+			//for (i = 0; i <= nxxx; i++) {
+				//for (j = 0; j <= nyy; j++) {
+					//for (k = 0; k <= nzz; k++) { 
+
+			for (i = n_buffer; i <= nx; i++) {
+				for (j = n_buffer; j <= ny; j++) {
+					for (k = n_buffer; k <= nz; k++) { 
+
+
+						if (FWS[icube][i][j][k] == IGHOST) {
+
+							Ngc = Ngc+1;
+
+							Ntemp = (Ngc-1)*4;
+
+							GC[Ntemp+1] = icube;
+
+							GC[Ntemp+2] = i;
+							GC[Ntemp+3] = j;
+							GC[Ntemp+4] = k;
+
+							Ntemp = (Ngc-1)*3;
+
+							GCcnt[Ntemp+1] = Xcnt[icube][i];
+							GCcnt[Ntemp+2] = Ycnt[icube][j];
+							GCcnt[Ntemp+3] = Zcnt[icube][k];
+
+							//FWS[icube][i][j][k] = IFLUID;
+
+						}    // ---- if (FWS[icube][i][j][k] == IGHOST) ---- //
+
+					}    // ---- for (i = 0; i < NcubeX; i++) ---- //
+				}    // ---- for (j = 0; j <= nyyy; j++) ---- //
+			}    // ---- for (k = 0; k <= nzzz; k++) ---- //
+
+		}    // ---- if (csl[icube] == 0) ---- //
+
+	}
+
+
+
+
+
+
+	// ================  calculate the ghost cells ================ //
+
+	printf("Ghost cells = %d\n\n",Ngc);
+
+
+
+
+	// ============ immersed boundary file ============= //
+
+	//	char file_name[100];
+	sprintf(file_name,"IBM_plus""%0.5d"".dat",myid);    
+	fptr_plus = fopen(file_name,"w"); 
+
+	sprintf(file_name,"IBM_minus""%0.5d"".dat",myid);    
+	fptr_minus = fopen(file_name,"w"); 
+
+
+	// ============ immersed boundary file ============ //
+
+
+
+
+	//fprintf(fptr,"icube i j k and weight of surrounding points\n");
+
+
+	double orig[3];
+	double dir[3];
+	double vert0[3];
+	double vert1[3];
+	double vert2[3];
+	double nuvec[3];
+
+
+	double tmin, ttmin;
+
+	double Ndis;
+	double Ndis_min = MAX;
+
+	double dotp;
+	double BIx, BIy, BIz, IPx, IPy, IPz;
+	double BIp0,BIp1,BIp2;
+	double dir0, dir1, dir2;
+
+	double xcnt, ycnt, zcnt;
+
+	int pNgc = 0;
+	int	itemp = 0;
+	int	pBI;
+
+
+
+
+
+
+	int iflag, iflag_total;
+	int ilarge = 0;
+	int nlarge[300];
+
+	//int icount;
+	int iNgc_plus = 0;
+	int iNgc_minus = 0;
+
+	double s1, s2, s3;    // ---- surrounding points Sx Sy Sz ---- //
+
+	double w1,w2,w3,w4,w5,w6,w7,w8;
+
+	double vert0_iflag_total0_x,vert0_iflag_total0_y,vert0_iflag_total0_z;
+
+
+	for (igc = 1; igc <= Ngc; igc++) {
+
+		if(Ntri == 0) continue;    // ---- cube contains ghost cells but no triangles ---- //
+
+		Ntemp = (igc-1)*3;
+
+		xcnt = GCcnt[Ntemp+1];
+		ycnt = GCcnt[Ntemp+2];
+		zcnt = GCcnt[Ntemp+3];
+
+
+		iflag_total = 0;
+		tmin = MAX;
+
+		Ndis_min = MAX;
+
+		itemp = -1;
+		ilarge = 0;
+		
+
+		for (itri = 0; itri < Ntri; itri++) {
+
+			Ntemp = (itri)*N_line;
+
+			BI_detect(myid, Ntemp, N_line, &Ndis, &Ndis_min, &iflag_total, &tmin, &dotp, &dir0, &dir1, &dir2, pNode_inf, ptri_number, pNode, 
+				tri, vert0, vert1, vert2, nuvec, dir, orig, xcnt, ycnt, zcnt, &itemp, &ilarge, nlarge);
+
+
+		}
+
+		
+
+		// ---- if (dotp > 0) the point is ouside the object ---- //
+
+
+		if (iflag_total == 0) {
+
+			Ndis_min = MAX;
+
+			for (itri = 0; itri < Ntri; itri++) {
+
+				Ntemp = (itri)*N_line;
+
+				BI_detect_iflag0(myid, Ntemp, &BIp0, &BIp1, &BIp2, N_line, &Ndis, &Ndis_min,  pNode_inf, ptri_number, pNode, 
+					tri, vert0, vert1, vert2,xcnt, ycnt, zcnt);
+
+			}
+		}
+
+
+
+
+		Ntemp = (igc-1)*4;
+
+		icube = GC[Ntemp+1];
+		i = GC[Ntemp+2];
+		j = GC[Ntemp+3];
+		k = GC[Ntemp+4];
+
+
+
+		if (dotp == 0) {
+
+			BIx = IPx = orig[0];
+			BIy = IPy = orig[1];
+			BIz = IPz = orig[2];
+
+			//FWS[icube][i][j][k] = 10;
+
+		}  // ---- if (dotp == 0) ---- //
+
+		else if (dotp > 0){
+
+			itemp = 1;
+
+			if (iflag_total > 0) {
+
+				BIx = orig[0] - tmin*dir0;
+				BIy = orig[1] - tmin*dir1;
+				BIz = orig[2] - tmin*dir2;
+
+				IPx = orig[0] + tmin*dir0;
+				IPy = orig[1] + tmin*dir1;
+				IPz = orig[2] + tmin*dir2;
+
+				//FWS[icube][i][j][k] = 20;
+
+			}
+			else { 
+
+
+				BIx = BIp0;
+				BIy = BIp1;
+				BIz = BIp2;
+
+
+				IPx = 2*orig[0]-BIx;
+				IPy = 2*orig[1]-BIy;
+				IPz = 2*orig[2]-BIz;
+
+				//FWS[icube][i][j][k] = 30;
+
+			}
+		}  // ---- else if (dotp > 0) ---- //
+
+		else {
+
+			itemp = -1;
+
+			if (iflag_total > 0) {
+
+				BIx = orig[0] + tmin*dir0;
+				BIy = orig[1] + tmin*dir1;
+				BIz = orig[2] + tmin*dir2;
+
+				IPx = orig[0] - tmin*dir0;
+				IPy = orig[1] - tmin*dir1;
+				IPz = orig[2] - tmin*dir2;
+
+				//FWS[icube][i][j][k] = 40;
+
+			}
+			else {
+
+
+				BIx = BIp0;
+				BIy = BIp1;
+				BIz = BIp2;
+
+				IPx = 2*orig[0]-BIx;
+				IPy = 2*orig[1]-BIy;
+				IPz = 2*orig[2]-BIz;
+
+				//FWS[icube][i][j][k] = 50;
+			}
+		}
+
+
+
+		icount = 0;
+
+		dx = cube_size[icube]/NcubeX;
+		dy = cube_size[icube]/NcubeY;
+		dz = cube_size[icube]/NcubeZ;
+
+
+		dis = sqrt( (BIx-orig[0])*(BIx-orig[0])+(BIy-orig[1])*(BIy-orig[1])+(BIz-orig[2])*(BIz-orig[2]) );
+
+
+		if (dis > sqrt(2)*dx) { 
+		
+			FWS[icube][i][j][k] = IFLUID; 
+			continue;
+			
+			}
+
+
+		//if (dis > dx) continue;
+
+		//if (dis > 2*dx*dx) continue;
+
+		iicube = icube;
+		ii = i;
+		jj = j;
+		kk = k;
+
+
+		for (i = 0; i <= nxx; i++) {
+			if (IPx >= Xcnt[icube][i] & IPx <= Xcnt[icube][i]+dx) 
+			{
+
+				icount = icount+1;
+				break;
+
+			}
+		}   // ---- for (i = n_buffer; i <= nx; i++) ---- //
+
+		for (j = 0; j <= nyy; j++) {
+			if (IPy >= Ycnt[icube][j] & IPy <= Ycnt[icube][j]+dy) 
+			{
+
+				icount = icount+1;
+				break;
+
+			}
+		}   // ---- for (j = 0; j < NcubeY; j++) { ---- //
+
+		for (k = 0; k <= nzz; k++) {
+			if ( IPz >= Zcnt[icube][k] & IPz <= Zcnt[icube][k]+dz) 
+			{
+				icount = icount+1;
+				break;
+
+			}
+		}   // ---- for (k = 0; k <= NcubeZ; k++) ---- //
+
+
+		if (icount < 3) {
+
+			continue;
+
+		}
+
+
+		// ---- 000 => 100 => 010 => 001 => 110 => 101 => 011 => 111 ---- //
+
+		s1 = IPx-Xcnt[icube][i];
+		s2 = IPy-Ycnt[icube][j];
+		s3 = IPz-Zcnt[icube][k];
+
+
+		sur_x[1] = 0;
+		sur_x[2] = Xcnt[icube][i+1]-Xcnt[icube][i];
+		sur_x[3] = 0;
+		sur_x[4] = 0;
+		sur_x[5] = Xcnt[icube][i+1]-Xcnt[icube][i];
+		sur_x[6] = Xcnt[icube][i+1]-Xcnt[icube][i];
+		sur_x[7] = 0;
+		sur_x[8] = Xcnt[icube][i+1]-Xcnt[icube][i];
+
+		sur_y[1] = 0;
+		sur_y[2] = 0;
+		sur_y[3] = Ycnt[icube][j+1]-Ycnt[icube][j];
+		sur_y[4] = 0;
+		sur_y[5] = Ycnt[icube][j+1]-Ycnt[icube][j];
+		sur_y[6] = 0;
+		sur_y[7] = Ycnt[icube][j+1]-Ycnt[icube][j];
+		sur_y[8] = Ycnt[icube][j+1]-Ycnt[icube][j];
+
+		sur_z[1] = 0;
+		sur_z[2] = 0;
+		sur_z[3] = 0;
+		sur_z[4] = Zcnt[icube][k+1]-Zcnt[icube][k];
+		sur_z[5] = 0;
+		sur_z[6] = Zcnt[icube][k+1]-Zcnt[icube][k];
+		sur_z[7] = Zcnt[icube][k+1]-Zcnt[icube][k];
+		sur_z[8] = Zcnt[icube][k+1]-Zcnt[icube][k];
+
+
+		for (int vi = 0; vi < 8; vi++) {
+
+			V[vi*8+7] = 1;
+
+			V[vi*8+6] = sur_z[vi+1];
+
+			V[vi*8+5] = sur_y[vi+1];
+
+			V[vi*8+4] = sur_x[vi+1];
+
+			V[vi*8+3] = sur_y[vi+1]*sur_z[vi+1];
+
+			V[vi*8+2] = sur_x[vi+1]*sur_z[vi+1];
+
+			V[vi*8+1] = sur_x[vi+1]*sur_y[vi+1];
+
+			V[vi*8+0] = sur_x[vi+1]*sur_y[vi+1]*sur_z[vi+1];
+
+		}
+
+
+		GetInverseMatrix( V, V, 8 );
+
+
+		for (int vi = 0; vi < 8; vi++) {
+
+			weight[vi] = V[vi]*s1*s2*s3+V[vi+8]*s1*s2+V[vi+16]*s1*s3+V[vi+24]*s2*s3+V[vi+32]*s1+V[vi+40]*s2+V[vi+48]*s3+V[vi+56];
+
+		}
+
+
+
+		temp = weight[0]+weight[1]+weight[2]+weight[3]+weight[4]+weight[5]+weight[6]+weight[7];
+
+
+		if ( 
+			(weight[0] >=(-minimum) && weight[0] <= (1+minimum)) &&
+			(weight[1] >=(-minimum) && weight[1] <= (1+minimum)) &&
+			(weight[2] >=(-minimum) && weight[2] <= (1+minimum)) &&
+			(weight[3] >=(-minimum) && weight[3] <= (1+minimum)) &&
+			(weight[4] >=(-minimum) && weight[4] <= (1+minimum)) &&
+			(weight[5] >=(-minimum) && weight[5] <= (1+minimum)) &&
+			(weight[6] >=(-minimum) && weight[6] <= (1+minimum)) &&
+			(weight[7] >=(-minimum) && weight[7] <= (1+minimum)) 
+			)
+
+		{ 
+
+			if (dotp >= 0) {
+
+				Ntemp = (igc-1)*4;
+				fprintf(fptr_minus,"%d\t%d\t%d\t%d\n",GC[Ntemp+1],GC[Ntemp+2],GC[Ntemp+3],GC[Ntemp+4]);
+
+
+				iNgc_minus = iNgc_minus+1;
+				fprintf(fptr_minus,"%d\t%d\t%d\t%d\n",icube,i,j,k);
+				fprintf(fptr_minus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",weight[0],weight[1],weight[2],weight[3],weight[4],weight[5],weight[6],weight[7]);
+
+				icube = GC[Ntemp+1];
+				i = GC[Ntemp+2];
+				j = GC[Ntemp+3];
+				k = GC[Ntemp+4];
+
+			}
+			else {
+
+				Ntemp = (igc-1)*4;
+				fprintf(fptr_plus,"%d\t%d\t%d\t%d\n",GC[Ntemp+1],GC[Ntemp+2],GC[Ntemp+3],GC[Ntemp+4]);
+
+				iNgc_plus = iNgc_plus+1;
+				fprintf(fptr_plus,"%d\t%d\t%d\t%d\n",icube,i,j,k);
+				fprintf(fptr_plus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",weight[0],weight[1],weight[2],weight[3],weight[4],weight[5],weight[6],weight[7]);
+
+
+				icube = GC[Ntemp+1];
+				i = GC[Ntemp+2];
+				j = GC[Ntemp+3];
+				k = GC[Ntemp+4];
+
+			}
+
+
+		}
+
+
+		/*
+		else {
+
+		FWS[iicube][ii][jj][kk] = -50;
+		printf("%d\t%d\t%d\t%d\n",GC[Ntemp+1],GC[Ntemp+2],GC[Ntemp+3],GC[Ntemp+4]);
+		printf("iflag_total = %d\n dotp = %.16f\n ",iflag_total,dotp);
+		printf("BI = %f\t%f\t%f\n",BIx,BIy,BIz);
+		printf("IP = %f\t%f\t%f\n",IPx,IPy,IPz);
+		printf("orig = %f\t%f\t%f\n",orig[0],orig[1],orig[2]);
+		printf("vert = %f\t%f\t%f\n",vert0_iflag_total0_x,vert0_iflag_total0_y,vert0_iflag_total0_z);
+
+		}
+		*/
+	}    // ---- for (igc = 1; igc <= Ngc; igc++) ---- //
+
+	fprintf(fptr_minus,"Number of Boundary Cells\n");
+	fprintf(fptr_minus,"%d",iNgc_minus);
+
+	fprintf(fptr_plus,"Number of Boundary Cells\n");
+	fprintf(fptr_plus,"%d",iNgc_plus);
+
+
+	// ==== immersed boundary file ===== //
+	fclose(fptr_plus);           //
+	fclose(fptr_minus);			 //
+	// ==== immersed boundary file ===== //
+
+
+	delete[] tri;
+	delete[] pvertex;
+	delete[] pNode;
+	delete[] ptri_number;
+	delete[] GC;
+	delete[] GCcnt;
+
+}
+
+
+
+
+void BI_detect
+	(
+	// ======================= //
+	int myid,
+
+	int Ntemp,
+
+	int N_line,
+
+	double *Ndis,
+
+	double *Ndis_min,
+
+	int *iflag_total,
+
+	double *tmin,
+
+	double *dotp,
+
+	double *dir0,
+	double *dir1,
+	double *dir2,
+
+	int pNode_inf[],
+	int ptri_number[],
+	int pNode[],
+
+	double tri[],
+
+	double vert0[3],
+	double vert1[3],
+	double vert2[3],
+
+	double nuvec[3],
+
+	double dir[3],
+
+	double orig[3],
+
+	double xcnt,
+	double ycnt,
+	double zcnt,
+
+	int *itemp,
+	int *ilarge,
+	int nlarge[]
+
+// ======================= //
+)
+{
+
+
+	int ishare;
+	int iflag;
+
+
+	double v12[3], v13[3];
+	double dis;
+
+
+	double t, u, v;
+
+
+
+	vert0[0] = tri[Ntemp+5];
+	vert0[1] = tri[Ntemp+6];
+	vert0[2] = tri[Ntemp+7];
+
+	vert1[0] = tri[Ntemp+9];
+	vert1[1] = tri[Ntemp+10];
+	vert1[2] = tri[Ntemp+11];
+
+	vert2[0] = tri[Ntemp+13];
+	vert2[1] = tri[Ntemp+14];
+	vert2[2] = tri[Ntemp+15];
+
+	v12[0] = vert1[0] - vert0[0];
+	v12[1] = vert1[1] - vert0[1];
+	v12[2] = vert1[2] - vert0[2];
+
+	v13[0] = vert2[0] - vert0[0];
+	v13[1] = vert2[1] - vert0[1];
+	v13[2] = vert2[2] - vert0[2];
+
+
+	nuvec[0] = v12[1] * v13[2] - v12[2] * v13[1];
+	nuvec[1] = v12[2] * v13[0] - v12[0] * v13[2];
+	nuvec[2] = v12[0] * v13[1] - v12[1] * v13[0];
+
+	dis = sqrt(nuvec[0]*nuvec[0]+nuvec[1]*nuvec[1]+nuvec[2]*nuvec[2]);
+
+	dir[0] = -nuvec[0]/dis;
+	dir[1] = -nuvec[1]/dis;
+	dir[2] = -nuvec[2]/dis;
+
+	orig[0] = xcnt;
+	orig[1] = ycnt;
+	orig[2] = zcnt;
+
+	t = 0;
+	iflag = intersect_triangle(orig, dir, vert0, vert1, vert2, &t, &u, &v);
+	*Ndis = fabs(t)*(dir[0]*dir[0]+dir[1]*dir[1]+dir[2]*dir[2]);
+
+
+	if (iflag == 1) {
+
+		*iflag_total = *iflag_total + 1;
+
+		if (*Ndis < *Ndis_min)
+		{
+			*Ndis_min = *Ndis;
+			*tmin = fabs(t);
+			*dir0 = dir[0];
+			*dir1 = dir[1];
+			*dir2 = dir[2];
+			*dotp = nuvec[0]*(vert0[0]-xcnt)+nuvec[1]*(vert0[1]-ycnt)+nuvec[2]*(vert0[2]-zcnt);
+
+		}
+	}    // ---- if (iflag == 1) ---- //
+
+
+}
+
+
+void BI_detect_iflag0
+	(
+
+	// ======================= //
+	int myid,
+
+	int Ntemp,
+
+	double *BIp0,
+	double *BIp1,
+	double *BIp2,
+
+	int N_line,
+
+	double *Ndis,
+
+	double *Ndis_min,
+
+	int pNode_inf[],
+	int ptri_number[],
+	int pNode[],
+
+	double tri[],
+
+	double vert0[3],
+	double vert1[3],
+	double vert2[3],
+
+	double xcnt,
+	double ycnt,
+	double zcnt
+
+	// ======================= //
+	)
+
+{
+
+	int ishare;
+	int iflag;
+
+
+	double v12[3], v13[3];
+	double dis;
+	double t, u, v;
+	double p0,p1,p2;
+
+	vert0[0] = tri[Ntemp+5];
+	vert0[1] = tri[Ntemp+6];
+	vert0[2] = tri[Ntemp+7];
+
+	vert1[0] = tri[Ntemp+9];
+	vert1[1] = tri[Ntemp+10];
+	vert1[2] = tri[Ntemp+11];
+
+	vert2[0] = tri[Ntemp+13];
+	vert2[1] = tri[Ntemp+14];
+	vert2[2] = tri[Ntemp+15];
+
+	ClosestPTPoinTrangle(myid, &p0,  &p1,  &p2, vert0, vert1, vert2, xcnt, ycnt, zcnt);
+
+	*Ndis = (p0-xcnt)*(p0-xcnt)+(p1-ycnt)*(p1-ycnt)+(p2-zcnt)*(p2-zcnt);
+
+	if (*Ndis <= *Ndis_min) {
+
+		*BIp0 = p0;
+		*BIp1 = p1;
+		*BIp2 = p2;
+
+		*Ndis_min = *Ndis;
+
+	}
+
+
+}
+
+
+void ClosestPTPoinTrangle
+	(
+
+	// ======================= //
+	int myid,
+
+	double *p0,
+	double *p1,
+	double *p2,
+
+	double vert0[3],
+	double vert1[3],
+	double vert2[3],
+
+	double xcnt,
+	double ycnt,
+	double zcnt
+
+	// ======================= //
+	)
+{
+
+	int ishare;
+	int Ntemp;
+	int iflag;
+
+
+	double ab[3], ac[3], bc[3], ap[3], bp[3], cp[3];
+	double d1,d2,d3,d4,d5,d6,vc,v,vb,w,va,denom;
+
+	ab[0] = vert1[0] - vert0[0];
+	ab[1] = vert1[1] - vert0[1];
+	ab[2] = vert1[2] - vert0[2];
+
+	ac[0] = vert2[0] - vert0[0];
+	ac[1] = vert2[1] - vert0[1];
+	ac[2] = vert2[2] - vert0[2];
+
+	bc[0] = vert2[0] - vert1[0];
+	bc[1] = vert2[1] - vert1[1];
+	bc[2] = vert2[2] - vert1[2];
+
+	ap[0] = xcnt - vert0[0];
+	ap[1] = ycnt - vert0[1];
+	ap[2] = zcnt - vert0[2];
+
+
+	d1 = ab[0]*ap[0]+ab[1]*ap[1]+ab[2]*ap[2];
+	d2 = ac[0]*ap[0]+ac[1]*ap[1]+ac[2]*ap[2];
+
+	if( d1 <= 0. && d2 <= 0. ) {
+
+		*p0 = vert0[0];
+		*p1 = vert0[1];
+		*p2 = vert0[2];
+
+		return;
+
+	}
+
+	bp[0] = xcnt - vert1[0];
+	bp[1] = ycnt - vert1[1];
+	bp[2] = zcnt - vert1[2];
+
+	d3 = ab[0]*bp[0]+ab[1]*bp[1]+ab[2]*bp[2];
+	d4 = ac[0]*bp[0]+ac[1]*bp[1]+ac[2]*bp[2];
+
+	if( d3 >= 0. && d4 <= d3 ) {
+
+		*p0 = vert1[0];
+		*p1 = vert1[1];
+		*p2 = vert1[2];
+
+		return;
+
+	}
+
+	vc = d1*d4-d3*d2;
+
+	if(vc <= 0. && d1 >= 0.&& d3 <= 0.) {
+
+		v = d1/(d1-d3);
+
+		*p0 = vert0[0]+v*ab[0];
+		*p1 = vert0[1]+v*ab[1];
+		*p2 = vert0[2]+v*ab[2];
+
+		return;
+
+	}
+
+
+	cp[0] = xcnt - vert2[0];
+	cp[1] = ycnt - vert2[1];
+	cp[2] = zcnt - vert2[2];
+
+	d5 = ab[0]*cp[0]+ab[1]*cp[1]+ab[2]*cp[2];
+	d6 = ac[0]*cp[0]+ac[1]*cp[1]+ac[2]*cp[2];
+
+	if(d6 >= 0. && d5 <= d6){
+
+		*p0 = vert2[0];
+		*p1 = vert2[1];
+		*p2 = vert2[2];
+
+		return;
+
+	}
+
+
+	vb = d5*d2-d1*d6;
+	if(vb <= 0. && d2 >= 0. && d6 <= 0.) {
+
+		w = d2/(d2-d6);
+
+
+		*p0 = vert0[0]+w*ac[0];
+		*p1 = vert0[1]+w*ac[1];
+		*p2 = vert0[2]+w*ac[2];
+
+		return;
+
+	}
+
+	va = d3*d6-d5*d4;
+	if(va <= 0. && (d4-d3) >= 0. && (d5-d6) >= 0.) {
+
+		w = (d4-d3)/((d4-d3)+(d5-d6));
+
+		*p0 = vert1[0]+w*bc[0];
+		*p1 = vert1[1]+w*bc[1];
+		*p2 = vert1[2]+w*bc[2];
+
+		return;
+
+	}
+
+	denom = 1./(va+vb+vc);
+	v = vb*denom;
+	w = vc+denom;
+
+	*p0 = vert0[0]+ab[0]*v+ac[0]*w;
+	*p1 = vert0[1]+ab[1]*v+ac[1]*w;
+	*p2 = vert0[2]+ab[2]*v+ac[2]*w;
+
+
+}
+
+
+
+
+int intersect_triangle
+	(
+	// ======================= //
+	double orig[3],
+	double dir[3],
+	double vert0[3],
+	double vert1[3],
+	double vert2[3],
+	double *t,
+	double *u,
+	double *v
+	// ======================= //
+	)
+{
+
+	double edge1[3], edge2[3], tvec[3], pvec[3], qvec[3];
+	double det, inv_det;
+
+
+
+	SUB(edge1, vert1, vert0);
+	SUB(edge2, vert2, vert0);
+
+	CROSS(pvec, dir, edge2);
+
+	det = DOT(edge1, pvec);
+
+
+
+	if (det < minimum)
+		return 0;
+
+	SUB(tvec, orig, vert0);
+
+	*u = DOT(tvec, pvec);
+
+	if (*u < 0.0 || *u > det)
+		return 0;
+
+	CROSS(qvec, tvec, edge1);
+
+	*v = DOT(dir, qvec);
+
+	if (*v < 0.0 || *u+*v > det)
+		return 0;
+
+	*t = DOT(edge2, qvec);
+	inv_det = 1.0 / det;
+
+	*t = DOT(edge2, qvec);
+
+	inv_det = 1.0 / det;
+	*t *= inv_det;
+	*u *= inv_det;
+	*v *= inv_det;
+
+	return 1;
+
+}
+
+
+void GetInverseMatrix( const double* inMat, double* outMat, const int n )
+{
+	double tmp;
+	int i, j, k;
+	double **a;
+	double **inv_a;
+
+
+	a = (double**)malloc(sizeof(double*)*n);
+	a[0] = (double*)malloc(sizeof(double)*(n*n));
+	for( i=1; i<n; i++ ){
+		a[i] = a[i-1] + n;
+	}
+	inv_a = (double**)malloc(sizeof(double*)*n);
+	inv_a[0] = (double*)malloc(sizeof(double)*(n*n));
+	for( i=1;i<n;i++){
+		inv_a[i] = inv_a[i-1] + n;
+	}
+
+	for( j=0; j<n; j++ ){
+		for( i=0; i<n; i++ ){
+			a[j][i] = inMat[i + n*j];
+		}
+	}
+
+	for( j=0; j<n; j++ ){
+		for( i=0; i<n; i++ ){
+			inv_a[j][i] = ( i==j ) ? 1.0 : 0.0;
+		}
+	}
+
+	for( k=0; k<n; k++){
+
+		int max = k;
+		for( j=k+1; j<n; j++){
+			if( fabs(a[j][k]) > fabs(a[max][k]) ){
+				max = j;
+			}
+		}
+
+		if( max != k ){
+			for( i=0; i<n; i++ ){
+
+				tmp = a[max][i];
+				a[max][i] = a[k][i];
+				a[k][i] = tmp;
+
+				tmp = inv_a[max][i];
+				inv_a[max][i] = inv_a[k][i];
+				inv_a[k][i] = tmp;
+			}
+		}
+
+		tmp = a[k][k];
+		for(i=0;i<n;i++){
+			a[k][i] /= tmp;
+			inv_a[k][i] /= tmp;
+		}
+
+		for( j=0;j<n;j++ ){
+			if( j != k ){
+				tmp =   a[j][k] / a[k][k];
+				for(i=0;i<n;i++){
+					a[j][i] = a[j][i] - a[k][i] * tmp;
+					inv_a[j][i] = inv_a[j][i] - inv_a[k][i] * tmp;
+				}
+			}
+		}
+
+	}
+	for( j=0; j<n; j++ ){
+		for( i=0; i<n; i++ ){
+			outMat[ i+n*j ] = inv_a[j][i];
+
+		}
+	}
+
+	free(a[0]);
+	free(a);
+	free(inv_a[0]);
+	free(inv_a);
+}
+
