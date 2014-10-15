@@ -339,27 +339,7 @@ void BCM_Immersed_boundary
 	 //fclose(fptr);
 
 
-
-
-	// ------------------------------------------ //
-	// ---- calculate the cell smallest size ---- //
-
-	for (icube = 1; icube < ncube; icube++) {  
-
-		if (csl[icube] == 0) {
-
-			temp = cube_size[icube]/NcubeX;
-			break;
-
-		}
-	}
-
-	// ---- calculate the cell smallest size ---- //
-	// ------------------------------------------ //
-
-
-
-
+	 
 	// ---------------------------------------------- //
 	// ------- Node_num = 0 inside the domain ------- //
 
