@@ -195,7 +195,7 @@ void BCM_Immersed_boundary
 
 	FILE *fptr;
 	FILE *fptr_plus,*fptr_minus;
-	fptr = fopen("BCM_STL_fine.stl","r");
+	fptr = fopen("BCM_STL.stl","r");
 	//fptr = fopen("BCM_STL_bin.stl","rb");
 
 
@@ -339,73 +339,29 @@ void BCM_Immersed_boundary
 	 //fclose(fptr);
 
 
-	 
-	// ---------------------------------------------- //
-	// ------- Node_num = 0 inside the domain ------- //
 
-	int *Node_num = new int[Ntri*3+1]; 
+	// ----------------------------------------------------------- //
+	// -------------- tri_num = 0 inside the domain -------------- //
 
-#pragma omp parallel for 
-	for (itri = 1; itri <= 3*Ntri; itri++) {
+	double boxcenter[3];
+	double boxhalfsize[3];
+	double triverts[3][3];
 
-		Node_num[itri] = -1;
+	int *tri_num = new int[Ntri+1];
+
+	#pragma omp parallel for 
+	for (itri = 1; itri <= Ntri; itri++) {
+
+		tri_num[itri] = -1;
 
 	}
 
 
-#pragma omp parallel for private(Ntemp,NNtemp,pV1x,pV1y,pV1z,pV2x,pV2y,pV2z,pV3x,pV3y,pV3z,dx,dy,dz,count_index)
+	//#pragma omp parallel for private
 
 	for (itri = 1; itri <= Ntri; itri++) {
 
 		Ntemp = (itri-1)*N_line;
-		NNtemp = (itri-1)*3;
-
-		pV1x = tri_[Ntemp+5];
-		pV1y = tri_[Ntemp+6];
-		pV1z = tri_[Ntemp+7];
-
-		count_index = 0;
-		for (icube = 1; icube < ncube; icube++) {  
-
-			dx = cube_size[icube]/NcubeX;
-			dy = cube_size[icube]/NcubeY;
-			dz = cube_size[icube]/NcubeZ;
-
-			if (pV1x >= Xcube[icube]-1.5*dx & pV1x <= Xcube[icube]+cube_size[icube]+1.5*dx &
-				pV1y >= Ycube[icube]-1.5*dy & pV1y <= Ycube[icube]+cube_size[icube]+1.5*dy &
-				pV1z >= Zcube[icube]-1.5*dz & pV1z <= Zcube[icube]+cube_size[icube]+1.5*dz ) {
-
-					Node_num[NNtemp+1] = 0;
-
-			}
-
-		}
-
-		pV2x = tri_[Ntemp+9];
-		pV2y = tri_[Ntemp+10];
-		pV2z = tri_[Ntemp+11];
-
-		count_index = 0;
-		for (icube = 1; icube < ncube; icube++) {  
-
-			dx = cube_size[icube]/NcubeX;
-			dy = cube_size[icube]/NcubeY;
-			dz = cube_size[icube]/NcubeZ;
-
-			if (pV2x >= Xcube[icube]-1.5*dx & pV2x <= Xcube[icube]+cube_size[icube]+1.5*dx &
-				pV2y >= Ycube[icube]-1.5*dy & pV2y <= Ycube[icube]+cube_size[icube]+1.5*dy &
-				pV2z >= Zcube[icube]-1.5*dz & pV2z <= Zcube[icube]+cube_size[icube]+1.5*dz ) {
-
-					Node_num[NNtemp+1] = 0;
-					Node_num[NNtemp+2] = 0;
-
-			}
-
-		}
-
-		pV3x = tri_[Ntemp+13];
-		pV3y = tri_[Ntemp+14];
-		pV3z = tri_[Ntemp+15];
 
 		for (icube = 1; icube < ncube; icube++) {  
 
@@ -413,25 +369,44 @@ void BCM_Immersed_boundary
 			dy = cube_size[icube]/NcubeY;
 			dz = cube_size[icube]/NcubeZ;
 
-			if (pV3x >= Xcube[icube]-1.5*dx & pV3x <= Xcube[icube]+cube_size[icube]+1.5*dx &
-				pV3y >= Ycube[icube]-1.5*dy & pV3y <= Ycube[icube]+cube_size[icube]+1.5*dy &
-				pV3z >= Zcube[icube]-1.5*dz & pV3z <= Zcube[icube]+cube_size[icube]+1.5*dz ) {
+			boxcenter[0] = Xcube[icube]+(NcubeX/2-0.5)*dx;
+			boxcenter[1] = Ycube[icube]+(NcubeY/2-0.5)*dy;
+			boxcenter[2] = Zcube[icube]+(NcubeZ/2-0.5)*dz;
 
-					Node_num[NNtemp+1] = 0;
-					Node_num[NNtemp+2] = 0;
-					Node_num[NNtemp+3] = 0;
 
+			boxhalfsize[0] = boxhalfsize[1] = boxhalfsize[2] = (NcubeX/2+n_buffer)*dx;
+
+
+			triverts[0][0] = tri_[Ntemp+5];
+			triverts[0][1] = tri_[Ntemp+6];
+			triverts[0][2] = tri_[Ntemp+7];
+
+			triverts[1][0] = tri_[Ntemp+9];
+			triverts[1][1] = tri_[Ntemp+10];
+			triverts[1][2] = tri_[Ntemp+11];
+
+			triverts[2][0] = tri_[Ntemp+13];
+			triverts[2][1] = tri_[Ntemp+14];
+			triverts[2][2] = tri_[Ntemp+15];
+
+			if (triBoxOverlap(boxcenter,boxhalfsize,triverts) == 1) {
+				
+				tri_num[itri] = 0;    /* box and triangle overlaps */
+				break;
+			
 			}
+
 
 		}
 
 	}
 
-#pragma omp barrier
 	
-	// ------- Node_num = 0 inside the domain ------- //
-	// ---------------------------------------------- //
+	//#pragma omp barrier
 
+	
+	// -------------- tri_num = 0 inside the domain -------------- //
+	// ----------------------------------------------------------- //
 
 
 
@@ -440,17 +415,11 @@ void BCM_Immersed_boundary
 
 	count_index = 0;
 
-#pragma omp parallel for private(NNtemp) reduction(+:count_index)
+#pragma omp parallel for reduction(+:count_index)
 
 	for (itri = 1; itri <= Ntri; itri++) {
 
-		NNtemp = (itri-1)*3;
-
-		if (Node_num[NNtemp+1] == 0) {
-
-			count_index = count_index+1;
-
-		}
+		if (tri_num[itri] == 0) count_index = count_index+1;
 
 	}
 
@@ -471,8 +440,7 @@ void BCM_Immersed_boundary
 
 		NNtemp = (itri-1)*N_line;
 
-
-		if (Node_num[(itri-1)*3+1] == 0) {
+		if (tri_num[itri] == 0) {
 
 			count_index = count_index+1;
 			Ntemp = (count_index-1)*N_line;
@@ -504,7 +472,7 @@ void BCM_Immersed_boundary
 
 	}
 
-	delete[] Node_num;
+	delete[] tri_num;
 	delete[] tri_;
 
 	// ------------------ remove the triangles outside the domain ------------------ //
@@ -856,10 +824,6 @@ void BCM_Immersed_boundary
 			}
 
 
-		//if (dis > dx) continue;
-
-		//if (dis > 2*dx*dx) continue;
-
 		iicube = icube;
 		ii = i;
 		jj = j;
@@ -1059,6 +1023,168 @@ void BCM_Immersed_boundary
 	delete[] GCcnt;
 
 }
+
+
+
+int triBoxOverlap(double boxcenter[3],double boxhalfsize[3],double triverts[3][3])
+
+{
+
+  /*    use separating axis theorem to test overlap between triangle and box */
+  /*    need to test for overlap in these directions: */
+  /*    1) the {x,y,z}-directions (actually, since we use the AABB of the triangle we do not even need to test these) */
+  /*    2) normal of the triangle */
+  /*    3) crossproduct(edge from tri, {x,y,z}-directin) this gives 3x3=9 more tests */
+
+   double v0[3],v1[3],v2[3];
+
+//   float axis[3];
+
+   double min,max,p0,p1,p2,rad,fex,fey,fez;		// -NJMP- "d" local variable removed
+
+   double normal[3],e0[3],e1[3],e2[3];
+
+
+
+   /* This is the fastest branch on Sun */
+   /* move everything so that the boxcenter is in (0,0,0) */
+
+   SUB(v0,triverts[0],boxcenter);
+   SUB(v1,triverts[1],boxcenter);
+   SUB(v2,triverts[2],boxcenter);
+
+   /* compute triangle edges */
+
+   SUB(e0,v1,v0);      /* tri edge 0 */
+   SUB(e1,v2,v1);      /* tri edge 1 */
+   SUB(e2,v0,v2);      /* tri edge 2 */
+
+
+   /* Bullet 3:  */
+
+   /*  test the 9 tests first (this was faster) */
+
+   fex = fabsf(e0[X]);
+   fey = fabsf(e0[Y]);
+   fez = fabsf(e0[Z]);
+
+   AXISTEST_X01(e0[Z], e0[Y], fez, fey);
+   AXISTEST_Y02(e0[Z], e0[X], fez, fex);
+   AXISTEST_Z12(e0[Y], e0[X], fey, fex);
+
+
+
+   fex = fabsf(e1[X]);
+   fey = fabsf(e1[Y]);
+   fez = fabsf(e1[Z]);
+
+   AXISTEST_X01(e1[Z], e1[Y], fez, fey);
+   AXISTEST_Y02(e1[Z], e1[X], fez, fex);
+   AXISTEST_Z0(e1[Y], e1[X], fey, fex);
+
+
+
+   fex = fabsf(e2[X]);
+   fey = fabsf(e2[Y]);
+   fez = fabsf(e2[Z]);
+
+   AXISTEST_X2(e2[Z], e2[Y], fez, fey);
+   AXISTEST_Y1(e2[Z], e2[X], fez, fex);
+   AXISTEST_Z12(e2[Y], e2[X], fey, fex);
+
+
+
+   /* Bullet 1: */
+   /*  first test overlap in the {x,y,z}-directions */
+   /*  find min, max of the triangle each direction, and test for overlap in */
+   /*  that direction -- this is equivalent to testing a minimal AABB around */
+   /*  the triangle against the AABB */
+
+
+
+   /* test in X-direction */
+
+   FINDMINMAX(v0[X],v1[X],v2[X],min,max);
+   if(min>boxhalfsize[X] || max<-boxhalfsize[X]) return 0;
+
+
+   /* test in Y-direction */
+
+   FINDMINMAX(v0[Y],v1[Y],v2[Y],min,max);
+   if(min>boxhalfsize[Y] || max<-boxhalfsize[Y]) return 0;
+
+
+   /* test in Z-direction */
+
+   FINDMINMAX(v0[Z],v1[Z],v2[Z],min,max);
+   if(min>boxhalfsize[Z] || max<-boxhalfsize[Z]) return 0;
+
+
+
+   /* Bullet 2: */
+   /*  test if the box intersects the plane of the triangle */
+   /*  compute plane equation of triangle: normal*x+d=0 */
+
+   CROSS(normal,e0,e1);
+
+   // -NJMP- (line removed here)
+
+   if(!planeBoxOverlap(normal,v0,boxhalfsize)) return 0;	// -NJMP-
+
+   return 1;   /* box and triangle overlaps */
+
+}
+
+
+
+int planeBoxOverlap(double normal[3], double vert[3], double maxbox[3])	// -NJMP-
+
+{
+
+  int q;
+
+  float vmin[3],vmax[3],v;
+
+  for(q=X;q<=Z;q++)
+
+  {
+
+    v=vert[q];					// -NJMP-
+
+    if(normal[q]>0.0f)
+
+    {
+
+      vmin[q]=-maxbox[q] - v;	// -NJMP-
+
+      vmax[q]= maxbox[q] - v;	// -NJMP-
+
+    }
+
+    else
+
+    {
+
+      vmin[q]= maxbox[q] - v;	// -NJMP-
+
+      vmax[q]=-maxbox[q] - v;	// -NJMP-
+
+    }
+
+  }
+
+  if(DOT(normal,vmin)>0.0f) return 0;	// -NJMP-
+
+  if(DOT(normal,vmax)>=0.0f) return 1;	// -NJMP-
+
+
+  return 0;
+
+}
+
+
+
+
 
 
 
