@@ -1345,6 +1345,7 @@ int main(int argc, char **argv)
 
 		if ( step%output_step == 0 ) {
 
+
 			BCM_Output(myid, Ncube, step, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt);
 
 
