@@ -359,6 +359,8 @@ void BCM_Immersed_boundary
 
 	//#pragma omp parallel for private
 
+	count_index = 0;
+
 	for (itri = 1; itri <= Ntri; itri++) {
 
 		Ntemp = (itri-1)*N_line;
@@ -390,14 +392,17 @@ void BCM_Immersed_boundary
 				
 				tri_num[itri] = 0;    /* box and triangle overlaps */
 
-				break;
-			
+				count_index = count_index+1;
+
 			}
 		}
 
 	}
 
 	
+	int *cube_trinum = new int[ncube];    // ---- how many triangles in each cube ---- //
+	int *tri_table = new int[count_index+1];
+
 
 
 	//#pragma omp barrier
@@ -496,72 +501,8 @@ void BCM_Immersed_boundary
 	// --------------------------------------------------------------------------------- //
 	// ----------------------- detect the triangle in which cube ----------------------- //
 
-	/*#pragma omp parallel for 
-	for (itri = 1; itri <= ( count_index*ncube+1 ); itri++) {
-
-		if( (itri-1)%ncube == 0) 
-
-			tri_table[itri] = (itri-1)/ncube+1;
-
-		else 
-
-			tri_table[itri] = 0;
-
-	}*/
-
 	
-	//
-	//Scount_index = 0;
-	//
-	//for (itri = 1; itri <= Ntri; itri++) {
-
-	//	Ntemp = (itri-1)*N_line;
-
-	//	if(tri_num[itri] == 0) {
-
-	//		Scount_index = Scount_index+1;
-	//		count_index = 0;
-
-	//		for (icube = 1; icube < ncube; icube++) {  
-
-	//			dx = dy = dz = cube_size[icube]/NcubeX;
-
-	//			boxhalfsize[0] = boxhalfsize[1] = boxhalfsize[2] = (NcubeX/2+n_buffer)*dx;
-
-	//			boxcenter[0] = Xcube[icube]+(NcubeX/2-0.5)*dx;
-	//			boxcenter[1] = Ycube[icube]+(NcubeY/2-0.5)*dy;
-	//			boxcenter[2] = Zcube[icube]+(NcubeZ/2-0.5)*dz;
-
-
-	//			triverts[0][0] = tri_[Ntemp+5];
-	//			triverts[0][1] = tri_[Ntemp+6];
-	//			triverts[0][2] = tri_[Ntemp+7];
-
-	//			triverts[1][0] = tri_[Ntemp+9];
-	//			triverts[1][1] = tri_[Ntemp+10];
-	//			triverts[1][2] = tri_[Ntemp+11];
-
-	//			triverts[2][0] = tri_[Ntemp+13];
-	//			triverts[2][1] = tri_[Ntemp+14];
-	//			triverts[2][2] = tri_[Ntemp+15];
-
-	//			if (triBoxOverlap(boxcenter,boxhalfsize,triverts) == 1) {
-
-	//				count_index = count_index+1;
-	//				tri_table[(Scount_index-1)*ncube+1+count_index] = icube;
-
-	//			}
-	//		}
-
-	//		tri_table[(Scount_index-1)*ncube+1] = count_index; 
-	//		
-
-	//	}    // ---- if(tri_num[itri] == 0) ---- //
-
-	//}
-
-	
-	int *tri_table = new int[Ntri*ncube+1];
+	count_index = 0;
 
 
 	for (icube = 1; icube < ncube; icube++) {  
@@ -573,8 +514,6 @@ void BCM_Immersed_boundary
 		boxcenter[0] = Xcube[icube]+(NcubeX/2-0.5)*dx;
 		boxcenter[1] = Ycube[icube]+(NcubeY/2-0.5)*dy;
 		boxcenter[2] = Zcube[icube]+(NcubeZ/2-0.5)*dz;
-
-		count_index = 0;
 
 		for (itri = 1; itri <= Ntri; itri++) {
 
@@ -595,7 +534,8 @@ void BCM_Immersed_boundary
 			if (triBoxOverlap(boxcenter,boxhalfsize,triverts) == 1) {
 
 				count_index = count_index+1;
-				tri_table[(icube-1)*(Ntri+1)+1+count_index] = itri;
+
+				tri_table[count_index] = itri;
 
 				//if(myid == 0 && icube ==124) printf("%d\t%d\t%d\n",icube,(icube-1)*(Ntri+1)+count_index,itri);
 
@@ -603,11 +543,16 @@ void BCM_Immersed_boundary
 
 		}
 
-		tri_table[(icube-1)*(Ntri+1)+1] = count_index; 
+		cube_trinum[icube] = count_index; 
 
-		//if(myid == 0 && icube > 150) printf("%d\t%d\t%d\n",icube,(icube-1)*(Ntri+1)+1,count_index);
+		//if(myid == 0) printf("%d\t%d\t%d\n",icube,tri_table[count_index],count_index);
 
 	}
+
+
+	
+	
+
 
 
 
@@ -822,14 +767,11 @@ void BCM_Immersed_boundary
 		itemp = -1;
 		ilarge = 0;
 
-		//if(myid == 0) printf("%d\n",icube);
+
 		
+		//if(myid == 0 && icube > 0 ) printf("%d\t%d\t%d\t%d\n",icube,tri_table[cube_trinum[icube-1]+1],tri_table[cube_trinum[icube]],cube_trinum[icube]);
 
-		//for (itri = (icube-1)*(Ntri+1)+2; itri <= (icube-1)*(Ntri+1)+Ntri; itri++) {
-
-		for (itri = (icube-1)*(Ntri+1)+2; itri <=(icube-1)*(Ntri+1)+1+tri_table[(icube-1)*(Ntri+1)+1]; itri++) {
-
-			//if (tri_table[itri] == 0) break;
+		for (itri =cube_trinum[icube-1]+1; itri <= cube_trinum[icube]; itri++) {
 
 			Ntemp = tri_table[itri]*N_line;
 
@@ -850,7 +792,7 @@ void BCM_Immersed_boundary
 			Ndis_min = MAX;
 
 			
-			for (itri = (icube-1)*(Ntri+1)+2; itri <= ( (icube-1)*(Ntri+1)+2+tri_table[(icube-1)*(Ntri+1)+1] ); itri++) {
+			for (itri =cube_trinum[icube-1]+1; itri <= cube_trinum[icube]; itri++) {
 
 				Ntemp = tri_table[itri]*N_line;
 
@@ -863,18 +805,18 @@ void BCM_Immersed_boundary
 
 
 
+		/*
+		for (itri = 0; itri < Ntri; itri++) {
 
-		//for (itri = 0; itri < Ntri; itri++) {
+			Ntemp = (itri)*N_line;
 
-		//	Ntemp = (itri)*N_line;
-
-		//	BI_detect(myid, Ntemp, N_line, &Ndis, &Ndis_min, &iflag_total, &tmin, &dotp, &dir0, &dir1, &dir2, pNode_inf, ptri_number, pNode, 
-		//		tri, vert0, vert1, vert2, nuvec, dir, orig, xcnt, ycnt, zcnt, &itemp, &ilarge, nlarge);
+			BI_detect(myid, Ntemp, N_line, &Ndis, &Ndis_min, &iflag_total, &tmin, &dotp, &dir0, &dir1, &dir2, pNode_inf, ptri_number, pNode, 
+				tri, vert0, vert1, vert2, nuvec, dir, orig, xcnt, ycnt, zcnt, &itemp, &ilarge, nlarge);
 
 
-		//}
-
-		//
+		}
+		*/
+		
 
 		//// ---- if (dotp > 0) the point is ouside the object ---- //
 
@@ -1171,6 +1113,7 @@ void BCM_Immersed_boundary
 	// ==== immersed boundary file ===== //
 
 	delete[] tri_table;
+	delete[] cube_trinum;
 	delete[] tri;
 	delete[] pvertex;
 	delete[] pNode;
