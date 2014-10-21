@@ -1094,7 +1094,6 @@ int main(int argc, char **argv)
 		gj = GCindex_minus[Ntemp+3];
 		gk = GCindex_minus[Ntemp+4];
 
-		//FWS[gicube][gi][gj][gk] = -10;
 
 		U1[gicube][gi][gj][gk][0] = rho0;
 		U1[gicube][gi][gj][gk][1] = 0;
@@ -1120,9 +1119,6 @@ int main(int argc, char **argv)
 		gi = GCindex_plus[Ntemp+2];
 		gj = GCindex_plus[Ntemp+3];
 		gk = GCindex_plus[Ntemp+4];
-
-		//FWS[gicube][gi][gj][gk] = 10;
-
 
 		U1[gicube][gi][gj][gk][0] = rho0;
 		U1[gicube][gi][gj][gk][1] = 0;
@@ -1158,7 +1154,7 @@ int main(int argc, char **argv)
 	// ------------------------------------------ //
 
 
-				/*BCM_X_boundary_condition(myid, NXbc_l, NXbc_u, Xbc_l, Xbc_u, U1_);
+				BCM_X_boundary_condition(myid, NXbc_l, NXbc_u, Xbc_l, Xbc_u, U1_);
 
 				BCM_Y_boundary_condition(NYbc_l, NYbc_u, Ybc_l, Ybc_u, U1_);
 
@@ -1238,7 +1234,7 @@ int main(int argc, char **argv)
 					adjX_bs_plus, adjX_sb_plus, adjX_bs_minus, adjX_sb_minus,
 					adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
-					U1_);*/
+					U1_);
 
 
 		// ------------------------------------------ //
@@ -1345,9 +1341,7 @@ int main(int argc, char **argv)
 
 		if ( step%output_step == 0 ) {
 
-
-			//BCM_Output(myid, Ncube, step, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt);
-
+			BCM_Output(myid, Ncube, step, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt);
 
 		}
 

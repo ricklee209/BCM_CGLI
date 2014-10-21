@@ -470,15 +470,6 @@ void BCM_Immersed_boundary
 			tri[Ntemp+14] = tri_[NNtemp+14];
 			tri[Ntemp+15] = tri_[NNtemp+15];
 
-/*
-			if(itri == 25533) {
-				
-				
-				printf("%f\t%f\t%f\n",tri_[NNtemp+5],tri_[NNtemp+6],tri_[NNtemp+7]);
-				printf("%d\t%d\n",Ntemp, count_index);
-
-			}
-			*/
 
 		}
 
@@ -488,11 +479,6 @@ void BCM_Immersed_boundary
 	// ------------------ remove the triangles outside the domain ------------------ //
 	// ----------------------------------------------------------------------------- //
 	
-
-
-
-	
-
 
 
 
@@ -547,21 +533,11 @@ void BCM_Immersed_boundary
 			triverts[2][2] = tri[Ntemp+15];
 
 			
-				if(myid == 0 && itri == 5642 && icube == 5) {
-				
-					printf("%f\t%f\t%f\n",tri[Ntemp+5],tri[Ntemp+6],tri[Ntemp+7]);
-					printf("%d\t%d\n",triBoxOverlap(boxcenter,boxhalfsize,triverts), itri);
-
-				}
-
 			if (triBoxOverlap(boxcenter,boxhalfsize,triverts) == 1) {
 
 				count_index = count_index+1;
 
 				tri_table[count_index] = itri;
-
-				
-				//if(myid == 0)  printf("%d\t%d\t%d\n",icube,count_index,itri);
 
 			}  // ---- if (triBoxOverlap(boxcenter,boxhalfsize,triverts) == 1) ---- //
 
@@ -569,24 +545,7 @@ void BCM_Immersed_boundary
 
 		cube_trinum[icube] = count_index; 
 
-		//if(myid == 0) printf("%d\t%d\t%d\n",icube,tri_table[count_index],count_index);
-
-		//if(myid == 0) printf("%d\t%d\n",icube,count_index);
-
 	}
-
-
-	
-	
-
-
-
-
-	/*for (itri = 1; itri <= 10000; itri++) {
-
-			if(myid == 0 && tri_table[itri] != 0) printf("%d\t%d\n",itri,tri_table[itri]);
-
-	}*/
 
 
 	delete[] tri_num;
@@ -595,10 +554,6 @@ void BCM_Immersed_boundary
 	
 	// ----------------------- detect the triangle in which cube ----------------------- //
 	// --------------------------------------------------------------------------------- //
-
-
-
-	
 
 
 	int ii,jj,kk;
@@ -746,15 +701,10 @@ void BCM_Immersed_boundary
 	int	pBI;
 
 
-
-
-
-
 	int iflag, iflag_total;
 	int ilarge = 0;
 	int nlarge[300];
 
-	//int icount;
 	int iNgc_plus = 0;
 	int iNgc_minus = 0;
 
@@ -775,7 +725,6 @@ void BCM_Immersed_boundary
 		ycnt = GCcnt[Ntemp+2];
 		zcnt = GCcnt[Ntemp+3];
 
-
 		NNtemp = (igc-1)*4;
 
 		icube = GC[NNtemp+1];
@@ -783,12 +732,9 @@ void BCM_Immersed_boundary
 		j = GC[NNtemp+3];
 		k = GC[NNtemp+4];
 
-		
 		dx = cube_size[icube]/NcubeX;
 		dy = cube_size[icube]/NcubeY;
 		dz = cube_size[icube]/NcubeZ;
-
-
 
 		iflag_total = 0;
 		tmin = MAX;
@@ -798,9 +744,7 @@ void BCM_Immersed_boundary
 		itemp = -1;
 		ilarge = 0;
 
-		
 
-		
 		for (itri =cube_trinum[icube-1]+1; itri <= cube_trinum[icube]; itri++) {
 
 			Ntemp = (tri_table[itri]-1)*N_line;
@@ -810,9 +754,7 @@ void BCM_Immersed_boundary
 
 		}
 
-
 		// ---- if (dotp > 0) the point is ouside the object ---- //
-
 
 
 		if (iflag_total > 0) {
@@ -851,14 +793,11 @@ void BCM_Immersed_boundary
 
 			dis = (BIx-orig[0])*(BIx-orig[0])+(BIy-orig[1])*(BIy-orig[1])+(BIz-orig[2])*(BIz-orig[2]);
 			
-			
 		}  // ---- if (iflag_total > 0) ---- //
 
 
-		//if(myid == 0) printf("%f\t%f\n",2*dx*dx,dis);
 
-		/*
-		
+
 		if (dis > 2*dx*dx | iflag_total == 0) {
 
 			Ndis_min = MAX;
@@ -882,15 +821,15 @@ void BCM_Immersed_boundary
 
 			dis = (BIx-xcnt)*(BIx-xcnt)+(BIy-ycnt)*(BIy-ycnt)+(BIz-zcnt)*(BIz-zcnt);
 
-		}
-		*/
+			if (dis > 2*dx*dx) {
+				
+				FWS[icube][i][j][k] = IFLUID; 
+				continue;
+			
+			}
 
-		
-		if (dis > 2*dx*dx | iflag_total == 0) {
-		
-			continue;
-
 		}
+		
 
 
 		
@@ -930,21 +869,11 @@ void BCM_Immersed_boundary
 
 
 		icount = 0;
-/*
-
-		if (dis > sqrt(2)*dx) { 
-		
-			FWS[icube][i][j][k] = IFLUID; 
-			continue;
-			
-			}*/
-
 
 		iicube = icube;
 		ii = i;
 		jj = j;
 		kk = k;
-
 
 		for (i = 0; i <= nxx; i++) {
 			if (IPx >= Xcnt[icube][i] & IPx <= Xcnt[icube][i]+dx) 
@@ -1041,7 +970,6 @@ void BCM_Immersed_boundary
 
 
 		GetInverseMatrix( V, V, 8 );
-
 
 		for (int vi = 0; vi < 8; vi++) {
 
