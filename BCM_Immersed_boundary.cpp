@@ -1000,10 +1000,11 @@ void BCM_Immersed_boundary
 				Ntemp = (igc-1)*4;
 				fprintf(fptr_minus,"%d\t%d\t%d\t%d\n",GC[Ntemp+1],GC[Ntemp+2],GC[Ntemp+3],GC[Ntemp+4]);
 
-
 				iNgc_minus = iNgc_minus+1;
 				fprintf(fptr_minus,"%d\t%d\t%d\t%d\n",icube,i,j,k);
 				fprintf(fptr_minus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",weight[0],weight[1],weight[2],weight[3],weight[4],weight[5],weight[6],weight[7]);
+
+				fprintf(fptr_minus,"%f\t%f\t%f\t%f\n",-dir[0], -dir[1], -dir[2],sqrt(dis));
 
 			}
 			else {
@@ -1014,6 +1015,8 @@ void BCM_Immersed_boundary
 				iNgc_plus = iNgc_plus+1;
 				fprintf(fptr_plus,"%d\t%d\t%d\t%d\n",icube,i,j,k);
 				fprintf(fptr_plus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",weight[0],weight[1],weight[2],weight[3],weight[4],weight[5],weight[6],weight[7]);
+				
+				fprintf(fptr_plus,"%f\t%f\t%f\t%f\n",-dir[0], -dir[1], -dir[2],sqrt(dis));
 
 			}
 

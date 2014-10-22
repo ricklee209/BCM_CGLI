@@ -359,6 +359,7 @@ extern int NBC;
 void BCM_Reading_IBM
 (
 // =================================================== //
+
 int myid,
 
 int *NNBC,
@@ -367,9 +368,12 @@ int mp_switch,
 
 double (*weight) = new double[NBC*8+1],
 
+double (*N_dis) = new double[NBC*4+1],
+
 int (*GCindex) = new int[NBC*4+1],
 
 int (*IPsur) = new int[NBC*4+1]
+
 
 // =================================================== //
 );
@@ -381,14 +385,20 @@ int (*IPsur) = new int[NBC*4+1]
  int myid,
 
  int *NNBC,
+ 
+ double deltaT,
+ double deltaTau,
 
  double (*weight) = new double[NBC_minus*8+1],
+ double (*N_dis) = new double[NBC_minus*4+1],
  int (*GCindex) = new int[NBC_minus*4+1],
  int (*IPsur) = new int[NBC_minus*4+1],
 
  int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
 
- double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+ 
+double (*U1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
 
  // =============================================================================== //
  );
@@ -400,14 +410,20 @@ int (*IPsur) = new int[NBC*4+1]
  int myid,
 
  int *NNBC,
+ 
+double deltaT,
+double deltaTau,
 
  double (*weight) = new double[NBC_plus*8+1],
+ double (*N_dis) = new double[NBC_plus*4+1],
  int (*GCindex) = new int[NBC_plus*4+1],
  int (*IPsur) = new int[NBC_plus*4+1],
 
  int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
 
- double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+ 
+double (*U1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
 
  // =============================================================================== //
  );

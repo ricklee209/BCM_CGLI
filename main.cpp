@@ -869,11 +869,12 @@ int main(int argc, char **argv)
 	NBC = NBC_minus;
 
 	double (*weight_minus) = new double[NBC*8+1];
+	double (*N_dis_minus) = new double[NBC*4+1];
 	int (*GCindex_minus) = new int[NBC*4+1];
 	int (*IPsur_minus) = new int[NBC*4+1];
 
 	mp_switch = -1;
-	BCM_Reading_IBM(myid, &NBC, mp_switch, weight_minus, GCindex_minus, IPsur_minus);
+	BCM_Reading_IBM(myid, &NBC, mp_switch, weight_minus, N_dis_minus, GCindex_minus, IPsur_minus);
 
 	double (*bU1_minus) = new double[NBC_minus+1];
 	double (*bU2_minus) = new double[NBC_minus+1];
@@ -910,11 +911,12 @@ int main(int argc, char **argv)
 
 
 	double (*weight_plus) = new double[NBC*8+1];
+	double (*N_dis_plus) = new double[NBC*4+1];
 	int (*GCindex_plus) = new int[NBC*4+1];
 	int (*IPsur_plus) = new int[NBC*4+1];
 
 	mp_switch = 1;
-	BCM_Reading_IBM(myid, &NBC, mp_switch, weight_plus, GCindex_plus, IPsur_plus);
+	BCM_Reading_IBM(myid, &NBC, mp_switch, weight_plus, N_dis_plus, GCindex_plus, IPsur_plus);
 
 	double (*bU1_plus) = new double[NBC_plus+1];
 	double (*bU2_plus) = new double[NBC_plus+1];
@@ -1163,9 +1165,9 @@ int main(int argc, char **argv)
 				
 				for (int ig = 1; ig <= 1; ig++) {
 
-					BCM_Ghostcell_minus(myid, &NBC_minus, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
+					BCM_Ghostcell_minus(myid, &NBC_minus, deltaT, deltaTau, weight_minus, N_dis_minus, GCindex_minus, IPsur_minus, FWS, U1_, U1);
 
-					BCM_Ghostcell_plus(myid, &NBC_plus, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
+					BCM_Ghostcell_plus(myid, &NBC_plus, deltaT, deltaTau, weight_plus, N_dis_plus, GCindex_plus, IPsur_plus, FWS, U1_, U1);
 
 				}
 				
