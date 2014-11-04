@@ -804,7 +804,7 @@ void BCM_Immersed_boundary
 
 			for (itri =cube_trinum[icube-1]+1; itri <= cube_trinum[icube]; itri++) {
 
-				Ntemp = tri_table[itri]*N_line;
+				Ntemp = (tri_table[itri]-1)*N_line;
 
 				BI_detect_iflag0(myid, Ntemp, &BIp0, &BIp1, &BIp2, N_line, &Ndis, &Ndis_min,  pNode_inf, ptri_number, pNode, 
 					tri, vert0, vert1, vert2,xcnt, ycnt, zcnt);

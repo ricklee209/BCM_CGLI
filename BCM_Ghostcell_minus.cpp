@@ -46,7 +46,7 @@ double (*U1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z
 int gicube,gi,gj,gk;
 int iNBC, Ntemp;
 double Nx, Ny, Nz;
-double Ndis;
+double Vn, Vn_old, Ndis;
 
 double rho, U, V, W, VV, P, T;
 double rhoold,Uold,Vold,Wold,VVold,Pold,Told;
@@ -76,7 +76,7 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 	T000, T100, T010, T001, T110, T101, T011, T111,\
 	w1,w2,w3,w4,w5,w6,w7,w8,\
 	gicube,gi,gj,gk,\
-	Nx, Ny, Nz, Ndis,\
+	Nx, Ny, Nz, Vn, Vn_old, Ndis,\
 	rho,P,U,V,W,VV,\
 	rhoold,Pold,Uold,Vold,Wold,VVold\
 	)
@@ -185,14 +185,16 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 		Nz = N_dis[Ntemp+3];
 		Ndis = N_dis[Ntemp+4];
 
-		rhoold = U1[icube][i][j][k][0];
-		Uold = U1[icube][i][j][k][1]/rhoold;
-		Vold = U1[icube][i][j][k][2]/rhoold;
-		Wold = U1[icube][i][j][k][3]/rhoold;
-		VVold = Uold*Uold+Vold*Vold+Wold*Wold;
-		Pold = (U1[icube][i][j][k][4]-0.5*rhoold*VVold)*(K-1);
 		
-		VVold = Uold*Nx+Vold*Ny+Wold*Nz;    // ---- Velocity mag. in normal direction ---- //
+		rhoold = U1[gicube][gi][gj][gk][0];
+		Uold = U1[gicube][gi][gj][gk][1]/rhoold;
+		Vold = U1[gicube][gi][gj][gk][2]/rhoold;
+		Wold = U1[gicube][gi][gj][gk][3]/rhoold;
+		VVold = Uold*Uold+Vold*Vold+Wold*Wold;
+		Pold = (U1[gicube][gi][gj][gk][4]-0.5*rhoold*VVold)*(K-1);
+		
+		
+		Vn_old = Uold*Nx+Vold*Ny+Wold*Nz;    // ---- Velocity mag. in normal direction ---- //
 
 // ----------------- Pressure boundary condition ----------------- //
 // --------------------------------------------------------------- //		
@@ -207,7 +209,9 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 		
 		VV = U*U+V*V+W*W;
 
-		P = Pold - (rho*U-rhoold*Uold)*Ndis/deltaT-rho*U*U;
+		Vn = U*Nx+V*Ny+W*Nz;
+
+		P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
 
 		U1_[gicube][gi][gj][gk][0] = rho;
 		U1_[gicube][gi][gj][gk][1] = 0.5*rho*U;
@@ -234,7 +238,11 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 			
 			VV = U*U+V*V+W*W;
 
-			P = Pold - (rho*U-rhoold*Uold)*Ndis/deltaT-rho*U*U;
+			
+			Vn = U*Nx+V*Ny+W*Nz;
+
+			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+
 			
 			U1_[gicube][gi][gj][gk][0] = rho;
 			U1_[gicube][gi][gj][gk][1] = rho*U;
@@ -264,7 +272,10 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 			
 			VV = U*U+V*V+W*W;
 
-			P = Pold - (rho*U-rhoold*Uold)*Ndis/deltaT-rho*U*U;
+			Vn = U*Nx+V*Ny+W*Nz;
+
+			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+
 			
 			U1_[gicube][gi][gj][gk][0] = rho;
 			U1_[gicube][gi][gj][gk][1] = rho*U;
@@ -295,7 +306,11 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 			
 			VV = U*U+V*V+W*W;
 
-			P = Pold - (rho*U-rhoold*Uold)*Ndis/deltaT-rho*U*U;
+			Vn = U*Nx+V*Ny+W*Nz;
+
+			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+
+			
 				
 			U1_[gicube][gi][gj][gk][0] = rho;
 			U1_[gicube][gi][gj][gk][1] = rho*U;
@@ -324,7 +339,11 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 			
 			VV = U*U+V*V+W*W;
 
-			P = Pold - (rho*U-rhoold*Uold)*Ndis/deltaT-rho*U*U;
+			Vn = U*Nx+V*Ny+W*Nz;
+
+			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+
+			
 			
 			U1_[gicube][gi][gj][gk][0] = rho;
 			U1_[gicube][gi][gj][gk][1] = rho*U;
@@ -332,7 +351,6 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 			U1_[gicube][gi][gj][gk][3] = rho*W;
 			U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*VV;
 
-			
 			}
 			
 		if ( gi==(i+1) & gj==(j+1) & gk==(k  ) ) { 
@@ -356,7 +374,11 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 			
 			VV = U*U+V*V+W*W;
 
-			P = Pold - (rho*U-rhoold*Uold)*Ndis/deltaT-rho*U*U;
+			Vn = U*Nx+V*Ny+W*Nz;
+
+			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+
+			
 
 			
 			U1_[gicube][gi][gj][gk][0] = rho;
@@ -388,7 +410,11 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 			
 			VV = U*U+V*V+W*W;
 
-			P = Pold - (rho*U-rhoold*Uold)*Ndis/deltaT-rho*U*U;
+			Vn = U*Nx+V*Ny+W*Nz;
+
+			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+
+			
 			
 			U1_[gicube][gi][gj][gk][0] = rho;
 			U1_[gicube][gi][gj][gk][1] = rho*U;
@@ -417,7 +443,11 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 			
 			VV = U*U+V*V+W*W;
 
-			P = Pold - (rho*U-rhoold*Uold)*Ndis/deltaT-rho*U*U;
+			Vn = U*Nx+V*Ny+W*Nz;
+
+			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+
+			
 			
 			U1_[gicube][gi][gj][gk][0] = rho;
 			U1_[gicube][gi][gj][gk][1] = rho*U;
@@ -447,7 +477,11 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 			
 			VV = U*U+V*V+W*W;
 
-			P = Pold - (rho*U-rhoold*Uold)*Ndis/deltaT-rho*U*U;
+			Vn = U*Nx+V*Ny+W*Nz;
+
+			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+
+			
 
 			U1_[gicube][gi][gj][gk][0] = rho;
 			U1_[gicube][gi][gj][gk][1] = rho*U;

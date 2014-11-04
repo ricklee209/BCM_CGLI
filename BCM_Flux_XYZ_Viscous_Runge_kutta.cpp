@@ -2520,7 +2520,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 	if(RK == 3) {
 	
 
-#pragma omp parallel for private(j,k,rho,P,U,V,W,T,VV,rhoold,Uold,Vold,Wold,VVold,Pold,Told)//reduction(+:e1,e2,e3,e4,e5)
+#pragma omp parallel for private(j,k,rho,P,U,V,W,T,VV,rhoold,Uold,Vold,Wold,VVold,Pold,Told)  reduction(+:e1,e2,e3,e4,e5)
 
 		for (icube = 1; icube < ncube; icube++) {  
 			for (i = n_buffer; i < nxx; i++) {
