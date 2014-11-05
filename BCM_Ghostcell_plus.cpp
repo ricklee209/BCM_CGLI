@@ -145,6 +145,7 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 		P011 = (U1_[icube][i][j+1][k+1][4]-0.5*rho011*VV011)*(K-1);
 		T011 = P011/rho011/R;
 
+
 		rho111 = U1_[icube][i+1][j+1][k+1][0];
 		U111 = U1_[icube][i+1][j+1][k+1][1]/rho111;
 		V111 = U1_[icube][i+1][j+1][k+1][2]/rho111;
@@ -207,9 +208,8 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 		
 		VV = U*U+V*V+W*W;
 
-		Vn = U*Nx+V*Ny+W*Nz;
-
-		P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+		P = w1*(P000-P0)+w2*(P100-P0)+w3*(P010-P0)+w4*(P001-P0)+w5*(P110-P0)+w6*(P101-P0)+w7*(P011-P0)+w8*(P111-P0)+P0;
+		
 
 		U1_[gicube][gi][gj][gk][0] = rho;
 		U1_[gicube][gi][gj][gk][1] = 0.5*rho*U;
@@ -217,32 +217,35 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 		U1_[gicube][gi][gj][gk][3] = 0.5*rho*W;
 		U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*0.25*VV;
 		
-
+		
 		if ( gi==(i  ) & gj==(j  ) & gk==(k  ) ) { 
 		
-			if (w1 > 0.9999) {
-
-				rho = rho000;
-
-			}
-			else {
-
-				rho = (w2*(rho100-rho0)+w3*(rho010-rho0)+w4*(rho001-rho0)+w5*(rho110-rho0)+w6*(rho101-rho0)+w7*(rho011-rho0)+w8*(rho111-rho0))/(1-w1)+rho0;
-
-			}
-				
 			U = (w2*U100+w3*U010+w4*U001+w5*U110+w6*U101+w7*U011+w8*U111)/(2-w1);
 			V = (w2*V100+w3*V010+w4*V001+w5*V110+w6*V101+w7*V011+w8*V111)/(2-w1);
 			W = (w2*W100+w3*W010+w4*W001+w5*W110+w6*W101+w7*W011+w8*W111)/(2-w1);
 			
 			VV = U*U+V*V+W*W;
 
-			
-			Vn = U*Nx+V*Ny+W*Nz;
+		
+			if (w1 > 0.9999) {
 
-			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+				rho = rho000;
+				P = P000;
+				
+			}
+			else {
 
-			
+				rho = (w2*(rho100-rho0)+w3*(rho010-rho0)+w4*(rho001-rho0)+w5*(rho110-rho0)+w6*(rho101-rho0)+w7*(rho011-rho0)+w8*(rho111-rho0))/(1-w1)+rho0;
+
+				Vn = U*Nx+V*Ny+W*Nz;
+				
+				Pold = (rho*Vn-rhoold*Vn_old)*Ndis/deltaT+rho*Vn*Vn;
+		
+				P = (Pold+w2*(P100-P0)+w3*(P010-P0)+w4*(P001-P0)+w5*(P110-P0)+w6*(P101-P0)+w7*(P011-P0)+w8*(P111-P0))/(1-w1)+P0;
+
+				
+			}
+				
 			U1_[gicube][gi][gj][gk][0] = rho;
 			U1_[gicube][gi][gj][gk][1] = rho*U;
 			U1_[gicube][gi][gj][gk][2] = rho*V;
@@ -253,28 +256,31 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 			
 		if ( gi==(i+1) & gj==(j  ) & gk==(k  ) ) { 
 		
-			
-			if (w2 > 0.9999) {
-
-				rho = rho100;
-			}
-			else {
-
-				rho = (w1*(rho000-rho0)+w3*(rho010-rho0)+w4*(rho001-rho0)+w5*(rho110-rho0)+w6*(rho101-rho0)+w7*(rho011-rho0)+w8*(rho111-rho0))/(1-w2)+rho0;
-
-			}
-				
-			
+		
 			U = (w1*U000+w3*U010+w4*U001+w5*U110+w6*U101+w7*U011+w8*U111)/(2-w2);
 			V = (w1*V000+w3*V010+w4*V001+w5*V110+w6*V101+w7*V011+w8*V111)/(2-w2);
 			W = (w1*W000+w3*W010+w4*W001+w5*W110+w6*W101+w7*W011+w8*W111)/(2-w2);
 			
 			VV = U*U+V*V+W*W;
 
-			Vn = U*Nx+V*Ny+W*Nz;
+			
+			if (w2 > 0.9999) {
 
-			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+				rho = rho100;
+				P = P100;
+			}
+			else {
 
+				rho = (w1*(rho000-rho0)+w3*(rho010-rho0)+w4*(rho001-rho0)+w5*(rho110-rho0)+w6*(rho101-rho0)+w7*(rho011-rho0)+w8*(rho111-rho0))/(1-w2)+rho0;
+
+				Vn = U*Nx+V*Ny+W*Nz;
+				
+				Pold = (rho*Vn-rhoold*Vn_old)*Ndis/deltaT+rho*Vn*Vn;
+		
+				P = (Pold+w1*(P000-P0)+w3*(P010-P0)+w4*(P001-P0)+w5*(P110-P0)+w6*(P101-P0)+w7*(P011-P0)+w8*(P111-P0))/(1-w2)+P0;
+
+			}
+				
 			
 			U1_[gicube][gi][gj][gk][0] = rho;
 			U1_[gicube][gi][gj][gk][1] = rho*U;
@@ -286,30 +292,30 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 			
 		if ( gi==(i  ) & gj==(j+1) & gk==(k  ) ) { 
 		
-			if (w3 > 0.9999) {
-
-				rho = rho010;
-
-
-			}
-			else {
-
-				rho = (w1*(rho000-rho0)+w2*(rho100-rho0)+w4*(rho001-rho0)+w5*(rho110-rho0)+w6*(rho101-rho0)+w7*(rho011-rho0)+w8*(rho111-rho0))/(1-w3)+rho0;
-
-			}
-				
-				
 			U = (w1*U000+w2*U100+w4*U001+w5*U110+w6*U101+w7*U011+w8*U111)/(2-w3);
 			V = (w1*V000+w2*V100+w4*V001+w5*V110+w6*V101+w7*V011+w8*V111)/(2-w3);
 			W = (w1*W000+w2*W100+w4*W001+w5*W110+w6*W101+w7*W011+w8*W111)/(2-w3);
 			
 			VV = U*U+V*V+W*W;
 
-			Vn = U*Nx+V*Ny+W*Nz;
+			if (w3 > 0.9999) {
 
-			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+				rho = rho010;
+				P = P010;
 
-			
+			}
+			else {
+
+				rho = (w1*(rho000-rho0)+w2*(rho100-rho0)+w4*(rho001-rho0)+w5*(rho110-rho0)+w6*(rho101-rho0)+w7*(rho011-rho0)+w8*(rho111-rho0))/(1-w3)+rho0;
+				
+				Vn = U*Nx+V*Ny+W*Nz;
+				
+				Pold = (rho*Vn-rhoold*Vn_old)*Ndis/deltaT+rho*Vn*Vn;
+				
+				P = (Pold+w1*(P000-P0)+w2*(P100-P0)+w4*(P001-P0)+w5*(P110-P0)+w6*(P101-P0)+w7*(P011-P0)+w8*(P111-P0))/(1-w3)+P0;
+
+			}
+				
 				
 			U1_[gicube][gi][gj][gk][0] = rho;
 			U1_[gicube][gi][gj][gk][1] = rho*U;
@@ -321,27 +327,29 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 			
 		if ( gi==(i  ) & gj==(j  ) & gk==(k+1) ) { 
 		
-			if (w4 > 0.9999) {
-
-				rho = rho001;
-			}
-			else {
-
-				rho = (w1*(rho000-rho0)+w2*(rho100-rho0)+w3*(rho010-rho0)+w5*(rho110-rho0)+w6*(rho101-rho0)+w7*(rho011-rho0)+w8*(rho111-rho0))/(1-w4)+rho0;
-
-			}
-				
-			
 			U = (w1*U000+w2*U100+w3*U010+w5*U110+w6*U101+w7*U011+w8*U111)/(2-w4);
 			V = (w1*V000+w2*V100+w3*V010+w5*V110+w6*V101+w7*V011+w8*V111)/(2-w4);
 			W = (w1*W000+w2*W100+w3*W010+w5*W110+w6*W101+w7*W011+w8*W111)/(2-w4);
 			
 			VV = U*U+V*V+W*W;
 
-			Vn = U*Nx+V*Ny+W*Nz;
+			if (w4 > 0.9999) {
 
-			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+				rho = rho001;
+				P = P001;
+			}
+			else {
 
+				rho = (w1*(rho000-rho0)+w2*(rho100-rho0)+w3*(rho010-rho0)+w5*(rho110-rho0)+w6*(rho101-rho0)+w7*(rho011-rho0)+w8*(rho111-rho0))/(1-w4)+rho0;
+				
+				Vn = U*Nx+V*Ny+W*Nz;
+				
+				Pold = (rho*Vn-rhoold*Vn_old)*Ndis/deltaT+rho*Vn*Vn;
+				
+				P = (Pold+w1*(P000-P0)+w2*(P100-P0)+w3*(P010-P0)+w5*(P110-P0)+w6*(P101-P0)+w7*(P011-P0)+w8*(P111-P0))/(1-w4)+P0;
+
+			}
+				
 			
 			
 			U1_[gicube][gi][gj][gk][0] = rho;
@@ -355,17 +363,6 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 		if ( gi==(i+1) & gj==(j+1) & gk==(k  ) ) { 
 			
 			
-			if (w5 > 0.9999) {
-
-				rho = rho110;
-			}
-			else {
-
-				rho = (w1*(rho000-rho0)+w2*(rho100-rho0)+w3*(rho010-rho0)+w4*(rho001-rho0)+w6*(rho101-rho0)+w7*(rho011-rho0)+w8*(rho111-rho0))/(1-w5)+rho0;
-
-			}
-				
-			
 			
 			U = (w1*U000+w2*U100+w3*U010+w4*U001+w6*U101+w7*U011+w8*U111)/(2-w5);
 			V = (w1*V000+w2*V100+w3*V010+w4*V001+w6*V101+w7*V011+w8*V111)/(2-w5);
@@ -373,12 +370,24 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 			
 			VV = U*U+V*V+W*W;
 
-			Vn = U*Nx+V*Ny+W*Nz;
+			if (w5 > 0.9999) {
 
-			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+				rho = rho110;
+				P = P110;
+			}
+			else {
 
+				rho = (w1*(rho000-rho0)+w2*(rho100-rho0)+w3*(rho010-rho0)+w4*(rho001-rho0)+w6*(rho101-rho0)+w7*(rho011-rho0)+w8*(rho111-rho0))/(1-w5)+rho0;
+
+				Vn = U*Nx+V*Ny+W*Nz;
+				
+				Pold = (rho*Vn-rhoold*Vn_old)*Ndis/deltaT+rho*Vn*Vn;
+				
+				P = (Pold+w1*(P000-P0)+w2*(P100-P0)+w3*(P010-P0)+w4*(P001-P0)+w6*(P101-P0)+w7*(P011-P0)+w8*(P111-P0))/(1-w5)+P0;
+
+			}
+				
 			
-
 			
 			U1_[gicube][gi][gj][gk][0] = rho;
 			U1_[gicube][gi][gj][gk][1] = rho*U;
@@ -391,29 +400,31 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 		if ( gi==(i+1) & gj==(j  ) & gk==(k+1) ) { 
 			
 			
-			if (w6 > 0.9999) {
-
-				rho = rho101;
-			}
-			else {
-
-				rho = (w1*(rho000-rho0)+w2*(rho100-rho0)+w3*(rho010-rho0)+w4*(rho001-rho0)+w5*(rho110-rho0)+w7*(rho011-rho0)+w8*(rho111-rho0))/(1-w6)+rho0;
-
-			}
-			
-				
-			
 			U = (w1*U000+w2*U100+w3*U010+w4*U001+w5*U110+w7*U011+w8*U111)/(2-w6);
 			V = (w1*V000+w2*V100+w3*V010+w4*V001+w5*V110+w7*V011+w8*V111)/(2-w6);
 			W = (w1*W000+w2*W100+w3*W010+w4*W001+w5*W110+w7*W011+w8*W111)/(2-w6);
 			
 			VV = U*U+V*V+W*W;
 
-			Vn = U*Nx+V*Ny+W*Nz;
+			if (w6 > 0.9999) {
 
-			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+				rho = rho101;
+				P = P101;
+			}
+			else {
 
+				rho = (w1*(rho000-rho0)+w2*(rho100-rho0)+w3*(rho010-rho0)+w4*(rho001-rho0)+w5*(rho110-rho0)+w7*(rho011-rho0)+w8*(rho111-rho0))/(1-w6)+rho0;
+
+				Vn = U*Nx+V*Ny+W*Nz;
+				
+				Pold = (rho*Vn-rhoold*Vn_old)*Ndis/deltaT+rho*Vn*Vn;
+				
+				P = (Pold+w1*(P000-P0)+w2*(P100-P0)+w3*(P010-P0)+w4*(P001-P0)+w5*(P110-P0)+w7*(P011-P0)+w8*(P111-P0))/(1-w6)+P0;
+
+				
+			}
 			
+				
 			
 			U1_[gicube][gi][gj][gk][0] = rho;
 			U1_[gicube][gi][gj][gk][1] = rho*U;
@@ -425,29 +436,31 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 			
 		if ( gi==(i  ) & gj==(j+1) & gk==(k+1) ) { 
 			
-			if (w7 > 0.9999) {
-
-				rho = rho011;
-			}
-			else {
-
-				rho = (w1*(rho000-rho0)+w2*(rho100-rho0)+w3*(rho010-rho0)+w4*(rho001-rho0)+w5*(rho110-rho0)+w6*(rho101-rho0)+w8*(rho111-rho0))/(1-w7)+rho0;
-
-			}
-				
-				
 			U = (w1*U000+w2*U100+w3*U010+w4*U001+w5*U110+w6*U101+w8*U111)/(2-w7);
 			V = (w1*V000+w2*V100+w3*V010+w4*V001+w5*V110+w6*V101+w8*V111)/(2-w7);
 			W = (w1*W000+w2*W100+w3*W010+w4*W001+w5*W110+w6*W101+w8*W111)/(2-w7);
 			
 			VV = U*U+V*V+W*W;
 
-			Vn = U*Nx+V*Ny+W*Nz;
+			if (w7 > 0.9999) {
 
-			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+				rho = rho011;
+				P = P011;
+			}
+			else {
 
-			
-			
+				rho = (w1*(rho000-rho0)+w2*(rho100-rho0)+w3*(rho010-rho0)+w4*(rho001-rho0)+w5*(rho110-rho0)+w6*(rho101-rho0)+w8*(rho111-rho0))/(1-w7)+rho0;
+
+				Vn = U*Nx+V*Ny+W*Nz;
+				
+				Pold = (rho*Vn-rhoold*Vn_old)*Ndis/deltaT+rho*Vn*Vn;
+				
+				P = (Pold+w1*(P000-P0)+w2*(P100-P0)+w3*(P010-P0)+w4*(P001-P0)+w5*(P110-P0)+w6*(P101-P0)+w8*(P111-P0))/(1-w7)+P0;
+
+				
+			}
+				
+				
 			U1_[gicube][gi][gj][gk][0] = rho;
 			U1_[gicube][gi][gj][gk][1] = rho*U;
 			U1_[gicube][gi][gj][gk][2] = rho*V;
@@ -459,29 +472,30 @@ double w1, w2, w3, w4, w5, w6, w7, w8;
 		if ( gi==(i+1) & gj==(j+1) & gk==(k+1) ) {
 			
 			
-			if (w8 > 0.9999) {
-
-				rho = rho111;
-			}
-			else {
-
-				rho = (w1*(rho000-rho0)+w2*(rho100-rho0)+w3*(rho010-rho0)+w4*(rho001-rho0)+w5*(rho110-rho0)+w6*(rho101-rho0)+w7*(rho011-rho0))/(1-w8)+rho0;
-				
-			}
-				
-			
 			U = (w1*U000+w2*U100+w3*U010+w4*U001+w5*U110+w6*U101+w7*U011)/(2-w8);
 			V = (w1*V000+w2*V100+w3*V010+w4*V001+w5*V110+w6*V101+w7*V011)/(2-w8);
 			W = (w1*W000+w2*W100+w3*W010+w4*W001+w5*W110+w6*W101+w7*W011)/(2-w8);
 			
 			VV = U*U+V*V+W*W;
 
-			Vn = U*Nx+V*Ny+W*Nz;
+			if (w8 > 0.9999) {
 
-			P = Pold - (rho*Vn-rhoold*Vn_old)*Ndis/deltaT-rho*Vn*Vn;
+				rho = rho111;
+				P = P111;
+			}
+			else {
 
+				rho = (w1*(rho000-rho0)+w2*(rho100-rho0)+w3*(rho010-rho0)+w4*(rho001-rho0)+w5*(rho110-rho0)+w6*(rho101-rho0)+w7*(rho011-rho0))/(1-w8)+rho0;
+				
+				Vn = U*Nx+V*Ny+W*Nz;
+				
+				Pold = (rho*Vn-rhoold*Vn_old)*Ndis/deltaT+rho*Vn*Vn;
+				
+				P = (Pold+w1*(P000-P0)+w2*(P100-P0)+w3*(P010-P0)+w4*(P001-P0)+w5*(P110-P0)+w6*(P101-P0)+w7*(P011-P0))/(1-w8)+P0;
+
+			}
+				
 			
-
 			U1_[gicube][gi][gj][gk][0] = rho;
 			U1_[gicube][gi][gj][gk][1] = rho*U;
 			U1_[gicube][gi][gj][gk][2] = rho*V;
