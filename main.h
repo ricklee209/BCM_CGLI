@@ -470,6 +470,88 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 );
 
 
+
+
+// ================================================================================================================//
+// ========================================= Absorbing boundary conidtion =========================================//
+
+
+void BCM_Abs_X_boundary_condition
+(
+// ================================================================================ //
+int myid,
+
+double deltaT,
+
+double deltaTau,
+
+double e,
+
+int nXbc_l,
+int nXbc_u,
+
+int (*Xbc_l) = new int[NXbc_l+1],
+int (*Xbc_u) = new int[NXbc_u+1],
+
+double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+// ================================================================================ //
+);
+
+
+
+
+void BCM_Abs_Y_boundary_condition
+(
+// ================================================================================ //
+int myid,
+
+double deltaT,
+
+double deltaTau,
+
+double e,
+
+int nYbc_l,
+int nYbc_u,
+
+int (*Ybc_l) = new int[NYbc_l+1],
+int (*Ybc_u) = new int[NYbc_u+1],
+
+double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+// ================================================================================ //
+);
+
+
+
+void BCM_Abs_Z_boundary_condition
+(
+// ================================================================================ //
+int myid,
+
+double deltaT,
+
+double deltaTau,
+
+double e,
+
+int nZbc_l,
+int nZbc_u,
+
+int (*Zbc_l) = new int[NZbc_l+1],
+int (*Zbc_u) = new int[NZbc_u+1],
+
+double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+// ================================================================================ //
+);
+
+
+
+// ========================================= Absorbing boundary conidtion =========================================//
+// ================================================================================================================//
+
+
+
+
 void BCM_Flux_XYZ_Viscous_Runge_kutta 
 (
 // ================================================================================ //
