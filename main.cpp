@@ -41,15 +41,15 @@ int main(int argc, char **argv)
 
 #include "Resolution.h"
 
-	int statistic_step = 1089;    // ---- periodic step ---- //
+	int statistic_step = 4;    // ---- periodic step ---- //
 
-	int start_step = 6000;    // ---- how many steps for reaching the quasi steady ---- //
+	int start_step = 4;    // ---- how many steps to reach the quasi steady ---- //
 
-	int dp_step = 500;    // ---- how many steps for periodically outputing the dp ---- //
+	int dp_step = 1;    // ---- how many steps for periodically outputing the dp ---- //
 
 	int iteration_end_step = 1;
-	int output_step = 1;
-	int count = 1;	
+	int output_step = 5;
+	int count = 11;	
 	int step;
 
 
@@ -1268,8 +1268,8 @@ int main(int argc, char **argv)
 // ==================================================================================================================== //
 
 
-				// if (step >= start_step) 
-				// BCM_Statistic(myid, Ncube, step, start_step, statistic_step, dp_step, rank_map, U1_,U2_,U3_,U4_,U5_);
+				 if (step >= start_step) 
+				 BCM_Statistic(myid, Ncube, step, start_step, statistic_step, dp_step, rank_map, U1_, Pall, VVall);
 
 
 

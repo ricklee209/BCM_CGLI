@@ -618,27 +618,29 @@ double (*er) = new double[7]
  // ============================================================================ //
  );
 
-// void BCM_Statistic
-// (
-// // =================================================== //
-// int myid,
-// int ncube,
 
-// int step,
-// int start_step,
-// int statistic_step,
-// int dp_step,
+void BCM_Statistic
+(
+// =================================================== //
+int myid,
+int ncube,
 
-// int (*rank_map)[MPI_Ncube] = new int[2][MPI_Ncube],
+int step,
+int start_step,
+int statistic_step,
+int dp_step,
 
-// double (*U1)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size], 
-// double (*U2)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size], 
-// double (*U3)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size], 
-// double (*U4)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size], 
-// double (*U5)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size]
+int (*rank_map)[MPI_Ncube] = new int[2][MPI_Ncube],
 
-// // =================================================== //
-// );
+double (*U1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+double (*Pall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
+double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size]
+
+// =================================================== //
+);
+
+
 
 
 

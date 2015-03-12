@@ -29,11 +29,7 @@ int dp_step,
 
 int (*rank_map)[MPI_Ncube] = new int[2][MPI_Ncube],
 
-double (*U1)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size], 
-double (*U2)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size], 
-double (*U3)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size], 
-double (*U4)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size], 
-double (*U5)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
+double (*U1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
 double (*Pall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
 double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size]
@@ -42,6 +38,9 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 )
 
 {
+
+
+// ====== Multi-zone structured scalar function file format ====== //
 
 	
 #include "BCM.h"
@@ -59,6 +58,10 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 
 	int Average_step = statistic_step;
 
+	int num_variable_output = 2; // output dp and Vmean two values //
+
+	int itemp = 1;
+
 	#pragma omp parallel for private(i,j,k,rho,U,V,W,VV,P)	
 	for (icube = 1; icube < ncube; icube++) { 
 		for (i = n_buffer-1; i <= nxx; i++) {
@@ -66,16 +69,16 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 				for (k = n_buffer-1; k <= nzz; k++) {  
 
 					/* flux parameter */
-					rho = U1[icube][i][j][k];
-					U = U2[icube][i][j][k]/rho;
-					V = U3[icube][i][j][k]/rho;
-					W = U4[icube][i][j][k]/rho;     
-					VV = U*V+V*V+W*W;
-					P = (U5[icube][i][j][k]-0.5*rho*VV)*(K-1)-101300;
+					rho = U1[icube][i][j][k][0];
+					U = U1[icube][i][j][k][1]/rho;
+					V = U1[icube][i][j][k][2]/rho;
+					W = U1[icube][i][j][k][3]/rho;     
+					VV = U*U+V*V+W*W;
+					P = (U1[icube][i][j][k][4]-0.5*rho*VV)*(K-1);
 					
 					Pall[icube][i][j][k] = Pall[icube][i][j][k]+P;
 
-					VVall[icube][i][j][k] = VVall[icube][i][j][k]+VV;
+					VVall[icube][i][j][k] = VVall[icube][i][j][k]+sqrt(VV);
 
 				}
 			}
@@ -83,67 +86,41 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 	}
 
 
-	if ( (step%Average_step) == 0) {
-
 #pragma omp parallel for private(i,j,k)	
-		for (icube = 1; icube < ncube; icube++) { 
-			for (i = n_buffer-1; i <= nxx; i++) {
-				for (j = n_buffer-1; j <= nyy; j++) {
-					for (k = n_buffer-1; k <= nzz; k++) {  
+	for (icube = 1; icube < ncube; icube++) { 
+		for (i = n_buffer-1; i <= nxx; i++) {
+			for (j = n_buffer-1; j <= nyy; j++) {
+				for (k = n_buffer-1; k <= nzz; k++) {  
 
-						Pm[icube][i][j][k] = Pall[icube][i][j][k]/Average_step;
+					Pm[icube][i][j][k] = Pall[icube][i][j][k]/(step*1.0-start_step*1.0+1.0);
 
-						VVm[icube][i][j][k] = VVall[icube][i][j][k]/Average_step;
+					VVm[icube][i][j][k] = VVall[icube][i][j][k]/(step*1.0-start_step*1.0+1.0);
 
-					}
 				}
 			}
 		}
-
-
-
-#pragma omp parallel for private(i,j,k)	
-		for (icube = 1; icube < ncube; icube++) { 
-			for (i = n_buffer-1; i <= nxx; i++) {
-				for (j = n_buffer-1; j <= nyy; j++) {
-					for (k = n_buffer-1; k <= nzz; k++) {  
-
-						Pall[icube][i][j][k] = 0;
-
-						VVall[icube][i][j][k] = 0;
-
-					}
-				}
-			}
-		}
-
-
-	}    // ---- if ( (step%statistic_step) == 0) ---- //
-
+	}
 
 
 
 	
 // =========================== Output averaged result =========================== //
 
-	if ( step > (Average_step+start_step+2) && step%dp_step == 0) {
+	if ( step%dp_step == 0 ) {
 
-		double (*dPout)[X_size][Y_size][Z_size] = new double[MPI_Ncube][X_size][Y_size][Z_size];
-		double (*Pmout)[X_size][Y_size][Z_size] = new double[MPI_Ncube][X_size][Y_size][Z_size];
-		double (*VVmout)[X_size][Y_size][Z_size] = new double[MPI_Ncube][X_size][Y_size][Z_size];
-	
+
 #pragma omp parallel for private(i,j,k,rho,U,V,W,VV,P)	
 		for (icube = 1; icube < ncube; icube++) { 
 			for (i = n_buffer-1; i <= nxx; i++) {
 				for (j = n_buffer-1; j <= nyy; j++) {
 					for (k = n_buffer-1; k <= nzz; k++) {  
 
-						rho = U1[icube][i][j][k];
-						U = U2[icube][i][j][k]/rho;
-						V = U3[icube][i][j][k]/rho;
-						W = U4[icube][i][j][k]/rho;     
-						VV = U*V+V*V+W*W;
-						P = (U5[icube][i][j][k]-0.5*rho*VV)*(K-1)-101300;
+						rho = U1[icube][i][j][k][0];
+						U = U1[icube][i][j][k][1]/rho;
+						V = U1[icube][i][j][k][2]/rho;
+						W = U1[icube][i][j][k][3]/rho;     
+						VV = U*U+V*V+W*W;
+						P = (U1[icube][i][j][k][4]-0.5*rho*VV)*(K-1);
 
 						Pp[icube][i][j][k] = P-Pm[icube][i][j][k];
 
@@ -155,7 +132,7 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 		MPI_Comm comm;
 		comm=MPI_COMM_WORLD;
 		MPI_Status istat[8];
-		MPI_Request requ1, reqps1;
+		MPI_Offset disp;
 
 		int nx_out = NcubeX+2;
 		int ny_out = NcubeY+2;
@@ -171,146 +148,106 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 
 		for (i = 0; i < np; i++) { 
 
-		icount = 0;
-		for (icube = 0; icube < MPI_Ncube; icube++) {
+			icount = 0;
+			for (icube = 0; icube < MPI_Ncube; icube++) {
 
-			if (rank_map[0][icube] == i) {
+				if (rank_map[0][icube] == i) {
 
-				icount = icount+1;
-				istart = rank_map[1][icube];
+					icount = icount+1;
+					istart = rank_map[1][icube];
 
-			}
-		}
-
-		x_gcount[i] = icount*X_size;
-		q_gcount[i] = icount*X_size*Y_size*Z_size;
-
-		if (i < (np-1)) {
-			
-			x_gdisp[i+1] = x_gdisp[i]+istart*X_size;
-			q_gdisp[i+1] = q_gdisp[i]+istart*X_size*Y_size*Z_size;
+				}
 			}
 
+			x_gcount[i] = icount*X_size;
+			q_gcount[i] = icount*X_size*Y_size*Z_size;
+
+			if (i < (np-1)) {
+
+				q_gdisp[i+1] = q_gdisp[i]+(MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*num_variable_output;
+
+
+			}
+
 		}
-	
-	
-		idest = 0;
 
-		icount = q_gcount[myid];
 
-		MPI_Gatherv((void *)&Pp[1][0][0][0], icount, MPI_DOUBLE, (void *)&dPout[0][0][0][0], q_gcount, q_gdisp, MPI_DOUBLE, idest, comm);
+		char data[100];
 		
-		MPI_Gatherv((void *)&Pm[1][0][0][0], icount, MPI_DOUBLE, (void *)&Pmout[0][0][0][0], q_gcount, q_gdisp, MPI_DOUBLE, idest, comm);
+		float (*Solution) = new float[(ncube-1)*nx_out*ny_out*nz_out*num_variable_output];
 
-		MPI_Gatherv((void *)&VVm[1][0][0][0], icount, MPI_DOUBLE, (void *)&VVmout[0][0][0][0], q_gcount, q_gdisp, MPI_DOUBLE, idest, comm);
+		sprintf(data,"qBCM_function_""%0.5d"".q",step);
 
-		if (myid == idest) {
+		MPI_File fh1_function;
 
-			char data[100];
-			FILE *fptr;
-			double temp = 1.0;
-			int itemp = 1;
-
-			sprintf(data,"qdP""%0.5d_%0.5d"".q",step, idest);
-			fptr = fopen(data,"wb");
-
-			fwrite(&ncube_out, sizeof(int), 1,fptr);
-
-			for (icube = 0; icube < MPI_Ncube; icube++)  {
-
-				fwrite(&nx_out, sizeof(int), 1,fptr);
-				fwrite(&ny_out, sizeof(int), 1,fptr);
-				fwrite(&nz_out, sizeof(int), 1,fptr);
-				fwrite(&itemp, sizeof(int), 1,fptr);
-
-			}
-
-
-			for (icube = 0; icube < MPI_Ncube; icube++)  {
-				for (i = n_buffer-1; i <= nx+1; i++) {
-					for (j = n_buffer-1; j <= ny+1; j++) { 
-						for (k = n_buffer-1; k <= nz+1; k++) { 
-
-							fwrite(&dPout[icube][k][j][i],sizeof(double),1,fptr);
-
-						}
-					}
-				}
-
-			}
+		MPI_File_open( MPI_COMM_WORLD, data,  MPI_MODE_RDWR | MPI_MODE_CREATE, MPI_INFO_NULL, &fh1_function ) ; 
 
 
 
+		if (myid == 0) {
 
+			FILE *fptr_solution_function;
 
-			sprintf(data,"qPm""%0.5d_%0.5d"".q",step, idest);
-			fptr = fopen(data,"wb");
+			fptr_solution_function = fopen(data,"wb");
 
-			fwrite(&ncube_out, sizeof(int), 1,fptr);
+			fwrite(&ncube_out, sizeof(int), 1,fptr_solution_function);
 
 			for (icube = 0; icube < MPI_Ncube; icube++)  {
 
-				fwrite(&nx_out, sizeof(int), 1,fptr);
-				fwrite(&ny_out, sizeof(int), 1,fptr);
-				fwrite(&nz_out, sizeof(int), 1,fptr);
-				fwrite(&itemp, sizeof(int), 1,fptr);
-
-			}
-
-			for (icube = 0; icube < MPI_Ncube; icube++)  {
-
-				for (i = n_buffer-1; i <= nx+1; i++) {
-					for (j = n_buffer-1; j <= ny+1; j++) { 
-						for (k = n_buffer-1; k <= nz+1; k++) { 
-
-							fwrite(&Pmout[icube][k][j][i],sizeof(double),1,fptr);
-
-						}
-					}
-				}
-
-			}
-
-
-
-			sprintf(data,"qVVm""%0.5d_%0.5d"".q",step, idest);
-			fptr = fopen(data,"wb");
-
-			fwrite(&ncube_out, sizeof(int), 1,fptr);
-
-			for (icube = 0; icube < MPI_Ncube; icube++)  {
-
-				fwrite(&nx_out, sizeof(int), 1,fptr);
-				fwrite(&ny_out, sizeof(int), 1,fptr);
-				fwrite(&nz_out, sizeof(int), 1,fptr);
-				fwrite(&itemp, sizeof(int), 1,fptr);
-				
-			}
-
-			for (icube = 0; icube < MPI_Ncube; icube++)  {
-
-				for (i = n_buffer-1; i <= nx+1; i++) {
-					for (j = n_buffer-1; j <= ny+1; j++) { 
-						for (k = n_buffer-1; k <= nz+1; k++) { 
-
-							fwrite(&VVmout[icube][k][j][i],sizeof(double),1,fptr);
-
-						}
-					}
-				}
+				fwrite(&nx_out, sizeof(int), 1,fptr_solution_function);
+				fwrite(&ny_out, sizeof(int), 1,fptr_solution_function);
+				fwrite(&nz_out, sizeof(int), 1,fptr_solution_function);
+				fwrite(&num_variable_output, sizeof(int), 1,fptr_solution_function);
 
 			}
 
 			
-			fclose(fptr);
+			fclose(fptr_solution_function);
 
-		}    // ---- if (myid == idest) ---- //
+		}
 
-		delete [] dPout;
-		delete [] Pmout;
-		delete [] VVmout;
 
-	}    // ---- if ( step%dp_step == 0) ---- //
+		
+		icount = -1;
+		for (icube = 1; icube < ncube; icube++) {  
+
+			for (i = n_buffer-1; i <= nx+1; i++) {
+				for (j = n_buffer-1; j <= ny+1; j++) { 
+					for (k = n_buffer-1; k <= nz+1; k++) { 
+
+						icount = icount + 1;
+						Solution[icount] = Pp[icube][k][j][i];
+
+					}
+				}
+			}
+
+
+			for (i = n_buffer-1; i <= nx+1; i++) {
+				for (j = n_buffer-1; j <= ny+1; j++) { 
+					for (k = n_buffer-1; k <= nz+1; k++) { 
+
+						icount = icount + 1;
+						Solution[icount] = VVm[icube][k][j][i];
+
+					}
+				}
+			}
+
+		}
+		
+		disp =  ((MPI_Offset)MPI_Ncube*4)*(MPI_Offset)sizeof(int)+1*(MPI_Offset)sizeof(int)+q_gdisp[myid]*(MPI_Offset)sizeof(float);
+
+
+		MPI_File_write_at_all(fh1_function, disp, Solution, (ncube-1)*nx_out*ny_out*nz_out*num_variable_output, MPI_FLOAT, MPI_STATUS_IGNORE);
+
+		MPI_File_close( &fh1_function );
+
+
+		delete [] Solution;
+
+	}  // ---- if ( step%dp_step == 0 ) ---- //
+
 
 // =========================== Output averaged result =========================== //
 	

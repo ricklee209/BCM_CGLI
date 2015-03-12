@@ -68,3 +68,10 @@ double (*recv_data_cur) = new double[2*X_size*X_size*5];
 
 double (*send_data_adj) = new double[2*X_size*X_size*5];
 double (*recv_data_adj) = new double[2*X_size*X_size*5];
+
+
+/**** Statistical data ****/
+double (*Pall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size];
+
+double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size];
+
