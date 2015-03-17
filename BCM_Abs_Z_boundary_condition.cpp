@@ -34,7 +34,11 @@ int nZbc_u,
 int (*Zbc_l) = new int[NZbc_l+1],
 int (*Zbc_u) = new int[NZbc_u+1],
 
-double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+double (*cube_size) = new double[Ncube],
+
+double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
 // ================================================================================ //
 )
 

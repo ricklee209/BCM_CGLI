@@ -431,6 +431,33 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 );
 
 
+void BCM_Abs_X_boundary_condition
+(
+// ================================================================================ //
+int myid,
+
+int ncube,
+
+double deltaT,
+
+double deltaTau,
+
+double e,
+
+int nXbc_l,
+int nXbc_u,
+
+int (*Xbc_l) = new int[NXbc_l+1],
+int (*Xbc_u) = new int[NXbc_u+1],
+
+double (*cube_size) = new double[Ncube],
+
+double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+// ================================================================================ //
+);
+
 
 
 extern int NYbc_l;
@@ -583,6 +610,8 @@ double (*U1q)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 double (*U1p1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
 double (*U1p2)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
 double (*Rku1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 

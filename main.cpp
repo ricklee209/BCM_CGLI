@@ -47,9 +47,9 @@ int main(int argc, char **argv)
 
 	int dp_step = 1;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 1;
-	int output_step = 5;
-	int count = 11;	
+	int iteration_end_step = 2;
+	int output_step = 1;
+	int count = 1;	
 	int step;
 
 
@@ -187,6 +187,27 @@ int main(int argc, char **argv)
 		if (fabs(Zcube[icube]-gZmin) < minimum) { NZbc_l = NZbc_l+1; Zbc_l[NZbc_l] = icube; }
 
 	};
+	
+#pragma omp parallel for private(i,j,k)
+
+	for (icube = 1; icube < Ncube; icube++) {  
+
+		for (i = 0; i <= nxxx; i++) {
+			for (j = 0; j <= nyyy; j++) {
+				for (k = 0; k <= nzzz; k++) {  
+
+					Fabs[icube][i][j][k][0] = 0; 
+					Fabs[icube][i][j][k][1] = 0; 
+					Fabs[icube][i][j][k][2] = 0;  
+					Fabs[icube][i][j][k][3] = 0; 
+					Fabs[icube][i][j][k][4] = 0;  
+
+				}
+			}
+		}
+
+	}
+
 
 	// ------------------------------------------------- Detect boundary  ------------------------------------------------- //	
 	// -------------------------------------------------------------------------------------------------------------------- //
@@ -1154,7 +1175,9 @@ int main(int argc, char **argv)
 	// ------------------------------------------ //
 
 
-				BCM_X_boundary_condition(myid, NXbc_l, NXbc_u, Xbc_l, Xbc_u, U1_);
+				//BCM_X_boundary_condition(myid, NXbc_l, NXbc_u, Xbc_l, Xbc_u, U1_);
+
+				BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
 
 				BCM_Y_boundary_condition(NYbc_l, NYbc_u, Ybc_l, Ybc_u, U1_);
 
@@ -1201,7 +1224,7 @@ int main(int argc, char **argv)
 				
 				
 				BCM_Flux_XYZ_Viscous_Runge_kutta(myid, Ncube, RK, deltaT, deltaTau, e, FWS, csl, cube_size,
-					U1_,U1 ,U1q,U1p1,U1p2,
+					U1_,U1 ,U1q,U1p1,U1p2,Fabs,
 					Rku1,Residual1,
 					er);
 					

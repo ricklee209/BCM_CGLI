@@ -75,3 +75,7 @@ double (*Pall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_siz
 
 double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size];
 
+
+/**** Absorbing force term ****/
+double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim];
+
