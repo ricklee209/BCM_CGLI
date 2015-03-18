@@ -151,6 +151,7 @@ void BCM_Initial_condition
 int myid,
 int ncube,
 int n_wallcube,
+int switch_initial,
 
 int (*rank_map)[MPI_Ncube] = new int[2][MPI_Ncube],
 
@@ -627,23 +628,24 @@ double (*er) = new double[7]
  (
  // ============================================================================ //
  int myid,
- int ncube,
+int ncube,
 
- int step,
+int step,
 
- int (*rank_map)[MPI_Ncube] = new int[2][MPI_Ncube],
+int switch_output,
 
- double (*U1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+int (*rank_map)[MPI_Ncube] = new int[2][MPI_Ncube],
 
- double (*U1q)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+double (*U1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
- double (*cube_size) = new double[Ncube],
+double (*U1q)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+double (*cube_size) = new double[Ncube],
 
 
- double (*Xcnt)[X_size] = new double[Ncube][X_size],
- double (*Ycnt)[Y_size] = new double[Ncube][Y_size],
- double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
-
+double (*Xcnt)[X_size] = new double[Ncube][X_size],
+double (*Ycnt)[Y_size] = new double[Ncube][Y_size],
+double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
  // ============================================================================ //
  );
 

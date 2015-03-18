@@ -22,6 +22,8 @@ int ncube,
 
 int step,
 
+int switch_output,
+
 int (*rank_map)[MPI_Ncube] = new int[2][MPI_Ncube],
 
 double (*U1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
@@ -98,94 +100,100 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 	idest = 0;
 	
 	char data[100];
-	
-	// sprintf(data,"BCMdata""%0.5d"".x",1);
-	// MPI_File fh0;
+
+	if ( switch_output == 1 ) {
+
+		sprintf(data,"BCMdata""%0.5d"".x",1);
+		MPI_File fh0;
 
 
-	// MPI_File_open( MPI_COMM_WORLD, data,  MPI_MODE_RDWR | MPI_MODE_CREATE, MPI_INFO_NULL, &fh0 ) ; 
+		MPI_File_open( MPI_COMM_WORLD, data,  MPI_MODE_RDWR | MPI_MODE_CREATE, MPI_INFO_NULL, &fh0 ) ; 
 
-	// if (myid == idest) {
+		if (myid == idest) {
 
-	// 	FILE *fptr_xyz;
+			FILE *fptr_xyz;
 
-	// 	fptr_xyz = fopen(data,"wb");
-		
-	// 	fwrite(&ncube_out, sizeof(int), 1,fptr_xyz);
+			fptr_xyz = fopen(data,"wb");
 
-	// 	for (icube = 0; icube < MPI_Ncube; icube++)  {
+			fwrite(&ncube_out, sizeof(int), 1,fptr_xyz);
 
-	// 		fwrite(&nx_out, sizeof(int), 1,fptr_xyz);
-	// 		fwrite(&ny_out, sizeof(int), 1,fptr_xyz);
-	// 		fwrite(&nz_out, sizeof(int), 1,fptr_xyz);
-			
-	// 	}
+			for (icube = 0; icube < MPI_Ncube; icube++)  {
 
-	// 	fclose(fptr_xyz);
+				fwrite(&nx_out, sizeof(int), 1,fptr_xyz);
+				fwrite(&ny_out, sizeof(int), 1,fptr_xyz);
+				fwrite(&nz_out, sizeof(int), 1,fptr_xyz);
 
-	// }
+			}
 
-	// float (*Grid) = new float[(ncube-1)*nx_out*ny_out*nz_out*3];
+			fclose(fptr_xyz);
 
-	// icount = -1;
-	// for (icube = 1; icube < ncube; icube++) {  
+		}
 
-	// 	for (i = n_buffer-1; i <= nx+1; i++) {
-	// 		for (j = n_buffer-1; j <= ny+1; j++) { 
-	// 			for (k = n_buffer-1; k <= nz+1; k++) { 
+		float (*Grid) = new float[(ncube-1)*nx_out*ny_out*nz_out*3];
 
-	// 				icount = icount+1;
+		icount = -1;
+		for (icube = 1; icube < ncube; icube++) {  
 
-	// 				Grid[icount] = Xcnt[icube][k];
-					
-	// 			}
-	// 		}
-	// 	}
+			for (i = n_buffer-1; i <= nx+1; i++) {
+				for (j = n_buffer-1; j <= ny+1; j++) { 
+					for (k = n_buffer-1; k <= nz+1; k++) { 
 
+						icount = icount+1;
 
-	// 	for (i = n_buffer-1; i <= nx+1; i++) {
-	// 		for (j = n_buffer-1; j <= ny+1; j++) { 
-	// 			for (k = n_buffer-1; k <= nz+1; k++) { 
+						Grid[icount] = Xcnt[icube][k];
 
-	// 				icount = icount+1;
-
-	// 				Grid[icount] = Ycnt[icube][j];
-
-	// 			}
-	// 		}
-	// 	}
+					}
+				}
+			}
 
 
-	// 	for (i = n_buffer-1; i <= nx+1; i++) {
-	// 		for (j = n_buffer-1; j <= ny+1; j++) { 
-	// 			for (k = n_buffer-1; k <= nz+1; k++) { 
+			for (i = n_buffer-1; i <= nx+1; i++) {
+				for (j = n_buffer-1; j <= ny+1; j++) { 
+					for (k = n_buffer-1; k <= nz+1; k++) { 
 
-	// 				icount = icount+1;
+						icount = icount+1;
 
-	// 				Grid[icount] = Zcnt[icube][i];
-					
-	// 			}
-	// 		}
-	// 	}
+						Grid[icount] = Ycnt[icube][j];
 
-	// }
-
-	
-	// disp = ((MPI_Offset)MPI_Ncube*3)*(MPI_Offset)sizeof(int)+1*(MPI_Offset)sizeof(int)+x_gdisp[myid]*(MPI_Offset)sizeof(float);
-
-	// //printf("gird=>%d\t%llu\n",myid,disp);
-	
-	// //MPI_File_set_view(fh0, disp, MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
-
-	// //MPI_File_write(fh0, Grid, (ncube-1)*nx_out*ny_out*nz_out*3, MPI_FLOAT, MPI_STATUS_IGNORE);
-
-	// MPI_File_write_at_all(fh0, disp, Grid, (ncube-1)*nx_out*ny_out*nz_out*3, MPI_FLOAT, MPI_STATUS_IGNORE);
+					}
+				}
+			}
 
 
+			for (i = n_buffer-1; i <= nx+1; i++) {
+				for (j = n_buffer-1; j <= ny+1; j++) { 
+					for (k = n_buffer-1; k <= nz+1; k++) { 
 
-	// delete []Grid;
+						icount = icount+1;
 
-	// MPI_File_close( &fh0 );
+						Grid[icount] = Zcnt[icube][i];
+
+					}
+				}
+			}
+
+		}
+
+
+		disp = ((MPI_Offset)MPI_Ncube*3)*(MPI_Offset)sizeof(int)+1*(MPI_Offset)sizeof(int)+x_gdisp[myid]*(MPI_Offset)sizeof(float);
+
+		//printf("gird=>%d\t%llu\n",myid,disp);
+
+		//MPI_File_set_view(fh0, disp, MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
+
+		//MPI_File_write(fh0, Grid, (ncube-1)*nx_out*ny_out*nz_out*3, MPI_FLOAT, MPI_STATUS_IGNORE);
+
+		MPI_File_write_at_all(fh0, disp, Grid, (ncube-1)*nx_out*ny_out*nz_out*3, MPI_FLOAT, MPI_STATUS_IGNORE);
+
+		switch_output = 0;
+
+		delete []Grid;
+
+		MPI_File_close( &fh0 );
+
+	}
+
+
 
 
 
@@ -293,9 +301,7 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 
 	disp =  ((MPI_Offset)MPI_Ncube*3)*(MPI_Offset)sizeof(int)+1*(MPI_Offset)sizeof(int)+q_gdisp[myid]*(MPI_Offset)sizeof(float);
 
-	
 	//printf("solution=>%d\t%llu\n",myid,disp);
-	
 	
 	//MPI_File_set_view(fh1, disp, MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
 
@@ -305,7 +311,131 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 
 	MPI_File_close( &fh1 );
 
+
+// ----------------------------------------------------------------- //
+// ------------------------- Previous_step ------------------------- //
+
+
+
 	
+	sprintf(data,"QqBCMdata""%0.5d"".q",step);
+	MPI_File fh2;
+
+	MPI_File_open( MPI_COMM_WORLD, data,  MPI_MODE_RDWR | MPI_MODE_CREATE, MPI_INFO_NULL, &fh2 ) ; 
+
+	if (myid == 0) {
+
+		FILE *fptr_solution;
+
+		fptr_solution = fopen(data,"wb");
+		
+		fwrite(&ncube_out, sizeof(int), 1,fptr_solution);
+
+		for (icube = 0; icube < MPI_Ncube; icube++)  {
+
+			fwrite(&nx_out, sizeof(int), 1,fptr_solution);
+			fwrite(&ny_out, sizeof(int), 1,fptr_solution);
+			fwrite(&nz_out, sizeof(int), 1,fptr_solution);
+			
+		}
+
+		fclose(fptr_solution);
+
+	}
+
+
+
+	icount = -1;
+	for (icube = 1; icube < ncube; icube++) {  
+
+		icount = icount + 1;
+		Solution[icount] = 1.0;
+		
+		icount = icount + 1;
+		Solution[icount] = 1.0;
+		
+		icount = icount + 1;
+		Solution[icount] = 1.0;
+		
+		icount = icount + 1;
+		Solution[icount] = 1.0;
+
+		for (i = n_buffer-1; i <= nx+1; i++) {
+			for (j = n_buffer-1; j <= ny+1; j++) { 
+				for (k = n_buffer-1; k <= nz+1; k++) { 
+
+					icount = icount + 1;
+					Solution[icount] = U1q[icube][k][j][i][0];
+
+				}
+			}
+		}
+
+		for (i = n_buffer-1; i <= nx+1; i++) {
+			for (j = n_buffer-1; j <= ny+1; j++) { 
+				for (k = n_buffer-1; k <= nz+1; k++) { 
+
+					icount = icount + 1;
+					Solution[icount] = U1q[icube][k][j][i][1];
+
+				}
+			}
+		}
+
+		for (i = n_buffer-1; i <= nx+1; i++) {
+			for (j = n_buffer-1; j <= ny+1; j++) { 
+				for (k = n_buffer-1; k <= nz+1; k++) { 
+
+					icount = icount + 1;
+					Solution[icount] = U1q[icube][k][j][i][2];
+
+				}
+			}
+		}
+
+		for (i = n_buffer-1; i <= nx+1; i++) {
+			for (j = n_buffer-1; j <= ny+1; j++) { 
+				for (k = n_buffer-1; k <= nz+1; k++) { 
+
+					icount = icount + 1;
+					Solution[icount] = U1q[icube][k][j][i][3];
+
+				}
+			}
+		}
+
+		for (i = n_buffer-1; i <= nx+1; i++) {
+			for (j = n_buffer-1; j <= ny+1; j++) { 
+				for (k = n_buffer-1; k <= nz+1; k++) { 
+
+					icount = icount + 1;
+					Solution[icount] = U1q[icube][k][j][i][4];
+
+				}
+			}
+		}
+	
+	}
+	
+
+	disp =  ((MPI_Offset)MPI_Ncube*3)*(MPI_Offset)sizeof(int)+1*(MPI_Offset)sizeof(int)+q_gdisp[myid]*(MPI_Offset)sizeof(float);
+
+	//printf("solution=>%d\t%llu\n",myid,disp);
+	
+	//MPI_File_set_view(fh1, disp, MPI_FLOAT, MPI_FLOAT, "native", MPI_INFO_NULL);
+
+	//MPI_File_write(fh1, Solution, (ncube-1)*nx_out*ny_out*nz_out*5+(ncube-1)*4, MPI_FLOAT, MPI_STATUS_IGNORE);
+
+	MPI_File_write_at_all(fh2, disp, Solution, (ncube-1)*nx_out*ny_out*nz_out*5+(ncube-1)*4, MPI_FLOAT, MPI_STATUS_IGNORE);
+
+	MPI_File_close( &fh2 );
+
+
+// ------------------------- Previous_step ------------------------- //
+// ----------------------------------------------------------------- //
+	
+
+
 	delete []Solution;
 
 
