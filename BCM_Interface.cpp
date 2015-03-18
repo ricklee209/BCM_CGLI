@@ -206,10 +206,6 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 	
 	
 
-
-	
-
-
 // ================================================================================================== //
 // ============================== # Package for sending in Current CPU ============================== //
 
@@ -217,11 +213,12 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 	ii = jj = kk = iicube = iL =0;
 	L1 = L2 = L3 = L4 = L5 = 0;
 	
-	//start_collection("region1");
-	
+#pragma omp parallel for private(ii,count_index,index,L1,L2,L3,L4,L5,icube_send,iicube,icube,i,j,k,iL,k2,j2,i2) schedule(dynamic)	
+
 	for (icpu_neig_eq = 0;  icpu_neig_eq < ncpu_eq; icpu_neig_eq++) {
 
 		
+		/*
 		ii = ii+Ncube_Ncpu_eq[icpu_neig_eq];
 		count_index = (ii-Ncube_Ncpu_eq[icpu_neig_eq])*zone;
 		
@@ -230,13 +227,28 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 		L3 = 2*Ncube_Ncpu_eq[icpu_neig_eq]*zone+5*count_index;
 		L4 = 3*Ncube_Ncpu_eq[icpu_neig_eq]*zone+5*count_index;
 		L5 = 4*Ncube_Ncpu_eq[icpu_neig_eq]*zone+5*count_index;
+		*/
+
+
+		ii = ist_eq[icpu_neig_eq];
+		count_index = ii*zone;
+
+		index = Ncube_Ncpu_eq[icpu_neig_eq]*zone;
+		
+		L1 = 0*index+5*count_index;
+		L2 = 1*index+L1;
+		L3 = 2*index+L1;
+		L4 = 3*index+L1;
+		L5 = 4*index+L1;
 
 		
-#pragma omp parallel for private(iicube,icube,i,j,k,iL,k2,j2,i2)
+//#pragma omp parallel for private(iicube,icube,i,j,k,iL,k2,j2,i2)
 
 		for (icube_send = 1; icube_send <= Ncube_Ncpu_eq[icpu_neig_eq]; icube_send++) {  
 
-			iicube = ii-Ncube_Ncpu_eq[icpu_neig_eq]+icube_send;
+			//iicube = ii-Ncube_Ncpu_eq[icpu_neig_eq]+icube_send;
+
+			iicube = ii+icube_send;
 			icube = Scube_Ncpu_eq[iicube];
 			
 			
@@ -249,8 +261,6 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					for (j = n_buffer; j <= ny; j++) {
 						for (k = 0; k < n_buffer; k++) {  
 
-							//count_index = count_index+1;
-							//iL = iL + 1;
 							iL = (icube_send-1)*zone+(i-n_buffer)*NcubeY*n_buffer+(j-n_buffer)*n_buffer+k;
 							k2 = NcubeZ+k;
 							
@@ -404,17 +414,12 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 		}    // ---- for (icube_send = 1; icube_send <= Ncube_Ncpu_eq[icpu_neig_eq]; icube_send++) ---- //
 
-#pragma omp barrier
-		
 	}    // ---- for (icpu_neig_eq = 0;  icpu_neig_eq < ncpu_eq; icpu_neig_eq++) ---- //
 
 // ============================== # Package for sending in Current CPU ============================== //
 // ================================================================================================== //
 
-	//stop_collection("region1");
-	
-	
-	
+
 	for (icpu_neig_eq = 0;  icpu_neig_eq < ncpu_eq; icpu_neig_eq++) {
 
 		istart = ist_eq[icpu_neig_eq]*5*NcubeX*NcubeY*n_buffer;
@@ -430,9 +435,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 	}
 	
 	
-	
-
- //start_collection("region2");
+	;
 
 // ================================================================================================== //
 // ============================== # Package for sending in Current CPU ============================== //
@@ -441,9 +444,11 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 	ii = jj = kk = iicube = iL =0;
 	L1 = L2 = L3 = L4 = L5 = 0;
 	
+#pragma omp parallel for private(ii,count_index,index,L1,L2,L3,L4,L5,icube_send,iicube,icube,i,j,k,iL,k2,j2,i2) schedule(dynamic)	
 
 	for (icpu_neig_sb = 0;  icpu_neig_sb < ncpu_sb; icpu_neig_sb++) {
 	
+		/*
 		ii = ii+Ncube_Ncpu_sb[icpu_neig_sb];
 		count_index = (ii-Ncube_Ncpu_sb[icpu_neig_sb])*zone/4;
 		
@@ -452,13 +457,27 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 		L3 = 2*Ncube_Ncpu_sb[icpu_neig_sb]*zone/4+5*count_index;
 		L4 = 3*Ncube_Ncpu_sb[icpu_neig_sb]*zone/4+5*count_index;
 		L5 = 4*Ncube_Ncpu_sb[icpu_neig_sb]*zone/4+5*count_index;
+		*/
 
+		ii = ist_sb[icpu_neig_sb];
+		count_index = ii*zone/4;
 
-#pragma omp parallel for private(iicube,icube,i,j,k,iL,k2,j2,i2)
+		index = Ncube_Ncpu_sb[icpu_neig_sb]*zone/4;
+		
+		L1 = 0*index+5*count_index;
+		L2 = 1*index+L1;
+		L3 = 2*index+L1;
+		L4 = 3*index+L1;
+		L5 = 4*index+L1;
+		
+
+//#pragma omp parallel for private(iicube,icube,i,j,k,iL,k2,j2,i2)
 
 		for (icube_send = 1; icube_send <= Ncube_Ncpu_sb[icpu_neig_sb]; icube_send++) {  
 
-			iicube = ii-Ncube_Ncpu_sb[icpu_neig_sb]+icube_send;
+			//iicube = ii-Ncube_Ncpu_sb[icpu_neig_sb]+icube_send;
+
+			iicube = ii+icube_send;
 			icube = Scube_Ncpu_sb[iicube];
 			
 			
@@ -522,8 +541,6 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 															  U1_[icube][i2+1][j2  ][k2+1][4]+
 															  U1_[icube][i2  ][j2+1][k2+1][4]+
 															  U1_[icube][i2+1][j2+1][k2+1][4]);
-							
-							//if(myid == 0 & icpu_neig_sb == 2) printf("%f\t",U1_[icube][i][j][k2]);
 							
 						}
 					}
@@ -882,18 +899,11 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 		}    // ---- for (icube_send = 1; icube_send <= Ncube_Ncpu_sb[icpu_neig_sb]; icube_send++) ---- //
 
-#pragma omp barrier
-		
 	}    // ---- for (icpu_neig_sb = 0;  icpu_neig_sb < ncpu_sb; icpu_neig_sb++) ---- //
 
 // ============================== # Package for sending in Current CPU ============================== //
 // ================================================================================================== //
 
-//stop_collection("region2");
-
-
-	
-//start_collection("region3");
 
 // ================================================================================================== //
 // ============================== # Package for sending in Current CPU ============================== //
@@ -902,10 +912,12 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 	ii = jj = kk = iicube = iL =0;
 	L1 = L2 = L3 = L4 = L5 = 0;
 	
+#pragma omp parallel for private(ii,count_index,index,L1,L2,L3,L4,L5,icube_send,iicube,icube,i,j,k,iL,k2,j2,i2) schedule(dynamic)	
 
 	for (icpu_neig_bs = 0;  icpu_neig_bs < ncpu_bs; icpu_neig_bs++) {
 
 	
+		/*
 		ii = ii+Ncube_Ncpu_bs[icpu_neig_bs];
 		count_index = (ii-Ncube_Ncpu_bs[icpu_neig_bs])*zone;
 		
@@ -914,13 +926,30 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 		L3 = 2*Ncube_Ncpu_bs[icpu_neig_bs]*zone+5*count_index;
 		L4 = 3*Ncube_Ncpu_bs[icpu_neig_bs]*zone+5*count_index;
 		L5 = 4*Ncube_Ncpu_bs[icpu_neig_bs]*zone+5*count_index;
+		*/
 
 
-#pragma omp parallel for private(iicube,icube,i,j,k,iL,k2,j2,i2)
+		
+		ii = ist_bs[icpu_neig_bs];
+		count_index = ii*zone;
+
+		index = Ncube_Ncpu_bs[icpu_neig_bs]*zone;
+		
+		L1 = 0*index+5*count_index;
+		L2 = 1*index+L1;
+		L3 = 2*index+L1;
+		L4 = 3*index+L1;
+		L5 = 4*index+L1;
+
+
+
+//#pragma omp parallel for private(iicube,icube,i,j,k,iL,k2,j2,i2)
 
 		for (icube_send = 1; icube_send <= Ncube_Ncpu_bs[icpu_neig_bs]; icube_send++) {  
 
-			iicube = ii-Ncube_Ncpu_bs[icpu_neig_bs]+icube_send;
+			//iicube = ii-Ncube_Ncpu_bs[icpu_neig_bs]+icube_send;
+
+			iicube = ii+icube_send;
 			icube = Scube_Ncpu_bs[iicube];
 
 // ------------------------------------- [Z+] direction ------------------------------------- //
@@ -1630,40 +1659,12 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 		}    // ---- for (icube_send = 1; icube_send <= Ncube_Ncpu_bs[icpu_neig_bs]; icube_send++) ---- //
 		
-#pragma omp barrier
-
 	}    // ---- for (icpu_neig_bs = 0;  icpu_neig_bs < ncpu_bs; icpu_neig_bs++) ---- //
 
 // ============================== # Package for sending in Current CPU ============================== //
 // ================================================================================================== //
 
-//stop_collection("region3");
 
-	
-	/*
-	MPI_Datatype Type_recv_eq, Type_recv_bs, Type_recv_sb, Type_send_eq, Type_send_bs, Type_send_sb;
-
-	MPI_Type_vector(1, 5*NcubeX*NcubeY*n_buffer*max_nei_bs+1, 5*NcubeX*NcubeY*n_buffer*max_nei_bs+1, MPI_DOUBLE, &Type_recv_eq);
-
-
-	MPI_Type_vector(1, 5*NcubeX*NcubeY*n_buffer*max_nei_bs+1, 5*NcubeX*NcubeY*n_buffer*max_nei_bs+1, MPI_DOUBLE, &Type_recv_bs);
-	MPI_Type_vector(1, 5*NcubeX*NcubeY*n_buffer*max_nei_sb+1, 5*NcubeX*NcubeY*n_buffer*max_nei_sb+1, MPI_DOUBLE, &Type_recv_sb);
-
-	MPI_Type_vector(1, 5*NcubeX*NcubeY*n_buffer*max_nei_eq+1, 5*NcubeX*NcubeY*n_buffer*max_nei_eq+1, MPI_DOUBLE, &Type_send_eq);
-	MPI_Type_vector(1, 5*NcubeX*NcubeY*n_buffer*max_nei_bs+1, 5*NcubeX*NcubeY*n_buffer*max_nei_bs+1, MPI_DOUBLE, &Type_send_bs);
-	MPI_Type_vector(1, 5*NcubeX*NcubeY*n_buffer*max_nei_sb+1, 5*NcubeX*NcubeY*n_buffer*max_nei_sb+1, MPI_DOUBLE, &Type_send_sb);
-
-	MPI_Type_commit(&Type_recv_eq);
-	MPI_Type_commit(&Type_recv_bs);
-	MPI_Type_commit(&Type_recv_sb);
-
-	MPI_Type_commit(&Type_send_eq);
-	MPI_Type_commit(&Type_send_bs);
-	MPI_Type_commit(&Type_send_sb);
-	*/
-
-
-	
 	for (icpu_neig_sb = 0;  icpu_neig_sb < ncpu_sb; icpu_neig_sb++) {
 
 		istart = ist_sb[icpu_neig_sb]*5*NcubeX*NcubeY*n_buffer/4;
@@ -1739,9 +1740,6 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 	}
 	
 	
-	
-	//start_collection("region4");
-
 // ---- the same size connection in X direction ---- //
 
 #pragma omp parallel for private(ic0, ic2, i,j,k, i0,i2) schedule(dynamic)
@@ -1753,7 +1751,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 		ic2 = adj_number[ic0][1][2];
 		
 		for (i = 0; i < n_buffer; i++) {
-//// #pragma omp parallel for private(k,i0,i2)
+
 			for (j = n_buffer; j <= ny; j++) {
 				for (k = n_buffer; k <= nz; k++) {  
 
@@ -1915,7 +1913,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 		if (ic0 > 0) {
 
 			for (i = 0; i < n_buffer; i++) {
-// #pragma omp parallel for private(k,i0,i2,j0,k0)
+
 				for (j = n_buffer; j <= ny; j++) {
 					for (k = n_buffer; k <= nz; k++) {  
 
@@ -1942,7 +1940,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 		if (ic0 > 0) {
 
 			for (i = 0; i < n_buffer; i++) {
-// #pragma omp parallel for private(k,i0,i2,j0,k0)
+
 				for (j = n_buffer; j <= ny; j++) {
 					for (k = n_buffer; k <= nz; k++) {  
 
@@ -1969,7 +1967,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 		if (ic0 > 0) {
 
 			for (i = 0; i < n_buffer; i++) {
-// #pragma omp parallel for private(k,i0,i2,j0,k0)
+
 				for (j = n_buffer; j <= ny; j++) {
 					for (k = n_buffer; k <= nz; k++) {  
 
@@ -1996,7 +1994,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 		if (ic0 > 0) {
 
 			for (i = 0; i < n_buffer; i++) {
-// #pragma omp parallel for private(k,i0,i2,j0,k0)
+
 				for (j = n_buffer; j <= ny; j++) {
 					for (k = n_buffer; k <= nz; k++) {  
 
@@ -2040,7 +2038,6 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 				for (j = n_buffer; j <= (ny-n_buffer+1)/2+1; j++) {
 					for (k = n_buffer; k <= (nz-n_buffer+1)/2+1; k++) {  
 
-						//ic2 = adj_number[ic0][1][2];
 
 						i0 = n_buffer+NcubeX+i;
 						j0 = j;
@@ -3481,7 +3478,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 		ic0 = adjZ_eq[adjZ];
 		ic2 = adj_number[ic0][1][6];
 
-// #pragma omp parallel for private(j,k,k0,k2)
+
 		for (i = n_buffer; i <= nx; i++) {
 			for (j = n_buffer; j <= ny; j++) {
 				for (k = 0; k < n_buffer; k++) {  
@@ -3989,7 +3986,6 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 		if (ic2 > 0) {
 
-			//printf("%d\t%d\t%d\n",myid,ic2,ic0);
 
 			for (i = n_buffer; i <= (nx-n_buffer+1)/2+1; i++) {
 				for (j = n_buffer; j <= (ny-n_buffer+1)/2+1; j++) {
@@ -4380,10 +4376,11 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 	ii = jj = kk = iicube = iL =0;
 	L1 = L2 = L3 = L4 = L5 = 0;
 	
+#pragma omp parallel for private(ii,count_index,index,L1,L2,L3,L4,L5,icube_send,iicube,icube,i,j,k,iL,k0,j0,i0) schedule(dynamic)
 
 	for (icpu_neig_eq = 0;  icpu_neig_eq < ncpu_eq; icpu_neig_eq++) {
 
-		
+		/*
 		ii = ii+Ncube_Ncpu_eq[icpu_neig_eq];
 		count_index = (ii-Ncube_Ncpu_eq[icpu_neig_eq])*zone;
 		
@@ -4393,12 +4390,27 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 		L3 = 2*Ncube_Ncpu_eq[icpu_neig_eq]*zone+5*count_index;
 		L4 = 3*Ncube_Ncpu_eq[icpu_neig_eq]*zone+5*count_index;
 		L5 = 4*Ncube_Ncpu_eq[icpu_neig_eq]*zone+5*count_index;
+		*/
 
+		
+		ii = ist_eq[icpu_neig_eq];
+		count_index = ii*zone;
+		
+		index = Ncube_Ncpu_eq[icpu_neig_eq]*zone;
+		
+		L1 = 0*index+5*count_index;
+		L2 = 1*index+L1;
+		L3 = 2*index+L1;
+		L4 = 3*index+L1;
+		L5 = 4*index+L1;
+		
+//#pragma omp parallel for private(iicube,icube,i,j,k,iL,k0,j0,i0) 	
 
-#pragma omp parallel for private(iicube,icube,i,j,k,iL,k0,j0,i0) 	
 		for (icube_send = 1; icube_send <= Ncube_Ncpu_eq[icpu_neig_eq]; icube_send++) {  
 
-			iicube = ii-Ncube_Ncpu_eq[icpu_neig_eq]+icube_send;
+			//iicube = ii-Ncube_Ncpu_eq[icpu_neig_eq]+icube_send;
+
+			iicube = ii+icube_send;
 			icube = Rcube_Ncpu_eq[iicube];
 
 // ------------------------------------- [Z+] direction ------------------------------------- //
@@ -4562,17 +4574,13 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 		}    // ---- for (icube_send = 1; icube_send <= Ncube_Ncpu_eq[icpu_neig_eq]; icube_send++) ---- //
 
-#pragma omp barrier
-		
 	}    // ---- for (icpu_neig_eq = 0;  icpu_neig_eq < ncpu_eq; icpu_neig_eq++) ---- //
 
 // ============================== # Unpackage for sending in Current CPU ============================== //
 // ==================================================================================================== //
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//stop_collection("region5");
 
 	for (icpu_neig_bs = 0;  icpu_neig_bs < ncpu_bs; icpu_neig_bs++) {
 
@@ -4589,16 +4597,17 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 // ==================================================================================================== //
 // ============================== # Unpackage for sending in Current CPU ============================== //
 
-//start_collection("region6");
 
 	count_index = 0;
 	ii = jj = kk = iicube = iL =0;
 	L1 = L2 = L3 = L4 = L5 = 0;
 	
+#pragma omp parallel for private(ii,count_index,index,L1,L2,L3,L4,L5,icube_send,iicube,icube,i,j,k,iL,k0,j0,i0) 
+	
 
 	for (icpu_neig_bs = 0;  icpu_neig_bs < ncpu_bs; icpu_neig_bs++) {
 
-	
+		/*
 		ii = ii+Ncube_Ncpu_bs[icpu_neig_bs];
 		count_index = (ii-Ncube_Ncpu_bs[icpu_neig_bs])*zone/4;
 		
@@ -4608,13 +4617,29 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 		L3 = 2*Ncube_Ncpu_bs[icpu_neig_bs]*zone/4+5*count_index;
 		L4 = 3*Ncube_Ncpu_bs[icpu_neig_bs]*zone/4+5*count_index;
 		L5 = 4*Ncube_Ncpu_bs[icpu_neig_bs]*zone/4+5*count_index;
+		*/
+
+		
+		ii = ist_bs[icpu_neig_bs];
+		count_index = ii*zone/4;
+		
+		
+		index = Ncube_Ncpu_bs[icpu_neig_bs]*zone/4;
+		
+		L1 = 0*index+5*count_index;
+		L2 = 1*index+L1;
+		L3 = 2*index+L1;
+		L4 = 3*index+L1;
+		L5 = 4*index+L1;
 
 
-#pragma omp parallel for private(iicube,icube,i,j,k,iL,k0,j0,i0) 	
+//#pragma omp parallel for private(iicube,icube,i,j,k,iL,k0,j0,i0) 	
 
 		for (icube_send = 1; icube_send <= Ncube_Ncpu_bs[icpu_neig_bs]; icube_send++) {  
 
-			iicube = ii-Ncube_Ncpu_bs[icpu_neig_bs]+icube_send;
+			//iicube = ii-Ncube_Ncpu_bs[icpu_neig_bs]+icube_send;
+
+			iicube = ii+icube_send;
 			icube = Rcube_Ncpu_bs[iicube];
 
 // ------------------------------------- [Z+] direction ------------------------------------- //
@@ -4726,8 +4751,6 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 								U1_[icube][i0][j0][k0][3] = recv_data_curr_bs[L4+iL];
 								U1_[icube][i0][j0][k0][4] = recv_data_curr_bs[L5+iL];
 
-								//printf("%f\t",U1_[icube][i0][j0][k0]);
-								
 							}
 						}
 					}
@@ -5378,8 +5401,6 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 		}    // ---- for (icube_send = 1; icube_send <= Ncube_Ncpu_bs[icpu_neig_bs]; icube_send++) ---- //
 
-#pragma omp barrier
-		
 	}    // ---- for (icpu_neig_bs = 0;  icpu_neig_bs < ncpu_bs; icpu_neig_bs++) ---- //
 
 
@@ -5389,13 +5410,6 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 	
 	
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-//stop_collection("region6");
-
-
-
-
 
 	for (icpu_neig_sb = 0;  icpu_neig_sb < ncpu_sb; icpu_neig_sb++) {
 
@@ -5404,7 +5418,6 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 	}
 	
 	
-//start_collection("region7");
 
 	 
 	
@@ -5415,10 +5428,11 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 	ii = jj = kk = iicube = iL =0;
 	L1 = L2 = L3 = L4 = L5 = 0;
 	
+#pragma omp parallel for private(ii,count_index,index,L1,L2,L3,L4,L5,icube_send,iicube,icube,i,j,k,iL,k0,j0,i0) 	
 
 	for (icpu_neig_sb = 0;  icpu_neig_sb < ncpu_sb; icpu_neig_sb++) {
 
-		
+		/*
 		ii = ii+Ncube_Ncpu_sb[icpu_neig_sb];
 		count_index = (ii-Ncube_Ncpu_sb[icpu_neig_sb])*zone;
 		
@@ -5428,12 +5442,30 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 		L3 = 2*Ncube_Ncpu_sb[icpu_neig_sb]*zone+5*count_index;
 		L4 = 3*Ncube_Ncpu_sb[icpu_neig_sb]*zone+5*count_index;
 		L5 = 4*Ncube_Ncpu_sb[icpu_neig_sb]*zone+5*count_index;
+		*/
 
-#pragma omp parallel for private(iicube,icube,i,j,k,iL,k0,j0,i0) 	
+		ii = ist_sb[icpu_neig_sb];
+		count_index = ii*zone;
+
+		
+		index = Ncube_Ncpu_sb[icpu_neig_sb]*zone;
+		
+		L1 = 0*index+5*count_index;
+		L2 = 1*index+L1;
+		L3 = 2*index+L1;
+		L4 = 3*index+L1;
+		L5 = 4*index+L1;
+		
+
+
+
+//#pragma omp parallel for private(iicube,icube,i,j,k,iL,k0,j0,i0) 	
 
 		for (icube_send = 1; icube_send <= Ncube_Ncpu_sb[icpu_neig_sb]; icube_send++) {  
 
-			iicube = ii-Ncube_Ncpu_sb[icpu_neig_sb]+icube_send;
+			//iicube = ii-Ncube_Ncpu_sb[icpu_neig_sb]+icube_send;
+
+			iicube = ii+icube_send;
 			icube = Rcube_Ncpu_sb[iicube];
 
 
@@ -5603,8 +5635,6 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 		}    // ---- for (icube_send = 1; icube_send <= Ncube_Ncpu_sb[icpu_neig_sb]; icube_send++) ---- //
 		
-#pragma omp barrier
-
 	}    // ---- for (icpu_neig_sb = 0;  icpu_neig_sb < ncpu_sb; icpu_neig_sb++) ---- //
 
 // ============================== # Unpackage for sending in Current CPU ============================== //

@@ -47,9 +47,9 @@ int main(int argc, char **argv)
 
 	int dp_step = 1;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 1;
-	int output_step = 5;
-	int count = 11;	
+	int iteration_end_step = 3;
+	int output_step = 3;
+	int count = 3;	
 	int step;
 
 
