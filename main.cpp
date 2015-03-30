@@ -47,17 +47,22 @@ int main(int argc, char **argv)
 
 	int dp_step = 1;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 2;
+	int iteration_end_step = 10;
 	int output_step = 1;
 	int count = 1;	
 	int step;
 
-
-
-	double deltaT = 0.0001;
+	double deltaT = 0.01;
 	double deltaTau = deltaT/200.;
 	double e = 0.1;
 
+	int switch_initial = 0; // ---- 1 reading initial coniditon ---- //
+
+	int switch_IBM = 1;     // ---- 1 run IBM ---- //
+
+	
+
+	int switch_output = 1;  // ---- 1 output grid file ---- //
 
 	int NBC,NBC_plus, NBC_minus, Ntemp, gicube, gi, gj, gk, mp_switch;
 
@@ -671,39 +676,13 @@ int main(int argc, char **argv)
 
 
 
-	BCM_Initial_condition(myid, Ncube, N_wallcube,
+	BCM_Initial_condition(myid, Ncube, N_wallcube, switch_initial,
 		rank_map,
 		FWS,
 		U1_, 
 		U1,  
 		U1q);
 
-
-	for (icube = 1; icube < Ncube; icube++) {  
-
-#pragma omp parallel for private(j,k)
-
-		for (i = 0; i <= nxxx; i++) {
-			for (j = 0; j <= nyyy; j++) {
-				for (k = 0; k <= nzzz; k++) {  
-
-					U1_[icube][i][j][k][0] = U1[icube][i][j][k][0]; 
-					U1_[icube][i][j][k][1] = U1[icube][i][j][k][1]; 
-					U1_[icube][i][j][k][2] = U1[icube][i][j][k][2]; 
-					U1_[icube][i][j][k][3] = U1[icube][i][j][k][3]; 
-					U1_[icube][i][j][k][4] = U1[icube][i][j][k][4]; 
-
-					U1q[icube][i][j][k][0] = U1[icube][i][j][k][0]; 
-					U1q[icube][i][j][k][1] = U1[icube][i][j][k][1]; 
-					U1q[icube][i][j][k][2] = U1[icube][i][j][k][2]; 
-					U1q[icube][i][j][k][3] = U1[icube][i][j][k][3]; 
-					U1q[icube][i][j][k][4] = U1[icube][i][j][k][4]; 
-					
-				}
-			}
-		}
-
-	}
 
 	
 	// --------------------------------------------------------------------------------------- //
@@ -827,12 +806,13 @@ int main(int argc, char **argv)
 	// --------------------------------------------------------------------------------------- //	
 
 
-	
-	
-	BCM_Immersed_boundary(myid, Ncube, N_wallcube, &NBC, Xmin, Xmax, Ymin, Ymax, Zmin, Zmax, 
-		cube_size, csl, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt, FWS, wallcube);				  
-	
-	
+	if ( switch_IBM == 1 ) {
+
+		BCM_Immersed_boundary(myid, Ncube, N_wallcube, &NBC, Xmin, Xmax, Ymin, Ymax, Zmin, Zmax, 
+			cube_size, csl, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt, FWS, wallcube);				  
+
+	}
+
 
 
 	BCM_Interface(myid,Ncube, 
@@ -1312,12 +1292,13 @@ int main(int argc, char **argv)
 
 
 
+#pragma omp parallel for private(i,j,k)
+
 				for (icube = 1; icube < Ncube; icube++) {  
 
-#pragma omp parallel for private(j,k)
-					for (i = n_buffer; i <= nx; i++) {
-						for (j = n_buffer; j <= ny; j++) {
-							for (k = n_buffer; k <= nz; k++) {  
+					for (i = n_buffer-1; i <= nxx; i++) {
+						for (j = n_buffer-1; j <= nyy; j++) {
+							for (k = n_buffer-1; k <= nzz; k++) {  
 
 								U1q[icube][i][j][k][0] = U1[icube][i][j][k][0]; 
 								U1q[icube][i][j][k][1] = U1[icube][i][j][k][1]; 
@@ -1368,7 +1349,7 @@ int main(int argc, char **argv)
 
 		if ( step%output_step == 0 ) {
 
-			BCM_Output(myid, Ncube, step, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt);
+			BCM_Output(myid, Ncube, step, switch_output, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt);
 
 		}
 

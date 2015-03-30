@@ -46,8 +46,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 	double (*U1p1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
 	double (*U1p2)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
-
+	
 	double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
 	double (*Rku1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
 	double (*Residual1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
@@ -2282,7 +2283,6 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					
 					// ----------------------------- Viscous_term ----------------------------- //
 					// -------------------------------------------------------------------------//
-
 
 
 					Rk1 = Fabs[icube][i][j][k][0]+Rp1+Rf1;
