@@ -47,6 +47,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 	double (*U1p2)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
+	double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 	double (*Rku1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
 	double (*Residual1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
@@ -2283,12 +2284,12 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					// -------------------------------------------------------------------------//
 
 
-					Rk1 = Rp1+Rf1;
-					Rk2 = Rp2+Rf2+vF2;
-					Rk3 = Rp3+Rf3+vF3;
-					Rk4 = Rp4+Rf4+vF4;
-					Rk5 = Rp5+Rf5+vF5;
 
+					Rk1 = Fabs[icube][i][j][k][0]+Rp1+Rf1;
+					Rk2 = Fabs[icube][i][j][k][1]+Rp2+Rf2+vF2;
+					Rk3 = Fabs[icube][i][j][k][2]+Rp3+Rf3+vF3;
+					Rk4 = Fabs[icube][i][j][k][3]+Rp4+Rf4+vF4;
+					Rk5 = Fabs[icube][i][j][k][4]+Rp5+Rf5+vF5;
 					// ------------------------------------------------------------------------------------------- //
 					// --------------------------------------- Runge-Kutta --------------------------------------- //
 

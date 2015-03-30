@@ -431,34 +431,6 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 );
 
 
-void BCM_Abs_X_boundary_condition
-(
-// ================================================================================ //
-int myid,
-
-int ncube,
-
-double deltaT,
-
-double deltaTau,
-
-double e,
-
-int nXbc_l,
-int nXbc_u,
-
-int (*Xbc_l) = new int[NXbc_l+1],
-int (*Xbc_u) = new int[NXbc_u+1],
-
-double (*cube_size) = new double[Ncube],
-
-double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
-
-double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
-// ================================================================================ //
-);
-
-
 
 extern int NYbc_l;
 extern int NYbc_u;
@@ -496,6 +468,64 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 // ================================================================================ //
 );
 
+
+
+
+void BCM_Abs_X_boundary_condition
+(
+// ================================================================================ //
+int myid,
+
+int ncube,
+
+double deltaT,
+
+double deltaTau,
+
+double e,
+
+int nXbc_l,
+int nXbc_u,
+
+int (*Xbc_l) = new int[NXbc_l+1],
+int (*Xbc_u) = new int[NXbc_u+1],
+
+double (*cube_size) = new double[Ncube],
+
+double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+// ================================================================================ //
+);
+
+
+
+void BCM_Abs_Y_boundary_condition
+(
+// ================================================================================ //
+int myid,
+
+int ncube,
+
+double deltaT,
+
+double deltaTau,
+
+double e,
+
+int nYbc_l,
+int nYbc_u,
+
+int (*Ybc_l) = new int[NYbc_l+1],
+int (*Ybc_u) = new int[NYbc_u+1],
+
+double (*cube_size) = new double[Ncube],
+
+double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+// ================================================================================ //
+);
 
 
 

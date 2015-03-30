@@ -1614,7 +1614,7 @@ int intersect_triangle
 
 
 
-	if (det < minimum)
+	if (det < 0.00000000000001)
 		return 0;
 
 	SUB(tvec, orig, vert0);
