@@ -221,13 +221,6 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 		for (j = 2; j <= ny; j++) {
 			for (k = 2; k <= nz; k++) {  
 
-				rho = U1_[iicube][nx][j][k][0];
-				U = U1_[iicube][nx][j][k][1]/rho;
-				V = U1_[iicube][nx][j][k][2]/rho;
-				W = U1_[iicube][nx][j][k][3]/rho;
-				VV = U*U+V*V+W*W;
-				P = 101300;
-
 				U1_[iicube][nxx][j][k][0] = U1_[iicube][nx][j][k][0];
 				U1_[iicube][nxx][j][k][1] = U1_[iicube][nx][j][k][1];
 				U1_[iicube][nxx][j][k][2] = U1_[iicube][nx][j][k][2];

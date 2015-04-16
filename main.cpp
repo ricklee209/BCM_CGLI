@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 
 	int dp_step = 1;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 10;
+	int iteration_end_step = 7;
 	int output_step = 1;
 	int count = 1;	
 	int step;
@@ -60,9 +60,8 @@ int main(int argc, char **argv)
 
 	int switch_IBM = 1;     // ---- 1 run IBM ---- //
 
-	
-
 	int switch_output = 1;  // ---- 1 output grid file ---- //
+
 
 	int NBC,NBC_plus, NBC_minus, Ntemp, gicube, gi, gj, gk, mp_switch;
 
@@ -683,6 +682,9 @@ int main(int argc, char **argv)
 		U1,  
 		U1q);
 
+	
+	if ( switch_IBM == 1 ) {
+
 
 	
 	// --------------------------------------------------------------------------------------- //
@@ -805,8 +807,6 @@ int main(int argc, char **argv)
 	// -------------------------------- detect the Ghost cell -------------------------------- //
 	// --------------------------------------------------------------------------------------- //	
 
-
-	if ( switch_IBM == 1 ) {
 
 		BCM_Immersed_boundary(myid, Ncube, N_wallcube, &NBC, Xmin, Xmax, Ymin, Ymax, Zmin, Zmax, 
 			cube_size, csl, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt, FWS, wallcube);				  
@@ -1083,7 +1083,7 @@ int main(int argc, char **argv)
 		adjX_eq, adjY_eq, adjZ_eq,
 		FWS);
 
-
+/*
 
 #pragma omp parallel for private(Ntemp,gicube,gi,gj,gk)
 	for (int iNBC = 1; iNBC <= NBC_minus; iNBC++) {
@@ -1135,7 +1135,7 @@ int main(int argc, char **argv)
 
 	}
 
-
+*/
 
 
 
@@ -1158,16 +1158,17 @@ int main(int argc, char **argv)
 				//BCM_X_boundary_condition(myid, NXbc_l, NXbc_u, Xbc_l, Xbc_u, U1_);
 
 				//BCM_Y_boundary_condition(NYbc_l, NYbc_u, Ybc_l, Ybc_u, U1_);
-
 				
-				BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
+				//BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
+
 
 				BCM_Abs_Y_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NYbc_l, NYbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
 
-
-				BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
-
+				BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
 				
+				BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
+
+
 				for (int ig = 1; ig <= 1; ig++) {
 
 					BCM_Ghostcell_minus(myid, &NBC_minus, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
@@ -1262,11 +1263,11 @@ int main(int argc, char **argv)
 			er[5] = er[5]/E5;
 
 
-			// if (myid == 0) {
+			 if (myid == 0) {
 
-			// printf("%d\t%f\t%f\t%f\t%f\t%f\n",iteration,er[1],er[2],er[3],er[4],er[5]);
+			 printf("%d\t%f\t%f\t%f\t%f\t%f\n",iteration,er[1],er[2],er[3],er[4],er[5]);
 
-			// }
+			 }
 
 
 
