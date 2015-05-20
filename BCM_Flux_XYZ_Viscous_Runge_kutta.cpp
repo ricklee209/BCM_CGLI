@@ -2425,37 +2425,15 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						if ( FWS[icube][i][j][k] == IFLUID ) {
 
-							// U1_[icube][i][j][k][0] = U1_[icube][i][j][k][0]+Rku1[icube][i][j][k][0];
-							// U1_[icube][i][j][k][1] = U1_[icube][i][j][k][1]+Rku1[icube][i][j][k][1];
-							// U1_[icube][i][j][k][2] = U1_[icube][i][j][k][2]+Rku1[icube][i][j][k][2];
-							// U1_[icube][i][j][k][3] = U1_[icube][i][j][k][3]+Rku1[icube][i][j][k][3];
-							// U1_[icube][i][j][k][4] = U1_[icube][i][j][k][4]+Rku1[icube][i][j][k][4];
-							
-							U1p1[icube][i][j][k][0] = U1_[icube][i][j][k][0] = U1_[icube][i][j][k][0]+Rku1[icube][i][j][k][0];
-							U1p1[icube][i][j][k][1] = U1_[icube][i][j][k][1] = U1_[icube][i][j][k][1]+Rku1[icube][i][j][k][1];
-							U1p1[icube][i][j][k][2] = U1_[icube][i][j][k][2] = U1_[icube][i][j][k][2]+Rku1[icube][i][j][k][2];
-							U1p1[icube][i][j][k][3] = U1_[icube][i][j][k][3] = U1_[icube][i][j][k][3]+Rku1[icube][i][j][k][3];
-							U1p1[icube][i][j][k][4] = U1_[icube][i][j][k][4] = U1_[icube][i][j][k][4]+Rku1[icube][i][j][k][4];
+							U1_[icube][i][j][k][0] = U1p1[icube][i][j][k][0]+Rku1[icube][i][j][k][0];
+							U1_[icube][i][j][k][1] = U1p1[icube][i][j][k][1]+Rku1[icube][i][j][k][1];
+							U1_[icube][i][j][k][2] = U1p1[icube][i][j][k][2]+Rku1[icube][i][j][k][2];
+							U1_[icube][i][j][k][3] = U1p1[icube][i][j][k][3]+Rku1[icube][i][j][k][3];
+							U1_[icube][i][j][k][4] = U1p1[icube][i][j][k][4]+Rku1[icube][i][j][k][4];
 
 
 						}
-						// else {
-
 						
-							// U1_[icube][i][j][k][0] = rho0;
-							// U1_[icube][i][j][k][1] = 0;
-							// U1_[icube][i][j][k][2] = 0;
-							// U1_[icube][i][j][k][3] = 0;
-							// U1_[icube][i][j][k][4] = P0/(K-1);
-						
-						// }
-
-
-						// U1p1[icube][i][j][k][0] = Rku1[icube][i][j][k][0];
-						// U1p1[icube][i][j][k][1] = Rku1[icube][i][j][k][1];
-						// U1p1[icube][i][j][k][2] = Rku1[icube][i][j][k][2];
-						// U1p1[icube][i][j][k][3] = Rku1[icube][i][j][k][3];
-						// U1p1[icube][i][j][k][4] = Rku1[icube][i][j][k][4];
 						
 					}
 				}
@@ -2476,39 +2454,15 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						if ( FWS[icube][i][j][k] == IFLUID ) {
 						
 							
-
-							// U1_[icube][i][j][k][0] = U1_[icube][i][j][k][0]+A2*B2*U1p1[icube][i][j][k][0]+B2*Rku1[icube][i][j][k][0];
-							// U1_[icube][i][j][k][1] = U1_[icube][i][j][k][1]+A2*B2*U1p1[icube][i][j][k][1]+B2*Rku1[icube][i][j][k][1];
-							// U1_[icube][i][j][k][2] = U1_[icube][i][j][k][2]+A2*B2*U1p1[icube][i][j][k][2]+B2*Rku1[icube][i][j][k][2];
-							// U1_[icube][i][j][k][3] = U1_[icube][i][j][k][3]+A2*B2*U1p1[icube][i][j][k][3]+B2*Rku1[icube][i][j][k][3];
-							// U1_[icube][i][j][k][4] = U1_[icube][i][j][k][4]+A2*B2*U1p1[icube][i][j][k][4]+B2*Rku1[icube][i][j][k][4];
-							
-								U1_[icube][i][j][k][0] = U1p2[icube][i][j][k][0] = 0.75*U1_[icube][i][j][k][0]+0.25*U1p1[icube][i][j][k][0]+0.25*Rku1[icube][i][j][k][0];
-								U1_[icube][i][j][k][1] = U1p2[icube][i][j][k][1] = 0.75*U1_[icube][i][j][k][1]+0.25*U1p1[icube][i][j][k][1]+0.25*Rku1[icube][i][j][k][1];
-								U1_[icube][i][j][k][2] = U1p2[icube][i][j][k][2] = 0.75*U1_[icube][i][j][k][2]+0.25*U1p1[icube][i][j][k][2]+0.25*Rku1[icube][i][j][k][2];
-								U1_[icube][i][j][k][3] = U1p2[icube][i][j][k][3] = 0.75*U1_[icube][i][j][k][3]+0.25*U1p1[icube][i][j][k][3]+0.25*Rku1[icube][i][j][k][3];
-								U1_[icube][i][j][k][4] = U1p2[icube][i][j][k][4] = 0.75*U1_[icube][i][j][k][4]+0.25*U1p1[icube][i][j][k][4]+0.25*Rku1[icube][i][j][k][4];
+								U1_[icube][i][j][k][0] = 0.75*U1p1[icube][i][j][k][0]+0.25*U1_[icube][i][j][k][0]+0.25*Rku1[icube][i][j][k][0];
+								U1_[icube][i][j][k][1] = 0.75*U1p1[icube][i][j][k][1]+0.25*U1_[icube][i][j][k][1]+0.25*Rku1[icube][i][j][k][1];
+								U1_[icube][i][j][k][2] = 0.75*U1p1[icube][i][j][k][2]+0.25*U1_[icube][i][j][k][2]+0.25*Rku1[icube][i][j][k][2];
+								U1_[icube][i][j][k][3] = 0.75*U1p1[icube][i][j][k][3]+0.25*U1_[icube][i][j][k][3]+0.25*Rku1[icube][i][j][k][3];
+								U1_[icube][i][j][k][4] = 0.75*U1p1[icube][i][j][k][4]+0.25*U1_[icube][i][j][k][4]+0.25*Rku1[icube][i][j][k][4];
+			
 			
 							}
 							
-						// else {
-
-							
-							// U1_[icube][i][j][k][0] = rho0;
-							// U1_[icube][i][j][k][1] = 0;
-							// U1_[icube][i][j][k][2] = 0;
-							// U1_[icube][i][j][k][3] = 0;
-							// U1_[icube][i][j][k][4] = P0/(K-1);
-						
-						// }
-
-						
-						// U1p1[icube][i][j][k][0] = Rku1[icube][i][j][k][0];
-						// U1p1[icube][i][j][k][1] = Rku1[icube][i][j][k][1];
-						// U1p1[icube][i][j][k][2] = Rku1[icube][i][j][k][2];
-						// U1p1[icube][i][j][k][3] = Rku1[icube][i][j][k][3];
-						// U1p1[icube][i][j][k][4] = Rku1[icube][i][j][k][4];
-
 
 					}
 				}
@@ -2538,17 +2492,11 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						if ( FWS[icube][i][j][k] == IFLUID ) {
 						
-							// U1_[icube][i][j][k][0] = U1_[icube][i][j][k][0]+A3*B3*U1_[icube][i][j][k][0]+B3*Rku1[icube][i][j][k][0];
-							// U1_[icube][i][j][k][1] = U1_[icube][i][j][k][1]+A3*B3*U1_[icube][i][j][k][1]+B3*Rku1[icube][i][j][k][1];
-							// U1_[icube][i][j][k][2] = U1_[icube][i][j][k][2]+A3*B3*U1_[icube][i][j][k][2]+B3*Rku1[icube][i][j][k][2];
-							// U1_[icube][i][j][k][3] = U1_[icube][i][j][k][3]+A3*B3*U1_[icube][i][j][k][3]+B3*Rku1[icube][i][j][k][3];
-							// U1_[icube][i][j][k][4] = U1_[icube][i][j][k][4]+A3*B3*U1_[icube][i][j][k][4]+B3*Rku1[icube][i][j][k][4];
-							
-							U1_[icube][i][j][k][0] = 1.0/3.0*U1_[icube][i][j][k][0]+2.0/3.0*U1p2[icube][i][j][k][0]+2.0/3.0*Rku1[icube][i][j][k][0];
-							U1_[icube][i][j][k][1] = 1.0/3.0*U1_[icube][i][j][k][1]+2.0/3.0*U1p2[icube][i][j][k][1]+2.0/3.0*Rku1[icube][i][j][k][1];
-							U1_[icube][i][j][k][2] = 1.0/3.0*U1_[icube][i][j][k][2]+2.0/3.0*U1p2[icube][i][j][k][2]+2.0/3.0*Rku1[icube][i][j][k][2];
-							U1_[icube][i][j][k][3] = 1.0/3.0*U1_[icube][i][j][k][3]+2.0/3.0*U1p2[icube][i][j][k][3]+2.0/3.0*Rku1[icube][i][j][k][3];
-							U1_[icube][i][j][k][4] = 1.0/3.0*U1_[icube][i][j][k][4]+2.0/3.0*U1p2[icube][i][j][k][4]+2.0/3.0*Rku1[icube][i][j][k][4];
+							U1_[icube][i][j][k][0] = 1.0/3.0*U1p1[icube][i][j][k][0]+2.0/3.0*U1_[icube][i][j][k][0]+2.0/3.0*Rku1[icube][i][j][k][0];
+							U1_[icube][i][j][k][1] = 1.0/3.0*U1p1[icube][i][j][k][1]+2.0/3.0*U1_[icube][i][j][k][1]+2.0/3.0*Rku1[icube][i][j][k][1];
+							U1_[icube][i][j][k][2] = 1.0/3.0*U1p1[icube][i][j][k][2]+2.0/3.0*U1_[icube][i][j][k][2]+2.0/3.0*Rku1[icube][i][j][k][2];
+							U1_[icube][i][j][k][3] = 1.0/3.0*U1p1[icube][i][j][k][3]+2.0/3.0*U1_[icube][i][j][k][3]+2.0/3.0*Rku1[icube][i][j][k][3];
+							U1_[icube][i][j][k][4] = 1.0/3.0*U1p1[icube][i][j][k][4]+2.0/3.0*U1_[icube][i][j][k][4]+2.0/3.0*Rku1[icube][i][j][k][4];
 									
 							
 							rho = U1_[icube][i][j][k][0];
@@ -2566,33 +2514,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 							e4 = e4+(W-Wold)*(W-Wold);
 							e5 = e5+(T-Told)*(T-Told);
 							
-							// Residual1[icube][i][j][k][2] = (P-Pold)*(P-Pold);
-							// Residual1[icube][i][j][k][3] = (U-Uold)*(U-Uold);
-							// Residual1[icube][i][j][k][4] = (V-Vold)*(V-Vold);	
-							// Residual1[icube][i][j][k][5] = (W-Wold)*(W-Wold);
-							// Residual1[icube][i][j][k][6] = (T-Told)*(T-Told);
-							
-							
 
 						}
 							
-						else {
-						
-							// U1_[icube][i][j][k][0] = rho0;
-							// U1_[icube][i][j][k][1] = 0;
-							// U1_[icube][i][j][k][2] = 0;
-							// U1_[icube][i][j][k][3] = 0;
-							// U1_[icube][i][j][k][4] = P0/(K-1);
-							
-							// Residual1[icube][i][j][k][2] = 0;
-							// Residual1[icube][i][j][k][3] = 0;
-							// Residual1[icube][i][j][k][4] = 0;
-							// Residual1[icube][i][j][k][5] = 0;
-							// Residual1[icube][i][j][k][6] = 0;
-							
-						}
-
-
 
 					}
 				}

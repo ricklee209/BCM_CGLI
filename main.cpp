@@ -47,12 +47,12 @@ int main(int argc, char **argv)
 
 	int dp_step = 1;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 7;
-	int output_step = 1;
-	int count = 1;	
+	int iteration_end_step = 2;
+	int output_step = 2;
+	int count = 2;	
 	int step;
 
-	double deltaT = 0.01;
+	double deltaT = 0.005;
 	double deltaTau = deltaT/200.;
 	double e = 0.1;
 
@@ -1148,6 +1148,36 @@ int main(int argc, char **argv)
 // ============================================================================ //
 		for (int iteration = 1; iteration < 50000; iteration++) {               //
 // ============================================================================ //		
+			
+
+	// ------------------------------------------------------------------------------------------ //
+	// -------------------------------- Runge-Kutta-Modification -------------------------------- //
+
+	
+				for (icube = 1; icube < Ncube; icube++) {  
+
+#pragma omp parallel for private(j,k)
+					for (i = n_buffer; i < nxx; i++) {
+						for (j = n_buffer; j < nyy; j++) {
+							for (k = n_buffer; k < nzz; k++) {  
+
+								U1p1[icube][i][j][k][0] = U1_[icube][i][j][k][0]; 
+								U1p1[icube][i][j][k][1] = U1_[icube][i][j][k][1]; 
+								U1p1[icube][i][j][k][2] = U1_[icube][i][j][k][2]; 
+								U1p1[icube][i][j][k][3] = U1_[icube][i][j][k][3]; 
+								U1p1[icube][i][j][k][4] = U1_[icube][i][j][k][4];
+
+							}
+						}
+					}
+
+				}
+
+	
+	// -------------------------------- Runge-Kutta-Modification -------------------------------- //
+	// ------------------------------------------------------------------------------------------ //
+	
+
 
 
 	// ------------------------------------------ //
@@ -1155,7 +1185,7 @@ int main(int argc, char **argv)
 	// ------------------------------------------ //
 
 
-				//BCM_X_boundary_condition(myid, NXbc_l, NXbc_u, Xbc_l, Xbc_u, U1_);
+				BCM_X_boundary_condition(myid, NXbc_l, NXbc_u, Xbc_l, Xbc_u, U1_);
 
 				//BCM_Y_boundary_condition(NYbc_l, NYbc_u, Ybc_l, Ybc_u, U1_);
 				
@@ -1166,9 +1196,9 @@ int main(int argc, char **argv)
 
 				BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
 				
-				BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
+				//BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
 
-
+				#pragma omp parallel 
 				for (int ig = 1; ig <= 1; ig++) {
 
 					BCM_Ghostcell_minus(myid, &NBC_minus, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
