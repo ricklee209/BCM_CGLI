@@ -48,32 +48,32 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 		for (j = 2; j <= ny; j++) {
 			for (k = 2; k <= nz; k++) {  
 
-				rho = U1_[iicube][2][j][k][0];
-				U = U1_[iicube][2][j][k][1]/rho;
-				V = U1_[iicube][2][j][k][2]/rho;
-				W = U1_[iicube][2][j][k][3]/rho;
-				VV = U*U+V*V+W*W;
-				P = (U1_[iicube][2][j][k][4]-0.5*rho*VV)*(K-1);
+				//rho = U1_[iicube][2][j][k][0];
+				//U = U1_[iicube][2][j][k][1]/rho;
+				//V = U1_[iicube][2][j][k][2]/rho;
+				//W = U1_[iicube][2][j][k][3]/rho;
+				//VV = U*U+V*V+W*W;
+				//P = (U1_[iicube][2][j][k][4]-0.5*rho*VV)*(K-1);
 
-				//rho = rho0;
-				rho = rho;
-				U = Uin;
-				V = V0;
-				W = W0;
-				VV = U*U+V*V+W*W;
+				////rho = rho0;
+				//rho = rho;
+				//U = Uin;
+				//V = V0;
+				//W = W0;
+				//VV = U*U+V*V+W*W;
 
 
-				U1_[iicube][1][j][k][0] = rho;
-				U1_[iicube][1][j][k][1] = rho*U;
-				U1_[iicube][1][j][k][2] = rho*V;
-				U1_[iicube][1][j][k][3] = rho*W;
-				U1_[iicube][1][j][k][4] = P/(K-1)+0.5*rho*VV;
+				U1_[iicube][1][j][k][0] = U1_[iicube][2][j][k][0];
+				U1_[iicube][1][j][k][1] = U1_[iicube][2][j][k][1];
+				U1_[iicube][1][j][k][2] = U1_[iicube][2][j][k][2];
+				U1_[iicube][1][j][k][3] = U1_[iicube][2][j][k][3];
+				U1_[iicube][1][j][k][4] = U1_[iicube][2][j][k][4];
 
-				U1_[iicube][0][j][k][0] = rho;
-				U1_[iicube][0][j][k][1] = rho*U;
-				U1_[iicube][0][j][k][2] = rho*V;
-				U1_[iicube][0][j][k][3] = rho*W;
-				U1_[iicube][0][j][k][4] = P/(K-1)+0.5*rho*VV;
+				U1_[iicube][0][j][k][0] = U1_[iicube][2][j][k][0];
+				U1_[iicube][0][j][k][1] = U1_[iicube][2][j][k][1];
+				U1_[iicube][0][j][k][2] = U1_[iicube][2][j][k][2];
+				U1_[iicube][0][j][k][3] = U1_[iicube][2][j][k][3];
+				U1_[iicube][0][j][k][4] = U1_[iicube][2][j][k][4];
 
 			}
 		}

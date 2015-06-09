@@ -41,31 +41,36 @@ int main(int argc, char **argv)
 
 #include "Resolution.h"
 
-	int statistic_step = 4;    // ---- periodic step ---- //
+	int statistic_step = 100000;    // ---- periodic step ---- //
 
-	int start_step = 4;    // ---- how many steps to reach the quasi steady ---- //
+	int start_step = 100000;    // ---- how many steps to reach the quasi steady ---- //
 
-	int dp_step = 1;    // ---- how many steps for periodically outputing the dp ---- //
+	int dp_step = 10000;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 2;
-	int output_step = 2;
-	int count = 2;	
+	int iteration_end_step = 500;
+	int output_step = 100;
+	int count = 1000;	
 	int step;
 
-	double deltaT = 0.005;
-	double deltaTau = deltaT/200.;
-	double e = 0.1;
+	double deltaT = 0.01;
+	//double deltaT = 0.03;
+	double deltaTau = deltaT/100.0;
+	double e = 0.00000004;
+	double Th = 309.03531204896;
+	//double e = 0.00000001;
+	//double Th = 299.15681120;
 
-	int switch_initial = 0; // ---- 1 reading initial coniditon ---- //
 
-	int switch_IBM = 1;     // ---- 1 run IBM ---- //
+	int switch_initial = 1; // ---- 1 reading initial coniditon ---- //
 
-	int switch_output = 1;  // ---- 1 output grid file ---- //
+	int switch_IBM = 0;     // ---- 1 run IBM ---- //
+
+	int switch_output = 0;  // ---- 1 output grid file ---- //
 
 
 	int NBC,NBC_plus, NBC_minus, Ntemp, gicube, gi, gj, gk, mp_switch;
 
-	double (*er) = new double[8];
+	double (*er) = new double[10];
 
 	double E1 = 0;
 	double E2 = 0;
@@ -779,9 +784,9 @@ int main(int argc, char **argv)
 							//FWS[icube][i][j][k] = IGHOST;
 
 
-							for (ii = i-0; ii <= i+0; ii++) {
-								for (jj = j-0; jj <= j+0; jj++) {
-									for (kk = k-0; kk <= k+0; kk++) { 
+							for (ii = i-2; ii <= i+2; ii++) {
+								for (jj = j-2; jj <= j+2; jj++) {
+									for (kk = k-2; kk <= k+2; kk++) { 
 
 										if (ii < 0 | ii > nxxx | jj < 0 | jj > nyyy | kk < 0 | kk > nzzz)
 											continue;
@@ -1137,6 +1142,7 @@ int main(int argc, char **argv)
 
 */
 
+	double xc,yc,zc,dis;
 
 
 // =============================================== //
@@ -1166,7 +1172,7 @@ int main(int argc, char **argv)
 								U1p1[icube][i][j][k][2] = U1_[icube][i][j][k][2]; 
 								U1p1[icube][i][j][k][3] = U1_[icube][i][j][k][3]; 
 								U1p1[icube][i][j][k][4] = U1_[icube][i][j][k][4];
-
+								
 							}
 						}
 					}
@@ -1185,6 +1191,10 @@ int main(int argc, char **argv)
 	// ------------------------------------------ //
 
 
+
+
+
+
 				BCM_X_boundary_condition(myid, NXbc_l, NXbc_u, Xbc_l, Xbc_u, U1_);
 
 				//BCM_Y_boundary_condition(NYbc_l, NYbc_u, Ybc_l, Ybc_u, U1_);
@@ -1201,9 +1211,15 @@ int main(int argc, char **argv)
 				#pragma omp parallel 
 				for (int ig = 1; ig <= 1; ig++) {
 
-					BCM_Ghostcell_minus(myid, &NBC_minus, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
+					//BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
 
-					BCM_Ghostcell_plus(myid, &NBC_plus, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
+					//BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
+
+
+					BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
+
+					BCM_Ghostcell_plus_Tem(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
+
 
 				}
 				
@@ -1236,6 +1252,7 @@ int main(int argc, char **argv)
 					adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
+				
 				
 				
 				BCM_Flux_XYZ_Viscous_Runge_kutta(myid, Ncube, RK, deltaT, deltaTau, e, FWS, csl, cube_size,
@@ -1293,16 +1310,16 @@ int main(int argc, char **argv)
 			er[5] = er[5]/E5;
 
 
-			 if (myid == 0) {
+			 //if (myid == 0) {
 
-			 printf("%d\t%f\t%f\t%f\t%f\t%f\n",iteration,er[1],er[2],er[3],er[4],er[5]);
+				 //printf("%d\t%f\t%f\t%f\t%f\t%f\n",iteration,er[1],er[2],er[3],er[4],er[5]);
 
-			 }
+			 //}
 
 
 
 // ==================================================================================================================== //
-			if ((er[1]<0.02 & er[2]<0.02 & er[3]<0.02 & er[4]<0.02 & er[5]<0.02) | iteration == iteration_end_step) {   //
+			if ((er[1]<0.01 & er[2]<0.01 & er[3]<0.01 & er[4]<0.01 & er[5]<0.01) | iteration == iteration_end_step) {   //
 // ==================================================================================================================== //
 
 
@@ -1315,7 +1332,7 @@ int main(int argc, char **argv)
 				if (myid == 0) {
 
 					//printf("%d\t%d\t%f\t%f\t%f\t%f\t%f\n",iteration,step,er[1],er[2],er[3],er[4],er[5]);
-					printf("%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",iteration,-er[6],-er[7],er[1],er[2],er[3],er[4],er[5]);
+					printf("%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",iteration,-er[8],-er[6],-er[7],er[1],er[2],er[3],er[4],er[5]);
 
 
 				}
@@ -1379,6 +1396,8 @@ int main(int argc, char **argv)
 		*/
 
 		if ( step%output_step == 0 ) {
+
+			BCM_Nusselt_Sphere(myid, Ncube, Th, csl, Xcnt, Ycnt, Zcnt, FWS, U1);
 
 			BCM_Output(myid, Ncube, step, switch_output, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt);
 

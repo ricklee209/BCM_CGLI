@@ -50,13 +50,13 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					U1_[iicube][i][j][1][0] = U1_[iicube][i][j][2][0];
 					U1_[iicube][i][j][1][1] = U1_[iicube][i][j][2][1];
 					U1_[iicube][i][j][1][2] = U1_[iicube][i][j][2][2];
-					U1_[iicube][i][j][1][3] = -U1_[iicube][i][j][2][3];
+					U1_[iicube][i][j][1][3] = U1_[iicube][i][j][2][3];
 					U1_[iicube][i][j][1][4] = U1_[iicube][i][j][2][4];
 
 					U1_[iicube][i][j][0][0] = U1_[iicube][i][j][2][0];
 					U1_[iicube][i][j][0][1] = U1_[iicube][i][j][2][1];
 					U1_[iicube][i][j][0][2] = U1_[iicube][i][j][2][2];
-					U1_[iicube][i][j][0][3] = -U1_[iicube][i][j][2][3];
+					U1_[iicube][i][j][0][3] = U1_[iicube][i][j][2][3];
 					U1_[iicube][i][j][0][4] = U1_[iicube][i][j][2][4];
 
 				}

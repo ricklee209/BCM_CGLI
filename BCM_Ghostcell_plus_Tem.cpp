@@ -13,7 +13,7 @@
 extern int Ncube;    
 extern int NBC_plus;
 
-void BCM_Ghostcell_plus
+void BCM_Ghostcell_plus_Tem
 (
 // =============================================================================== //
 int myid,
@@ -64,7 +64,6 @@ double er_p = 0.9999;
 
 //#pragma omp parallel 
 
-
 	for (iNBC = 1; iNBC <= *NNBC; iNBC++) {
 
 		Ntemp = (iNBC-1)*4;
@@ -90,6 +89,9 @@ double er_p = 0.9999;
 		w[6] = tmp2;
 		w[4] = tmp3;
 
+
+
+
 		for (ii = i; ii <= i+1; ii++) {
 			for (jj = j; jj <= j+1; jj++) {
 				for (kk = k; kk <= k+1; kk++) {  
@@ -99,8 +101,9 @@ double er_p = 0.9999;
 					V = U1_[icube][ii][jj][kk][2]/rho;
 					W = U1_[icube][ii][jj][kk][3]/rho;
 					P = ( U1_[icube][ii][jj][kk][4]-0.5*rho*(U*U+V*V+W*W) )*(K-1);
+					T = P/rho/R;
 					
-					u1[(ii-i)*4 + 2*(jj-j) + (kk-k)] = rho;
+					u1[(ii-i)*4 + 2*(jj-j) + (kk-k)] = T;
 					u2[(ii-i)*4 + 2*(jj-j) + (kk-k)] = U;
 					u3[(ii-i)*4 + 2*(jj-j) + (kk-k)] = V;
 					u4[(ii-i)*4 + 2*(jj-j) + (kk-k)] = W;
@@ -120,7 +123,7 @@ double er_p = 0.9999;
 		gk = GCindex[Ntemp+4];
 
 
-		rho = 0.0;
+		T = 0.0;
 		U = 0.0;
 		V = 0.0;
 		W = 0.0;
@@ -154,7 +157,6 @@ double er_p = 0.9999;
 
 			if (w[iw] > er_p) {
 
-				rho = u1[iw] - rho0;
 				P = u5[iw] - P0; 
 
 			}
@@ -164,12 +166,10 @@ double er_p = 0.9999;
 
 					if ( ii == iw ) continue;
 
-					rho = rho + ( u1[ii] - rho0 ) * w[ii];
 					P = P + ( u5[ii] - P0 ) * w[ii];
 
 				}
 
-				rho = rho/( 1.0-w[iw] );
 				P = P/( 1.0-w[iw] );
 
 			}
@@ -179,18 +179,19 @@ double er_p = 0.9999;
 			for( ii = 0; ii < 8; ii ++ ) {
 
 				if ( ii == iw ) continue;
-
+				
+				T = T + u1[ii]*w[ii];
 				U = U + u2[ii]*w[ii];
 				V = V + u3[ii]*w[ii];
 				W = W + u4[ii]*w[ii];
 
 			}
 
-			rho = rho + rho0;
 			P = P + P0;
 			U = U / ( 2.0-w[iw] );
 			V = V / ( 2.0-w[iw] );
 			W = W / ( 2.0-w[iw] );
+			T = (T + Th) / ( 2.0-w[iw] );
 
 		}
 
@@ -198,7 +199,8 @@ double er_p = 0.9999;
 
 			for( ii = 0; ii < 8; ii ++ ) {
 
-				rho = rho + ( u1[ii] - rho0 ) * w[ii];
+				
+				T = T + u1[ii]*w[ii];
 				U = U + u2[ii]*w[ii];
 				V = V + u3[ii]*w[ii];
 				W = W + u4[ii]*w[ii];
@@ -206,7 +208,7 @@ double er_p = 0.9999;
 
 			}
 
-			rho = rho + rho0;
+			T = 0.5*(T + Th);
 			P = P + P0;
 			U = 0.5*U;
 			V = 0.5*V;
@@ -217,6 +219,8 @@ double er_p = 0.9999;
 
 		VV = U*U+V*V+W*W;
 
+		rho = P/T/R;
+
 		U1_[gicube][gi][gj][gk][0] = rho;
 		U1_[gicube][gi][gj][gk][1] = rho*U;
 		U1_[gicube][gi][gj][gk][2] = rho*V;
@@ -225,5 +229,6 @@ double er_p = 0.9999;
 
 	}
 
+	
 	
 }

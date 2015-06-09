@@ -21,6 +21,8 @@ int myid,
 
 int *NNBC,
 
+double Th,
+
 double (*weight) = new double[NBC_minus*8+1],
 int (*GCindex) = new int[NBC_minus*4+1],
 int (*IPsur) = new int[NBC_minus*4+1],
@@ -46,6 +48,7 @@ double u1[8], u2[8], u3[8], u4[8], u5[8];
 
 double w[8];
 
+double tmp1,tmp2,tmp3,tmp4;
 
 double er_p = 0.9999;
 
@@ -78,9 +81,17 @@ double er_p = 0.9999;
 
 		for( iw = 0; iw < 8; iw ++ ) w[iw] = weight[Ntemp+1+iw];
 
-		temp = w[4];
-		w[4] = w[3];
-		w[3] = temp;
+		
+		tmp1 = w[1];
+		tmp2 = w[3];
+		tmp3 = w[6];
+		tmp4 = w[4];
+
+		w[1] = tmp4;
+		w[3] = tmp1;
+		w[6] = tmp2;
+		w[4] = tmp3;
+
 
 		for (ii = i; ii <= i+1; ii++) {
 			for (jj = j; jj <= j+1; jj++) {
@@ -126,7 +137,7 @@ double er_p = 0.9999;
 			for (jj = j; jj <= j+1; jj++) {
 				for (kk = k; kk <= k+1; kk++) {  
 
-					if( gi == i && gj == j && gk == k ) {
+					if( gi == ii && gj == jj && gk == kk ) {
 
 						i_switch = 1;
 						goto ourfor;

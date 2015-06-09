@@ -53,7 +53,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 	double (*Residual1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
-	double (*er) = new double[8]
+	double (*er) = new double[10]
 
 // ================================================================================ //
 )
@@ -206,6 +206,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 	double dPx,dPy,dPz,dPxi,dPyi,dPzi;
 
+	double dTx,dTy,dTz,dTxi,dTyi,dTzi;
+
 	double e1 = 0;
 	double e2 = 0;
 	double e3 = 0;
@@ -214,6 +216,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 	
 	double e6 = 0;
 	double e7 = 0;
+	double e8 = 0;
+	double e9 = 0;
 
 	double theda_p, U_p, C_p;
 
@@ -321,7 +325,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 	d51,d52,d53,d54,d55,\
 	i,j,k,\
 	dx,dy,dz,\
-	dPx,dPy,dPz,dPxi,dPyi,dPzi\
+	dPx,dPy,dPz,dPxi,dPyi,dPzi,\
+	dTx,dTy,dTz,dTxi,dTyi,dTzi,\
+	theda_p, U_p, C_p\
 	) 
 
 
@@ -371,7 +377,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					IFk1 = FWS[icube][i][j][k+1];
 					IFk2 = FWS[icube][i][j][k+2];
 
-					if(k > 2) {
+					//if(k > 2) {
 
 						IF_k3 = FWS[icube][i][j][k-3];
 						u1_k3 = U1_[icube][i][j][k-3][0];
@@ -379,7 +385,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						u3_k3 = U1_[icube][i][j][k-3][2];
 						u4_k3 = U1_[icube][i][j][k-3][3];
 						u5_k3 = U1_[icube][i][j][k-3][4];
-					}
+					//}
 
 					u1_k2 = U1_[icube][i][j][k-2][0];
 					u2_k2 = U1_[icube][i][j][k-2][1];
@@ -407,7 +413,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					u5k2 = U1_[icube][i][j][k+2][4]; 
 
 
-					if(k < nz) { 
+					//if(k < nz) { 
 
 						IFk3 = FWS[icube][i][j][k+3];
 
@@ -418,7 +424,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						u5k3 = U1_[icube][i][j][k+3][4];
 
 						
-					}
+					//}
 
 					// -------------------------- Z-direction --------------------------//
 					// -----------------------------------------------------------------//
@@ -669,17 +675,46 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 
+					//temp1 = (P_-_P)/rho/beta/C;
+
+					//temp2 = temp/S*(W_-_W);
+
+					//temp3 = 0.5*(1-beta)*W*temp/S;
+
+
+
+					//deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
+
+					//deltaP = temp/S*(P_-_P)+(S-fabs(W)+temp3)*rho*(W_-_W);
+
+
+
+
+					
+					theda_p = VV/C;
+					U_p = 0.5*(1+theda_p)*W;
+					C_p = 0.5*sqrt(4*C*theda_p+W*W*(1-theda_p)*(1-theda_p));
+
 					temp1 = (P_-_P)/rho/beta/C;
 
-					temp2 = temp/S*(W_-_W);
+					temp2 = U_p/S*(W_-_W);
 
 					temp3 = 0.5*(1-beta)*W*temp/S;
 
 
+					
+					temp4 = 0.5*(1-theda_p)*W*U_p/S;
 
 					deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
 
-					deltaP = temp/S*(P_-_P)+(S-fabs(W)+temp3)*rho*(W_-_W);
+					deltaP = U_p/S*(P_-_P)+(C_p-fabs(W)+temp4)*rho*(W_-_W);
+
+
+
+
+
+
+
 
 					/* artificial viscosity */
 					Fav1 = fabs(W)*dU1+deltaU*rho;
@@ -768,17 +803,38 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 
+					//temp1 = (P_-_P)/rho/beta/C;
+
+					//temp2 = temp/S*(W_-_W);
+
+					//temp3 = 0.5*(1-beta)*W*temp/S;
+
+
+
+					//deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
+
+					//deltaP = temp/S*(P_-_P)+(S-fabs(W)+temp3)*rho*(W_-_W);
+
+					
+					theda_p = VV/C;
+					U_p = 0.5*(1+theda_p)*W;
+					C_p = 0.5*sqrt(4*C*theda_p+W*W*(1-theda_p)*(1-theda_p));
+
 					temp1 = (P_-_P)/rho/beta/C;
 
-					temp2 = temp/S*(W_-_W);
+					temp2 = U_p/S*(W_-_W);
 
 					temp3 = 0.5*(1-beta)*W*temp/S;
 
 
+					
+					temp4 = 0.5*(1-theda_p)*W*U_p/S;
 
 					deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
 
-					deltaP = temp/S*(P_-_P)+(S-fabs(W)+temp3)*rho*(W_-_W);
+					deltaP = U_p/S*(P_-_P)+(C_p-fabs(W)+temp4)*rho*(W_-_W);
+
+
 
 					/* artificial viscosity */
 					Fav1 = fabs(W)*dU1+deltaU*rho;
@@ -834,7 +890,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					u5_i2 = U1_[icube][i-2][j][k][4];
 
 
-					if(i > 2) {
+					//if(i > 2) {
 
 						IF_i3 = FWS[icube][i-3][j][k];
 						u1_i3 = U1_[icube][i-3][j][k][0];
@@ -843,7 +899,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						u4_i3 = U1_[icube][i-3][j][k][3];
 						u5_i3 = U1_[icube][i-3][j][k][4];
 
-					}
+					//}
 
 					IFi1 = FWS[icube][i+1][j][k];
 					u1i1 = U1_[icube][i+1][j][k][0];
@@ -860,7 +916,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					u5i2 = U1_[icube][i+2][j][k][4];
 
 
-					if(i < nx)   {
+					//if(i < nx)   {
 
 						IFi3 = FWS[icube][i+3][j][k];
 						u1i3 = U1_[icube][i+3][j][k][0];
@@ -869,7 +925,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						u4i3 = U1_[icube][i+3][j][k][3];
 						u5i3 = U1_[icube][i+3][j][k][4];
 
-					}
+					//}
 
 
 					// -------------------------- X-direction --------------------------//
@@ -1118,17 +1174,39 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 
+					//temp1 = (P_-_P)/rho/beta/C;
+
+					//temp2 = temp/S*(U_-_U);
+
+					//temp3 = 0.5*(1-beta)*U*temp/S;
+
+
+
+					//deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
+
+					//deltaP = temp/S*(P_-_P)+(S-fabs(U)+temp3)*rho*(U_-_U);
+
+					
+					theda_p = VV/C;
+
+
+
+					U_p = 0.5*(1+theda_p)*U;
+					C_p = 0.5*sqrt(4*C*theda_p+U*U*(1-theda_p)*(1-theda_p));
+
 					temp1 = (P_-_P)/rho/beta/C;
 
-					temp2 = temp/S*(U_-_U);
+					temp2 = U_p/S*(U_-_U);
 
 					temp3 = 0.5*(1-beta)*U*temp/S;
 
 
+					
+					temp4 = 0.5*(1-theda_p)*U*U_p/S;
 
 					deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
 
-					deltaP = temp/S*(P_-_P)+(S-fabs(U)+temp3)*rho*(U_-_U);
+					deltaP = U_p/S*(P_-_P)+(C_p-fabs(U)+temp4)*rho*(U_-_U);
 
 					/* artificial viscosity */
 					Fav1 = fabs(U)*dU1+deltaU*rho;
@@ -1217,19 +1295,41 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 
+					//temp1 = (P_-_P)/rho/beta/C;
+
+					//temp2 = temp/S*(U_-_U);
+
+					//temp3 = 0.5*(1-beta)*U*temp/S;
+
+
+
+					//deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
+
+
+
+					//deltaP = temp/S*(P_-_P)+(S-fabs(U)+temp3)*rho*(U_-_U);
+
+					
+					theda_p = VV/C;
+
+
+
+					U_p = 0.5*(1+theda_p)*U;
+					C_p = 0.5*sqrt(4*C*theda_p+U*U*(1-theda_p)*(1-theda_p));
+
 					temp1 = (P_-_P)/rho/beta/C;
 
-					temp2 = temp/S*(U_-_U);
+					temp2 = U_p/S*(U_-_U);
 
 					temp3 = 0.5*(1-beta)*U*temp/S;
 
 
+					
+					temp4 = 0.5*(1-theda_p)*U*U_p/S;
 
 					deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
 
-
-
-					deltaP = temp/S*(P_-_P)+(S-fabs(U)+temp3)*rho*(U_-_U);
+					deltaP = U_p/S*(P_-_P)+(C_p-fabs(U)+temp4)*rho*(U_-_U);
 
 					/* artificial viscosity */
 					Fav1 = fabs(U)*dU1+deltaU*rho;
@@ -1284,7 +1384,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					u5_j2 = U1_[icube][i][j-2][k][4];
 
 
-					if(j > 2) {
+					//if(j > 2) {
 
 						IF_j3 = FWS[icube][i][j-3][k];
 						u1_j3 = U1_[icube][i][j-3][k][0];
@@ -1293,7 +1393,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						u4_j3 = U1_[icube][i][j-3][k][3];
 						u5_j3 = U1_[icube][i][j-3][k][4];
 
-					}
+					//}
 
 					IFj1 = FWS[icube][i][j+1][k];
 					u1j1 = U1_[icube][i][j+1][k][0];
@@ -1309,7 +1409,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					u4j2 = U1_[icube][i][j+2][k][3];
 					u5j2 = U1_[icube][i][j+2][k][4];
 
-					if(j < ny)   {
+					//if(j < ny)   {
 
 						IFj3 = FWS[icube][i][j+3][k];
 						u1j3 = U1_[icube][i][j+3][k][0];
@@ -1318,7 +1418,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						u4j3 = U1_[icube][i][j+3][k][3];
 						u5j3 = U1_[icube][i][j+3][k][4];
 
-					}
+					//}
 
 					// -------------------------- Y-direction --------------------------//
 					// -----------------------------------------------------------------//
@@ -1565,19 +1665,39 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 
+					//temp1 = (P_-_P)/rho/beta/C;
+
+					//temp2 = temp/S*(V_-_V);
+
+					//temp3 = 0.5*(1-beta)*V*temp/S;
+
+
+
+					//deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
+
+
+
+					//deltaP = temp/S*(P_-_P)+(S-fabs(V)+temp3)*rho*(V_-_V);
+
+
+					theda_p = VV/C;
+					U_p = 0.5*(1+theda_p)*V;
+					C_p = 0.5*sqrt(4*C*theda_p+V*V*(1-theda_p)*(1-theda_p));
+
 					temp1 = (P_-_P)/rho/beta/C;
 
-					temp2 = temp/S*(V_-_V);
+					temp2 = U_p/S*(V_-_V);
 
 					temp3 = 0.5*(1-beta)*V*temp/S;
 
 
+					
+					temp4 = 0.5*(1-theda_p)*V*U_p/S;
 
 					deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
 
 
-
-					deltaP = temp/S*(P_-_P)+(S-fabs(V)+temp3)*rho*(V_-_V);
+					deltaP = U_p/S*(P_-_P)+(C_p-fabs(V)+temp4)*rho*(V_-_V);
 
 					/* artificial viscosity */
 					Fav1 = fabs(V)*dU1+deltaU*rho;
@@ -1665,17 +1785,36 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 
+					//temp1 = (P_-_P)/rho/beta/C;
+
+					//temp2 = temp/S*(V_-_V);
+
+					//temp3 = 0.5*(1-beta)*V*temp/S;
+
+
+
+					//deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
+
+					//deltaP = temp/S*(P_-_P)+(S-fabs(V)+temp3)*rho*(V_-_V);
+
+					theda_p = VV/C;
+					U_p = 0.5*(1+theda_p)*V;
+					C_p = 0.5*sqrt(4*C*theda_p+V*V*(1-theda_p)*(1-theda_p));
+
 					temp1 = (P_-_P)/rho/beta/C;
 
-					temp2 = temp/S*(V_-_V);
+					temp2 = U_p/S*(V_-_V);
 
 					temp3 = 0.5*(1-beta)*V*temp/S;
 
 
+					
+					temp4 = 0.5*(1-theda_p)*V*U_p/S;
 
 					deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
 
-					deltaP = temp/S*(P_-_P)+(S-fabs(V)+temp3)*rho*(V_-_V);
+
+					deltaP = U_p/S*(P_-_P)+(C_p-fabs(V)+temp4)*rho*(V_-_V);
 
 
 					/* artificial viscosity */
@@ -1964,6 +2103,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					LL5 = Ux*sigma_xx+Vx*sigma_xy+Wx*sigma_xz+mu_E*Cv*K*dT_dx/(Pr_E);
 
+
+					dTx = dT_dx;
 					
 
 
@@ -2025,6 +2166,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					LL5i = Ux*sigma_xx+Vx*sigma_xy+Wx*sigma_xz+mu_E*Cv*K*dT_dx/(Pr_E);
 
+
+					dTxi = dT_dx;
 
 					/* ------------ Forward ------------ */
 					/* --------------------------------- */
@@ -2090,6 +2233,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					ML5 = Uy*sigma_yx+Vy*sigma_yy+Wy*sigma_yz+mu_E*Cv*K*dT_dy/(Pr_E);
 
+					dTy = dT_dy;
+
 					/* ----------- Backward ----------- */
 					/* -------------------------------- */
 
@@ -2145,6 +2290,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					ML5j = Uy*sigma_yx+Vy*sigma_yy+Wy*sigma_yz+mu_E*Cv*K*dT_dy/(Pr_E);
 
+					dTyi = dT_dy;
 
 					/* ------------ Forward ------------ */
 					/* --------------------------------- */
@@ -2209,6 +2355,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					NL5 = Uz*sigma_zx+Vz*sigma_zy+Wz*sigma_zz+mu_E*Cv*K*dT_dz/(Pr_E);
 
+					dTz = dT_dz;
+
 					/* ----------- Backward ----------- */
 					/* -------------------------------- */
 
@@ -2266,6 +2414,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					NL5k = Uz*sigma_zx+Vz*sigma_zy+Wz*sigma_zz+mu_E*Cv*K*dT_dz/(Pr_E);
 
+					dTzi = dT_dz;
+
 					/* ------------ Forward ------------ */
 					/* --------------------------------- */
 
@@ -2286,10 +2436,10 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 					Rk1 = Fabs[icube][i][j][k][0]+Rp1+Rf1;
-					Rk2 = Fabs[icube][i][j][k][1]+Rp2+Rf2+vF2;
+					Rk2 = Fabs[icube][i][j][k][1]+Rp2+Rf2+vF2-(rho-rho0)*9.81;
 					Rk3 = Fabs[icube][i][j][k][2]+Rp3+Rf3+vF3;
 					Rk4 = Fabs[icube][i][j][k][3]+Rp4+Rf4+vF4;
-					Rk5 = Fabs[icube][i][j][k][4]+Rp5+Rf5+vF5;
+					Rk5 = Fabs[icube][i][j][k][4]+Rp5+Rf5+vF5-(rho-rho0)*9.81*U;
 					// ------------------------------------------------------------------------------------------- //
 					// --------------------------------------- Runge-Kutta --------------------------------------- //
 
@@ -2375,6 +2525,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					Rku1[icube][i][j][k][3] = MR4;
 					Rku1[icube][i][j][k][4] = MR5;
 					
+
+
 					// if (csl[icube] == 0 | csl[icube] == 1 | csl[icube] == 2) {
 					
 						// Residual1[icube][i][j][k][0] = -(Rf2)*dx*dy*dz;
@@ -2393,12 +2545,23 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					
 					//if (IF < IFLUID) {
 						
-					if (IF < IFLUID) Residual1[icube][i][j][k][0] = -( -(dPxi-dPx)/dx + vF2 )*dx*dy*dz;
+					//if (IF < IFLUID) Residual1[icube][i][j][k][0] = -( -(dPxi-dPx)/dx + vF2 )*dx*dy*dz;
 					
 
-					if (IF < IFLUID) Residual1[icube][i][j][k][1] = -( -(dPzi-dPz)/dz + vF4 )*dx*dy*dz;
-					
+					//if (IF < IFLUID) Residual1[icube][i][j][k][1] = -( -(dPzi-dPz)/dz + vF4 )*dx*dy*dz;
 
+
+					if (IF < IFLUID) {
+					
+							Residual1[icube][i][j][k][0] = -( -(dPxi-dPx)/dx )*dx*dy*dz;
+					
+							Residual1[icube][i][j][k][1] = -( vF2 )*dx*dy*dz;
+					
+							Residual1[icube][i][j][k][2] = ( dTxi-dTx+dTyi-dTy+dTzi-dTz )/dx*dx*dy*dz;
+
+					}
+
+					
 					//}
 					
 					
@@ -2533,6 +2696,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 							e6 = e6+Residual1[icube][i][j][k][0];
 							e7 = e7+Residual1[icube][i][j][k][1];
+
+							e8 = e8+Residual1[icube][i][j][k][2];
 						
 						//if ( FWS[icube][i][j][k] > ISOLID ) {
 						
@@ -2559,9 +2724,16 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 		e4 = sqrt(e4)*DN;
 		e5 = sqrt(e5)*DN;
 		
-		e6 = e6/(0.5*rho0*U0*U0*2.602);
-		e7 = e7/(0.5*rho0*U0*U0*2.602);
+		e6 = e6/(0.5*rho0*0.078111805438271*0.078111805438271*0.001256637061436);
+		e7 = e7/(0.5*rho0*0.078111805438271*0.078111805438271*0.001256637061436);
 
+		//e6 = e6/(0.5*rho0*0.024701121733286*0.024701121733286*0.001256637061436);
+		//e7 = e7/(0.5*rho0*0.024701121733286*0.024701121733286*0.001256637061436);
+
+
+		e8 = 0.04*e8/(309.03531204896-T0)/(4.0* 3.14159265*0.02*0.02);
+
+		//e8 = 0.04*e8/(299.15681120-T0)/(4.0* 3.14159265*0.02*0.02);
 
 		MPI_Comm comm;
 		comm=MPI_COMM_WORLD;
@@ -2575,6 +2747,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 		
 		MPI_Allreduce ((void*)&e6,(void*)&er[6], 1, MPI_DOUBLE, MPI_SUM, comm );
 		MPI_Allreduce ((void*)&e7,(void*)&er[7], 1, MPI_DOUBLE, MPI_SUM, comm );
+		MPI_Allreduce ((void*)&e8,(void*)&er[8], 1, MPI_DOUBLE, MPI_SUM, comm );
 
 
 	}

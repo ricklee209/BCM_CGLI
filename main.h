@@ -383,6 +383,8 @@ int (*IPsur) = new int[NBC*4+1]
 
  int *NNBC,
 
+ double Th,
+
  double (*weight) = new double[NBC_minus*8+1],
  int (*GCindex) = new int[NBC_minus*4+1],
  int (*IPsur) = new int[NBC_minus*4+1],
@@ -402,6 +404,8 @@ int (*IPsur) = new int[NBC*4+1]
 
  int *NNBC,
 
+ double Th,
+
  double (*weight) = new double[NBC_plus*8+1],
  int (*GCindex) = new int[NBC_plus*4+1],
  int (*IPsur) = new int[NBC_plus*4+1],
@@ -412,6 +416,54 @@ int (*IPsur) = new int[NBC*4+1]
 
  // =============================================================================== //
  );
+
+
+
+ 
+
+ void BCM_Ghostcell_minus_Tem
+ (
+ // =============================================================================== //
+ int myid,
+
+ int *NNBC,
+
+ double Th,
+
+ double (*weight) = new double[NBC_minus*8+1],
+ int (*GCindex) = new int[NBC_minus*4+1],
+ int (*IPsur) = new int[NBC_minus*4+1],
+
+ int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
+
+ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+
+ // =============================================================================== //
+ );
+
+
+ void BCM_Ghostcell_plus_Tem
+ (
+ // =============================================================================== //
+ int myid,
+
+ int *NNBC,
+
+ double Th,
+
+ double (*weight) = new double[NBC_plus*8+1],
+ int (*GCindex) = new int[NBC_plus*4+1],
+ int (*IPsur) = new int[NBC_plus*4+1],
+
+ int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
+
+ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+
+ // =============================================================================== //
+ );
+
+
+
 
 extern int NXbc_l;
 extern int NXbc_u;
@@ -610,7 +662,7 @@ double (*Rku1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 double (*Residual1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
 
-double (*er) = new double[7]
+double (*er) = new double[10]
 
 // ================================================================================ //
 );
@@ -661,6 +713,31 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 
 // =================================================== //
 );
+
+
+
+void BCM_Nusselt_Sphere 
+(
+// ================================================================================ //
+int myid,
+int ncube,
+
+double Th,
+
+int (*csl) = new int[Ncube],
+
+double (*Xcnt)[X_size] = new double[Ncube][X_size],
+double (*Ycnt)[Y_size] = new double[Ncube][Y_size],
+double (*Zcnt)[Z_size] = new double[Ncube][Z_size],
+
+int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
+
+
+double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+
+// ================================================================================ //
+);
+
 
 
 
