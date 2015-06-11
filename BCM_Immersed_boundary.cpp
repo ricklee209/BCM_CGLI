@@ -170,7 +170,7 @@ void BCM_Immersed_boundary
 	double sur_y[9];
 	double sur_z[9];
 
-	double weight[8];
+	double Dweight[8],Nweight[8],wtmp[8];
 
 
 	int itri, Ntri, count_index, Scount_index, Ecount_index;
@@ -195,7 +195,9 @@ void BCM_Immersed_boundary
 
 	FILE *fptr;
 	FILE *fptr_plus,*fptr_minus;
+
 	fptr = fopen("BCM_STL.stl","r");
+
 	//fptr = fopen("BCM_STL_bin.stl","rb");
 
 
@@ -660,7 +662,6 @@ void BCM_Immersed_boundary
 
 	// ============ immersed boundary file ============= //
 
-	//	char file_name[100];
 	sprintf(file_name,"IBM_plus""%0.5d"".dat",myid);    
 	fptr_plus = fopen(file_name,"w"); 
 
@@ -684,7 +685,8 @@ void BCM_Immersed_boundary
 	double nuvec[3];
 
 
-	double tmin, ttmin;
+	double tmin;
+	double te = 0.1;  // ---- reduce the distance from BI to IP
 
 	double Ndis;
 	double Ndis_min = MAX;
@@ -693,12 +695,14 @@ void BCM_Immersed_boundary
 	double BIx, BIy, BIz, IPx, IPy, IPz;
 	double BIp0,BIp1,BIp2;
 	double dir0, dir1, dir2;
+	double BIvan[8];
 
 	double xcnt, ycnt, zcnt;
 
 	int pNgc = 0;
 	int	itemp = 0;
 	int	pBI;
+	int i_start,j_start,k_start,icase;
 
 
 	int iflag, iflag_total;
@@ -707,6 +711,7 @@ void BCM_Immersed_boundary
 
 	int iNgc_plus = 0;
 	int iNgc_minus = 0;
+
 
 	double s1, s2, s3;    // ---- surrounding points Sx Sy Sz ---- //
 
@@ -773,9 +778,9 @@ void BCM_Immersed_boundary
 				BIy = orig[1] - tmin*dir1;
 				BIz = orig[2] - tmin*dir2;
 
-				IPx = orig[0] + tmin*dir0;
-				IPy = orig[1] + tmin*dir1;
-				IPz = orig[2] + tmin*dir2;
+				IPx = orig[0] + te*tmin*dir0;
+				IPy = orig[1] + te*tmin*dir1;
+				IPz = orig[2] + te*tmin*dir2;
 
 			}  // ---- else if (dotp > 0) ---- //
 
@@ -785,9 +790,9 @@ void BCM_Immersed_boundary
 				BIy = orig[1] + tmin*dir1;
 				BIz = orig[2] + tmin*dir2;
 
-				IPx = orig[0] - tmin*dir0;
-				IPy = orig[1] - tmin*dir1;
-				IPz = orig[2] - tmin*dir2;
+				IPx = orig[0] - te*tmin*dir0;
+				IPy = orig[1] - te*tmin*dir1;
+				IPz = orig[2] - te*tmin*dir2;
 
 			}
 
@@ -815,9 +820,10 @@ void BCM_Immersed_boundary
 			BIy = BIp1;
 			BIz = BIp2;
 
-			IPx = 2*xcnt-BIx;
-			IPy = 2*ycnt-BIy;
-			IPz = 2*zcnt-BIz;
+			IPx = xcnt+te*(xcnt-BIx);
+			IPy = ycnt+te*(ycnt-BIy);
+			IPz = zcnt+te*(zcnt-BIz);
+
 
 			dis = (BIx-xcnt)*(BIx-xcnt)+(BIy-ycnt)*(BIy-ycnt)+(BIz-zcnt)*(BIz-zcnt);
 
@@ -832,41 +838,6 @@ void BCM_Immersed_boundary
 		
 
 
-		
-		//if(myid==0 && icube ==5 && i == 4 && j == 13 && k == 15) printf("2===%f\n",dis);
-		
-
-		/*
-		for (itri = 0; itri < Ntri; itri++) {
-
-			Ntemp = (itri)*N_line;
-
-			BI_detect(myid, Ntemp, N_line, &Ndis, &Ndis_min, &iflag_total, &tmin, &dotp, &dir0, &dir1, &dir2, pNode_inf, ptri_number, pNode, 
-				tri, vert0, vert1, vert2, nuvec, dir, orig, xcnt, ycnt, zcnt, &itemp, &ilarge, nlarge);
-
-
-		}
-		*/
-		
-
-		//// ---- if (dotp > 0) the point is ouside the object ---- //
-
-
-		//if (iflag_total == 0) {
-
-		//	Ndis_min = MAX;
-
-		//	for (itri = 0; itri < Ntri; itri++) {
-
-		//		Ntemp = (itri)*N_line;
-
-		//		BI_detect_iflag0(myid, Ntemp, &BIp0, &BIp1, &BIp2, N_line, &Ndis, &Ndis_min,  pNode_inf, ptri_number, pNode, 
-		//			tri, vert0, vert1, vert2,xcnt, ycnt, zcnt);
-
-		//	}
-		//}
-
-
 
 		icount = 0;
 
@@ -876,7 +847,7 @@ void BCM_Immersed_boundary
 		kk = k;
 
 		for (i = 0; i <= nxx; i++) {
-			if (IPx >= Xcnt[icube][i] & IPx <= Xcnt[icube][i]+dx) 
+			if (IPx >= Xcnt[icube][i] && IPx <= Xcnt[icube][i]+dx) 
 			{
 
 				icount = icount+1;
@@ -886,7 +857,7 @@ void BCM_Immersed_boundary
 		}   // ---- for (i = n_buffer; i <= nx; i++) ---- //
 
 		for (j = 0; j <= nyy; j++) {
-			if (IPy >= Ycnt[icube][j] & IPy <= Ycnt[icube][j]+dy) 
+			if (IPy >= Ycnt[icube][j] && IPy <= Ycnt[icube][j]+dy) 
 			{
 
 				icount = icount+1;
@@ -896,7 +867,7 @@ void BCM_Immersed_boundary
 		}   // ---- for (j = 0; j < NcubeY; j++) { ---- //
 
 		for (k = 0; k <= nzz; k++) {
-			if ( IPz >= Zcnt[icube][k] & IPz <= Zcnt[icube][k]+dz) 
+			if ( IPz >= Zcnt[icube][k] && IPz <= Zcnt[icube][k]+dz) 
 			{
 				icount = icount+1;
 				break;
@@ -905,120 +876,489 @@ void BCM_Immersed_boundary
 		}   // ---- for (k = 0; k <= NcubeZ; k++) ---- //
 
 
-		if (icount < 3) {
+		if (icount < 3) continue;
 
-			continue;
+		
+		icase = (ii-i)*4+(jj-j)*2+kk-k+1;
+
+
+		
+		
+		dir0 = IPx-BIx;
+		dir1 = IPy-BIy;
+		dir2 = IPz-BIz;
+		
+
+
+		switch (icase)  {
+
+			case 1:
+
+				i_start = i+1;
+				j_start = j+1;
+				k_start = k+1;
+
+				dir0 = dir0;
+				dir1 = dir1;
+				dir2 = dir2;
+
+				break; 
+
+			case 2:
+				
+				i_start = i+1;
+				j_start = j+1;
+				k_start = k;
+
+				dir0 = dir0;
+				dir1 = dir1;
+				dir2 = -dir2;
+
+				break; 
+
+			case 3:
+				
+				i_start = i+1;
+				j_start = j;
+				k_start = k+1;
+
+				dir0 = dir0;
+				dir1 = -dir1;
+				dir2 = dir2;
+
+				break; 
+
+			case 4:
+				
+				i_start = i+1;
+				j_start = j;
+				k_start = k;
+
+				dir0 = dir0;
+				dir1 = -dir1;
+				dir2 = -dir2;
+
+				break; 
+
+			case 5:
+				
+				i_start = i;
+				j_start = j+1;
+				k_start = k+1;
+
+				dir0 = -dir0;
+				dir1 = dir1;
+				dir2 = dir2;
+
+				break; 
+
+			case 6:
+				
+				i_start = i;
+				j_start = j+1;
+				k_start = k;
+
+				dir0 = -dir0;
+				dir1 = dir1;
+				dir2 = -dir2;
+
+				break; 
+
+			case 7:
+				
+				i_start = i;
+				j_start = j;
+				k_start = k+1;
+
+				dir0 = -dir0;
+				dir1 = -dir1;
+				dir2 = dir2;
+
+				break; 
+
+			case 8:
+
+				i_start = i;
+				j_start = j;
+				k_start = k;
+
+				dir0 = -dir0;
+				dir1 = -dir1;
+				dir2 = -dir2;
+
+				break; 
+
+			default: 
+
+				printf("icase is not correct");
+
+		}
+
+
+		// ---- 000 => 100 => 010 => 001 => 110 => 101 => 011 => 111 ---- //
+
+		
+		BIx = fabs( BIx - Xcnt[icube][i_start] );
+		BIy = fabs( BIy - Ycnt[icube][j_start] );
+		BIz = fabs( BIz - Zcnt[icube][k_start] );
+
+
+
+// ------------------------------------------------------------------------------------ //
+// ------------------------------------ Dirichlet  ------------------------------------ //
+
+		/*
+		V[56] = BIx*BIy*BIz;
+		V[57] = BIx*BIy;
+		V[58] = BIx*BIz;
+		V[59] = BIy*BIz;
+		V[60] = BIx;
+		V[61] = BIy;
+		V[62] = BIz;
+		V[63] = 1.0;
+
+		GetInverseMatrix( V, V, 8 );
+		*/
+
+		BIvan[0] = BIx*BIy*BIz;
+		BIvan[1] = BIx*BIy;
+		BIvan[2] = BIx*BIz;
+		BIvan[3] = BIy*BIz;
+		BIvan[4] = BIx;
+		BIvan[5] = BIy;
+		BIvan[6] = BIz;
+		BIvan[7] = 1.0;
+
+		Dirichlet_Vandermonde_matrix(dx,dy,dz,V,BIvan);
+
+		s1 = dx;
+		s2 = dy;
+		s3 = dz;
+
+		for (int vi = 0; vi < 8; vi++) {
+
+			wtmp[vi] = V[vi]*s1*s2*s3+V[vi+8]*s1*s2+V[vi+16]*s1*s3+V[vi+24]*s2*s3+V[vi+32]*s1+V[vi+40]*s2+V[vi+48]*s3+V[vi+56];
 
 		}
 
 		
+		switch (icase)  {
 
-		// ---- 000 => 100 => 010 => 001 => 110 => 101 => 011 => 111 ---- //
+			case 1:
 
-		s1 = IPx-Xcnt[icube][i];
-		s2 = IPy-Ycnt[icube][j];
-		s3 = IPz-Zcnt[icube][k];
+				Dweight[0] = wtmp[7];
+				Dweight[1] = wtmp[6];
+				Dweight[2] = wtmp[5];
+				Dweight[3] = wtmp[4];
+				Dweight[4] = wtmp[3];
+				Dweight[5] = wtmp[2];
+				Dweight[6] = wtmp[1];
+				Dweight[7] = wtmp[0];
 
+				swap(Dweight[3],Dweight[4]);
+				break;
 
-		sur_x[1] = 0;
-		sur_x[2] = Xcnt[icube][i+1]-Xcnt[icube][i];
-		sur_x[3] = 0;
-		sur_x[4] = 0;
-		sur_x[5] = Xcnt[icube][i+1]-Xcnt[icube][i];
-		sur_x[6] = Xcnt[icube][i+1]-Xcnt[icube][i];
-		sur_x[7] = 0;
-		sur_x[8] = Xcnt[icube][i+1]-Xcnt[icube][i];
+			case 2:
+				
+				Dweight[0] = wtmp[6];
+				Dweight[1] = wtmp[7];
+				Dweight[2] = wtmp[4];
+				Dweight[3] = wtmp[5];
+				Dweight[4] = wtmp[2];
+				Dweight[5] = wtmp[3];
+				Dweight[6] = wtmp[0];
+				Dweight[7] = wtmp[1];
 
-		sur_y[1] = 0;
-		sur_y[2] = 0;
-		sur_y[3] = Ycnt[icube][j+1]-Ycnt[icube][j];
-		sur_y[4] = 0;
-		sur_y[5] = Ycnt[icube][j+1]-Ycnt[icube][j];
-		sur_y[6] = 0;
-		sur_y[7] = Ycnt[icube][j+1]-Ycnt[icube][j];
-		sur_y[8] = Ycnt[icube][j+1]-Ycnt[icube][j];
+				swap(Dweight[2],Dweight[5]);
+				break;
 
-		sur_z[1] = 0;
-		sur_z[2] = 0;
-		sur_z[3] = 0;
-		sur_z[4] = Zcnt[icube][k+1]-Zcnt[icube][k];
-		sur_z[5] = 0;
-		sur_z[6] = Zcnt[icube][k+1]-Zcnt[icube][k];
-		sur_z[7] = Zcnt[icube][k+1]-Zcnt[icube][k];
-		sur_z[8] = Zcnt[icube][k+1]-Zcnt[icube][k];
+			case 3:
 
 
-		for (int vi = 0; vi < 8; vi++) {
+				Dweight[0] = wtmp[5];
+				Dweight[1] = wtmp[4];
+				Dweight[2] = wtmp[7];
+				Dweight[3] = wtmp[6];
+				Dweight[4] = wtmp[1];
+				Dweight[5] = wtmp[0];
+				Dweight[6] = wtmp[3];
+				Dweight[7] = wtmp[2];
+				
+				swap(Dweight[1],Dweight[6]);
+				break;
 
-			V[vi*8+7] = 1;
+			case 4:
+				
+				
+				Dweight[0] = wtmp[4];
+				Dweight[1] = wtmp[5];
+				Dweight[2] = wtmp[6];
+				Dweight[3] = wtmp[7];
+				Dweight[4] = wtmp[0];
+				Dweight[5] = wtmp[1];
+				Dweight[6] = wtmp[2];
+				Dweight[7] = wtmp[3];
 
-			V[vi*8+6] = sur_z[vi+1];
+				swap(Dweight[0],Dweight[7]);
+				break;
 
-			V[vi*8+5] = sur_y[vi+1];
+			case 5:
+				
+				Dweight[0] = wtmp[3];
+				Dweight[1] = wtmp[2];
+				Dweight[2] = wtmp[1];
+				Dweight[3] = wtmp[0];
+				Dweight[4] = wtmp[7];
+				Dweight[5] = wtmp[6];
+				Dweight[6] = wtmp[5];
+				Dweight[7] = wtmp[4];
+				
+				swap(Dweight[0],Dweight[7]);
+				break;
 
-			V[vi*8+4] = sur_x[vi+1];
+			case 6:
+				
+				Dweight[0] = wtmp[2];
+				Dweight[1] = wtmp[3];
+				Dweight[2] = wtmp[0];
+				Dweight[3] = wtmp[1];
+				Dweight[4] = wtmp[6];
+				Dweight[5] = wtmp[7];
+				Dweight[6] = wtmp[4];
+				Dweight[7] = wtmp[5];
 
-			V[vi*8+3] = sur_y[vi+1]*sur_z[vi+1];
+				swap(Dweight[1],Dweight[6]);
+				break;
 
-			V[vi*8+2] = sur_x[vi+1]*sur_z[vi+1];
+			case 7:
 
-			V[vi*8+1] = sur_x[vi+1]*sur_y[vi+1];
+				Dweight[0] = wtmp[1];
+				Dweight[1] = wtmp[0];
+				Dweight[2] = wtmp[3];
+				Dweight[3] = wtmp[2];
+				Dweight[4] = wtmp[5];
+				Dweight[5] = wtmp[4];
+				Dweight[6] = wtmp[7];
+				Dweight[7] = wtmp[6];
 
-			V[vi*8+0] = sur_x[vi+1]*sur_y[vi+1]*sur_z[vi+1];
+				swap(Dweight[2],Dweight[5]);
+				break;
+
+			case 8:
+
+				
+				Dweight[0] = wtmp[0];
+				Dweight[1] = wtmp[1];
+				Dweight[2] = wtmp[2];
+				Dweight[3] = wtmp[3];
+				Dweight[4] = wtmp[4];
+				Dweight[5] = wtmp[5];
+				Dweight[6] = wtmp[6];
+				Dweight[7] = wtmp[7];
+
+
+				swap(Dweight[3],Dweight[4]);
+				break;
 
 		}
 
+// ------------------------------------ Dirichlet  ------------------------------------ //
+// ------------------------------------------------------------------------------------ //
+
+
+		
+// ---------------------------------------------------------------------------------- //
+// ------------------------------------ Neumann  ------------------------------------ //
+
+		/*
+		V[56] = BIx*BIy*dir2 + BIx*BIz*dir1 + BIz*BIy*dir0;
+		V[57] = BIx*dir1 + BIy*dir0;
+		V[58] = BIx*dir2 + BIz*dir0;
+		V[59] = BIy*dir2 + BIz*dir1;
+		V[60] = dir0;
+		V[61] = dir1;
+		V[62] = dir2;
+		V[63] = 0.0;
 
 		GetInverseMatrix( V, V, 8 );
+		*/
+
+		
+
+		BIvan[0] = BIx*BIy*dir2 + BIx*BIz*dir1 + BIz*BIy*dir0;
+		BIvan[1] = BIx*dir1 + BIy*dir0;
+		BIvan[2] = BIx*dir2 + BIz*dir0;
+		BIvan[3] = BIy*dir2 + BIz*dir1;
+		BIvan[4] = dir0;
+		BIvan[5] = dir1;
+		BIvan[6] = dir2;
+		BIvan[7] = 0.0;
+
+		Neumann_Vandermonde_matrix(dx,dy,dz,V,BIvan);
+
+		s1 = dx;
+		s2 = dy;
+		s3 = dz;
 
 		for (int vi = 0; vi < 8; vi++) {
 
-			weight[vi] = V[vi]*s1*s2*s3+V[vi+8]*s1*s2+V[vi+16]*s1*s3+V[vi+24]*s2*s3+V[vi+32]*s1+V[vi+40]*s2+V[vi+48]*s3+V[vi+56];
+			wtmp[vi] = V[vi]*s1*s2*s3+V[vi+8]*s1*s2+V[vi+16]*s1*s3+V[vi+24]*s2*s3+V[vi+32]*s1+V[vi+40]*s2+V[vi+48]*s3+V[vi+56];
+
+		}
+				
+
+
+		switch (icase)  {
+
+			case 1:
+
+				Nweight[0] = wtmp[7];
+				Nweight[1] = wtmp[6];
+				Nweight[2] = wtmp[5];
+				Nweight[3] = wtmp[4];
+				Nweight[4] = wtmp[3];
+				Nweight[5] = wtmp[2];
+				Nweight[6] = wtmp[1];
+				Nweight[7] = wtmp[0];
+
+				swap(Nweight[3],Nweight[4]);
+				break;
+
+			case 2:
+				
+				Nweight[0] = wtmp[6];
+				Nweight[1] = wtmp[7];
+				Nweight[2] = wtmp[4];
+				Nweight[3] = wtmp[5];
+				Nweight[4] = wtmp[2];
+				Nweight[5] = wtmp[3];
+				Nweight[6] = wtmp[0];
+				Nweight[7] = wtmp[1];
+
+				swap(Nweight[2],Nweight[5]);
+				break;
+
+			case 3:
+
+
+				Nweight[0] = wtmp[5];
+				Nweight[1] = wtmp[4];
+				Nweight[2] = wtmp[7];
+				Nweight[3] = wtmp[6];
+				Nweight[4] = wtmp[1];
+				Nweight[5] = wtmp[0];
+				Nweight[6] = wtmp[3];
+				Nweight[7] = wtmp[2];
+				
+				swap(Nweight[1],Nweight[6]);
+				break;
+
+			case 4:
+				
+				
+				Nweight[0] = wtmp[4];
+				Nweight[1] = wtmp[5];
+				Nweight[2] = wtmp[6];
+				Nweight[3] = wtmp[7];
+				Nweight[4] = wtmp[0];
+				Nweight[5] = wtmp[1];
+				Nweight[6] = wtmp[2];
+				Nweight[7] = wtmp[3];
+
+				swap(Nweight[0],Nweight[7]);
+				break;
+
+			case 5:
+				
+				Nweight[0] = wtmp[3];
+				Nweight[1] = wtmp[2];
+				Nweight[2] = wtmp[1];
+				Nweight[3] = wtmp[0];
+				Nweight[4] = wtmp[7];
+				Nweight[5] = wtmp[6];
+				Nweight[6] = wtmp[5];
+				Nweight[7] = wtmp[4];
+				
+				swap(Nweight[0],Nweight[7]);
+				break;
+
+			case 6:
+				
+				Nweight[0] = wtmp[2];
+				Nweight[1] = wtmp[3];
+				Nweight[2] = wtmp[0];
+				Nweight[3] = wtmp[1];
+				Nweight[4] = wtmp[6];
+				Nweight[5] = wtmp[7];
+				Nweight[6] = wtmp[4];
+				Nweight[7] = wtmp[5];
+
+				swap(Nweight[1],Nweight[6]);
+				break;
+
+			case 7:
+
+				Nweight[0] = wtmp[1];
+				Nweight[1] = wtmp[0];
+				Nweight[2] = wtmp[3];
+				Nweight[3] = wtmp[2];
+				Nweight[4] = wtmp[5];
+				Nweight[5] = wtmp[4];
+				Nweight[6] = wtmp[7];
+				Nweight[7] = wtmp[6];
+
+				swap(Nweight[2],Nweight[5]);
+				break;
+
+			case 8:
+
+				
+				Nweight[0] = wtmp[0];
+				Nweight[1] = wtmp[1];
+				Nweight[2] = wtmp[2];
+				Nweight[3] = wtmp[3];
+				Nweight[4] = wtmp[4];
+				Nweight[5] = wtmp[5];
+				Nweight[6] = wtmp[6];
+				Nweight[7] = wtmp[7];
+
+
+				swap(Nweight[3],Nweight[4]);
+				break;
 
 		}
 
 
 
-		temp = weight[0]+weight[1]+weight[2]+weight[3]+weight[4]+weight[5]+weight[6]+weight[7];
+// ------------------------------------ Neumann  ------------------------------------ //
+// ---------------------------------------------------------------------------------- //
 
 
-		if ( 
-			(weight[0] >=(-minimum) && weight[0] <= (1+minimum)) &&
-			(weight[1] >=(-minimum) && weight[1] <= (1+minimum)) &&
-			(weight[2] >=(-minimum) && weight[2] <= (1+minimum)) &&
-			(weight[3] >=(-minimum) && weight[3] <= (1+minimum)) &&
-			(weight[4] >=(-minimum) && weight[4] <= (1+minimum)) &&
-			(weight[5] >=(-minimum) && weight[5] <= (1+minimum)) &&
-			(weight[6] >=(-minimum) && weight[6] <= (1+minimum)) &&
-			(weight[7] >=(-minimum) && weight[7] <= (1+minimum)) 
-			)
 
-		{ 
+		if (dotp >= 0) {
 
-			if (dotp >= 0) {
-
-				Ntemp = (igc-1)*4;
-				fprintf(fptr_minus,"%d\t%d\t%d\t%d\n",GC[Ntemp+1],GC[Ntemp+2],GC[Ntemp+3],GC[Ntemp+4]);
+			Ntemp = (igc-1)*4;
+			fprintf(fptr_minus,"%d\t%d\t%d\t%d\n",GC[Ntemp+1],GC[Ntemp+2],GC[Ntemp+3],GC[Ntemp+4]);
 
 
-				iNgc_minus = iNgc_minus+1;
-				fprintf(fptr_minus,"%d\t%d\t%d\t%d\n",icube,i,j,k);
-				fprintf(fptr_minus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",weight[0],weight[1],weight[2],weight[3],weight[4],weight[5],weight[6],weight[7]);
-
-			}
-			else {
-
-				Ntemp = (igc-1)*4;
-				fprintf(fptr_plus,"%d\t%d\t%d\t%d\n",GC[Ntemp+1],GC[Ntemp+2],GC[Ntemp+3],GC[Ntemp+4]);
-
-				iNgc_plus = iNgc_plus+1;
-				fprintf(fptr_plus,"%d\t%d\t%d\t%d\n",icube,i,j,k);
-				fprintf(fptr_plus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",weight[0],weight[1],weight[2],weight[3],weight[4],weight[5],weight[6],weight[7]);
-
-			}
-
+			iNgc_minus = iNgc_minus+1;
+			fprintf(fptr_minus,"%d\t%d\t%d\t%d\n",icube,i,j,k);
+			fprintf(fptr_minus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",Dweight[0],Dweight[1],Dweight[2],Dweight[3],Dweight[4],Dweight[5],Dweight[6],Dweight[7]);
+			fprintf(fptr_minus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",Nweight[0],Nweight[1],Nweight[2],Nweight[3],Nweight[4],Nweight[5],Nweight[6],Nweight[7]);
 
 		}
+		else {
+
+			Ntemp = (igc-1)*4;
+			fprintf(fptr_plus,"%d\t%d\t%d\t%d\n",GC[Ntemp+1],GC[Ntemp+2],GC[Ntemp+3],GC[Ntemp+4]);
+
+			iNgc_plus = iNgc_plus+1;
+			fprintf(fptr_plus,"%d\t%d\t%d\t%d\n",icube,i,j,k);
+			fprintf(fptr_plus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",Dweight[0],Dweight[1],Dweight[2],Dweight[3],Dweight[4],Dweight[5],Dweight[6],Dweight[7]);
+			fprintf(fptr_plus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",Nweight[0],Nweight[1],Nweight[2],Nweight[3],Nweight[4],Nweight[5],Nweight[6],Nweight[7]);
+
+		}
+		
 
 
 		/*
@@ -1042,10 +1382,12 @@ void BCM_Immersed_boundary
 	fprintf(fptr_plus,"Number of Boundary Cells\n");
 	fprintf(fptr_plus,"%d",iNgc_plus);
 
+	
+
 
 	// ==== immersed boundary file ===== //
-	fclose(fptr_plus);           //
-	fclose(fptr_minus);			 //
+	fclose(fptr_plus);          
+	fclose(fptr_minus);			
 	// ==== immersed boundary file ===== //
 
 	delete[] tri_table;
@@ -1728,4 +2070,155 @@ void GetInverseMatrix( const double* inMat, double* outMat, const int n )
 	free(inv_a[0]);
 	free(inv_a);
 }
+
+
+void swap(double *a, double *b) 
+{
+
+	double tmp;
+
+	tmp = *a;
+	*a = *b;
+	*b = tmp;
+
+}
+
+void Dirichlet_Vandermonde_matrix(
+// ================================================================================ //	
+double dx,
+double dy,
+double dz,
+double van[64],
+double BIvan[8]
+// ================================================================================ //	
+) 
+
+{
+
+	double dxi1,dxi2,dxi3,tmp;
+
+	for(int i=0; i <= 63; i++) van[i] = 0.0; 
+
+	dxi1 = 1.0/dx;
+	dxi2 = 1.0/dx/dx;
+	dxi3 = 1.0/dx/dx/dx;
+
+	tmp = 1.0/(BIvan[0]*dx*dx);
+
+	van[0] = -( BIvan[1]+BIvan[2]+BIvan[3]- 
+			(BIvan[4]+BIvan[5]+BIvan[6])*dx+dx*dx )* 
+			tmp;
+
+	van[1] = ( BIvan[1]+BIvan[2]-BIvan[4]*dx )*tmp;
+
+	van[2] = ( BIvan[1]+BIvan[3]-BIvan[5]*dx )*tmp;
+
+	van[3] = ( BIvan[2]+BIvan[3]-BIvan[6]*dx )*tmp;
+
+	van[4] = -BIvan[1]*tmp;
+	van[5] = -BIvan[2]*tmp;
+	van[6] = -BIvan[3]*tmp;
+	van[7] = 1.0/BIvan[0];
+
+	van[8] = dxi2;
+	van[9] = -dxi2;
+	van[10] = -dxi2;
+	van[12] = dxi2; 				  
+	  
+	van[16] = dxi2;
+	van[17] = -dxi2;
+	van[19] = -dxi2;
+	van[21] = dxi2;
+
+	van[24] = dxi2;
+	van[26] = -dxi2;
+	van[27] = -dxi2;
+	van[30] = dxi2;
+	  
+	van[32] = -dxi1;
+	van[33] = dxi1;
+	  
+	van[40] = -dxi1;
+	van[42] = dxi1;
+	  
+	van[48] = -dxi1;
+	van[51] = dxi1;
+	  
+	van[56] = 1.0;
+		
+
+}
+
+
+
+void Neumann_Vandermonde_matrix(
+// ================================================================================ //	
+double dx,
+double dy,
+double dz,
+double van[64],
+double BIvan[8]
+// ================================================================================ //	
+) 
+
+{
+
+	double dxi1,dxi2,dxi3,tmp;
+
+	for(int i=0; i <= 63; i++) van[i] = 0.0; 
+
+	dxi1 = 1.0/dx;
+	dxi2 = 1.0/dx/dx;
+	dxi3 = 1.0/dx/dx/dx;
+
+	tmp = 1.0/(BIvan[0]*dx*dx);
+
+	van[0] = -( BIvan[1]+BIvan[2]+BIvan[3]- 
+			(BIvan[4]+BIvan[5]+BIvan[6])*dx )* 
+			tmp;
+
+	van[1] = ( BIvan[1]+BIvan[2]-BIvan[4]*dx )*tmp;
+
+	van[2] = ( BIvan[1]+BIvan[3]-BIvan[5]*dx )*tmp;
+
+	van[3] = ( BIvan[2]+BIvan[3]-BIvan[6]*dx )*tmp;
+
+	van[4] = -BIvan[1]*tmp;
+	van[5] = -BIvan[2]*tmp;
+	van[6] = -BIvan[3]*tmp;
+	van[7] = 1.0/BIvan[0];
+
+	van[8] = dxi2;
+	van[9] = -dxi2;
+	van[10] = -dxi2;
+	van[12] = dxi2; 				  
+	  
+	van[16] = dxi2;
+	van[17] = -dxi2;
+	van[19] = -dxi2;
+	van[21] = dxi2;
+
+	van[24] = dxi2;
+	van[26] = -dxi2;
+	van[27] = -dxi2;
+	van[30] = dxi2;
+	  
+	van[32] = -dxi1;
+	van[33] = dxi1;
+	  
+	van[40] = -dxi1;
+	van[42] = dxi1;
+	  
+	van[48] = -dxi1;
+	van[51] = dxi1;
+	  
+	van[56] = 1.0;
+		
+
+}
+
+
+
+
+
 

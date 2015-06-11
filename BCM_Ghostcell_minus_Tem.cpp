@@ -23,7 +23,8 @@ int *NNBC,
 
 double Th,
 
-double (*weight) = new double[NBC_minus*8+1],
+double (*Dweight) = new double[NBC_minus*8+1],
+double (*Nweight) = new double[NBC_minus*8+1],
 int (*GCindex) = new int[NBC_minus*4+1],
 int (*IPsur) = new int[NBC_minus*4+1],
 
@@ -40,30 +41,17 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 #include "prm.h"
 	
 int gicube,gi,gj,gk;
-int iNBC, Ntemp, ii, jj, kk, iw, i_switch;
+int iNBC, Ntemp, ii, jj, kk, iw,  icase;
 
 double rho, U, V, W, VV, P, T, temp;
 
 double u1[8], u2[8], u3[8], u4[8], u5[8];
 
-double w[8];
+double Dw[8],Nw[8];
 
-double tmp1,tmp2,tmp3,tmp4;
-
-double er_p = 0.9999;
 
 
 // ---- GCindex => IPsur => weight ---- //
-//
-//#pragma omp parallel for private(Ntemp,icube,i,j,k,\
-//	ii, jj, kk, iw, i_switch, \
-//	gicube,gi,gj,gk,\
-//	u1,u2,u3,u4,u5,\
-//	rho,P,U,V,W,VV,temp\
-//	)
-//	
-
-//#pragma omp parallel 
 
 
 	for (iNBC = 1; iNBC <= *NNBC; iNBC++) {
@@ -79,42 +67,9 @@ double er_p = 0.9999;
 		Ntemp = (iNBC-1)*8;
 
 
-		for( iw = 0; iw < 8; iw ++ ) w[iw] = weight[Ntemp+1+iw];
+		for( iw = 0; iw < 8; iw ++ ) Dw[iw] = Dweight[Ntemp+1+iw];
+		for( iw = 0; iw < 8; iw ++ ) Nw[iw] = Nweight[Ntemp+1+iw];
 
-		tmp1 = w[1];
-		tmp2 = w[3];
-		tmp3 = w[6];
-		tmp4 = w[4];
-
-		w[1] = tmp4;
-		w[3] = tmp1;
-		w[6] = tmp2;
-		w[4] = tmp3;
-
-
-		for (ii = i; ii <= i+1; ii++) {
-			for (jj = j; jj <= j+1; jj++) {
-				for (kk = k; kk <= k+1; kk++) {  
-
-					rho = U1_[icube][ii][jj][kk][0];
-					U = U1_[icube][ii][jj][kk][1]/rho;
-					V = U1_[icube][ii][jj][kk][2]/rho;
-					W = U1_[icube][ii][jj][kk][3]/rho;
-					P = ( U1_[icube][ii][jj][kk][4]-0.5*rho*(U*U+V*V+W*W) )*(K-1);
-					T = P/rho/R;
-					
-					u1[(ii-i)*4 + 2*(jj-j) + (kk-k)] = T;
-					u2[(ii-i)*4 + 2*(jj-j) + (kk-k)] = U;
-					u3[(ii-i)*4 + 2*(jj-j) + (kk-k)] = V;
-					u4[(ii-i)*4 + 2*(jj-j) + (kk-k)] = W;
-					u5[(ii-i)*4 + 2*(jj-j) + (kk-k)] = P;
-					
-				}
-			}
-		}
-
-		
-		
 		Ntemp = (iNBC-1)*4;
 
 		gicube = GCindex[Ntemp+1];
@@ -123,98 +78,60 @@ double er_p = 0.9999;
 		gk = GCindex[Ntemp+4];
 
 
-		T = 0.0;
-		U = 0.0;
-		V = 0.0;
-		W = 0.0;
-		P = 0.0;
 
-		i_switch = 0;
-
+		icase = (gi-i)*4+(gj-j)*2+gk-k+1;
 
 		
 		for (ii = i; ii <= i+1; ii++) {
 			for (jj = j; jj <= j+1; jj++) {
 				for (kk = k; kk <= k+1; kk++) {  
 
-					if( gi == ii && gj == jj && gk == kk ) {
+					if( icase == (ii-i)*4 + 2*(jj-j) + (kk-k) + 1 ) {
 
-						i_switch = 1;
-						goto ourfor;
-					
+						T = Th;
+						U = 0.0;
+						V = 0.0;
+						W = 0.0;
+						P = 0.0;
+
+					}
+					else {
+
+						rho = U1_[icube][ii][jj][kk][0];
+						U = U1_[icube][ii][jj][kk][1]/rho;
+						V = U1_[icube][ii][jj][kk][2]/rho;
+						W = U1_[icube][ii][jj][kk][3]/rho;
+						P = ( U1_[icube][ii][jj][kk][4]-0.5*rho*(U*U+V*V+W*W) )*(K-1);
+						T = P/rho/R;
+
 					}
 
+						u1[(ii-i)*4 + 2*(jj-j) + (kk-k)] = T;
+						u2[(ii-i)*4 + 2*(jj-j) + (kk-k)] = U;
+						u3[(ii-i)*4 + 2*(jj-j) + (kk-k)] = V;
+						u4[(ii-i)*4 + 2*(jj-j) + (kk-k)] = W;
+						u5[(ii-i)*4 + 2*(jj-j) + (kk-k)] = P;
+					
 				}
 			}
 		}
-		
-		ourfor:
-
-		if( i_switch == 1 ) {
-
-			iw = (gi-i)*4 + 2*(gj-j) + (gk-k);
 
 
-			if (w[iw] > er_p) {
+		T = 0.0;
+		U = V = W = 0.0;
+		P = 0.0;
 
-				P = u5[iw] - P0; 
+		for( ii = 0; ii < 8; ii ++ ) {
 
-			}
-			else {
-
-				for( ii = 0; ii < 8; ii ++ ) {
-
-					if ( ii == iw ) continue;
-
-					P = P + ( u5[ii] - P0 ) * w[ii];
-
-				}
-
-				P = P/( 1.0-w[iw] );
-
-			}
-
-
-
-			for( ii = 0; ii < 8; ii ++ ) {
-
-				if ( ii == iw ) continue;
-				
-				T = T + u1[ii]*w[ii];
-				U = U + u2[ii]*w[ii];
-				V = V + u3[ii]*w[ii];
-				W = W + u4[ii]*w[ii];
-
-			}
-
-			P = P + P0;
-			U = U / ( 2.0-w[iw] );
-			V = V / ( 2.0-w[iw] );
-			W = W / ( 2.0-w[iw] );
-			T = (T + Th) / ( 2.0-w[iw] );
+			T = T + u1[ii]*Dw[ii];
+			U = U + u2[ii]*Dw[ii];
+			V = V + u3[ii]*Dw[ii];
+			W = W + u4[ii]*Dw[ii];
+			P = P + u5[ii]*Nw[ii];
 
 		}
 
-		else {
-
-			for( ii = 0; ii < 8; ii ++ ) {
-
-				
-				T = T + u1[ii]*w[ii];
-				U = U + u2[ii]*w[ii];
-				V = V + u3[ii]*w[ii];
-				W = W + u4[ii]*w[ii];
-				P = P + ( u5[ii] - P0 ) * w[ii];
-
-			}
-
-			T = 0.5*(T + Th);
-			P = P + P0;
-			U = 0.5*U;
-			V = 0.5*V;
-			W = 0.5*W;
-
-		}    // ---- if( i_switch == 1 ) ---- //
+			
 
 
 		VV = U*U+V*V+W*W;

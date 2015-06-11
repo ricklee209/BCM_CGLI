@@ -225,3 +225,29 @@ int intersect_triangle
 
 void GetInverseMatrix( const double* inMat, double* outMat, const int n );
 
+void swap(double *a, double *b);
+
+
+void Dirichlet_Vandermonde_matrix(
+// ================================================================================ //	
+double dx,
+double dy,
+double dz,
+double van[64],
+double BIvan[8]
+// ================================================================================ //	
+);
+
+
+void Neumann_Vandermonde_matrix(
+// ================================================================================ //	
+double dx,
+double dy,
+double dz,
+double van[64],
+double BIvan[8]
+// ================================================================================ //	
+);
+
+
+

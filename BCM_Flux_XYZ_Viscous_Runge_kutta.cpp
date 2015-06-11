@@ -377,7 +377,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					IFk1 = FWS[icube][i][j][k+1];
 					IFk2 = FWS[icube][i][j][k+2];
 
-					//if(k > 2) {
+					if(k > 2) {
 
 						IF_k3 = FWS[icube][i][j][k-3];
 						u1_k3 = U1_[icube][i][j][k-3][0];
@@ -385,7 +385,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						u3_k3 = U1_[icube][i][j][k-3][2];
 						u4_k3 = U1_[icube][i][j][k-3][3];
 						u5_k3 = U1_[icube][i][j][k-3][4];
-					//}
+					}
 
 					u1_k2 = U1_[icube][i][j][k-2][0];
 					u2_k2 = U1_[icube][i][j][k-2][1];
@@ -413,7 +413,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					u5k2 = U1_[icube][i][j][k+2][4]; 
 
 
-					//if(k < nz) { 
+					if(k < nz) { 
 
 						IFk3 = FWS[icube][i][j][k+3];
 
@@ -424,7 +424,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						u5k3 = U1_[icube][i][j][k+3][4];
 
 						
-					//}
+					}
 
 					// -------------------------- Z-direction --------------------------//
 					// -----------------------------------------------------------------//
@@ -890,7 +890,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					u5_i2 = U1_[icube][i-2][j][k][4];
 
 
-					//if(i > 2) {
+					if(i > 2) {
 
 						IF_i3 = FWS[icube][i-3][j][k];
 						u1_i3 = U1_[icube][i-3][j][k][0];
@@ -899,7 +899,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						u4_i3 = U1_[icube][i-3][j][k][3];
 						u5_i3 = U1_[icube][i-3][j][k][4];
 
-					//}
+					}
 
 					IFi1 = FWS[icube][i+1][j][k];
 					u1i1 = U1_[icube][i+1][j][k][0];
@@ -916,7 +916,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					u5i2 = U1_[icube][i+2][j][k][4];
 
 
-					//if(i < nx)   {
+					if(i < nx)   {
 
 						IFi3 = FWS[icube][i+3][j][k];
 						u1i3 = U1_[icube][i+3][j][k][0];
@@ -925,7 +925,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						u4i3 = U1_[icube][i+3][j][k][3];
 						u5i3 = U1_[icube][i+3][j][k][4];
 
-					//}
+					}
 
 
 					// -------------------------- X-direction --------------------------//
@@ -1384,7 +1384,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					u5_j2 = U1_[icube][i][j-2][k][4];
 
 
-					//if(j > 2) {
+					if(j > 2) {
 
 						IF_j3 = FWS[icube][i][j-3][k];
 						u1_j3 = U1_[icube][i][j-3][k][0];
@@ -1393,7 +1393,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						u4_j3 = U1_[icube][i][j-3][k][3];
 						u5_j3 = U1_[icube][i][j-3][k][4];
 
-					//}
+					}
 
 					IFj1 = FWS[icube][i][j+1][k];
 					u1j1 = U1_[icube][i][j+1][k][0];
@@ -1409,7 +1409,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					u4j2 = U1_[icube][i][j+2][k][3];
 					u5j2 = U1_[icube][i][j+2][k][4];
 
-					//if(j < ny)   {
+					if(j < ny)   {
 
 						IFj3 = FWS[icube][i][j+3][k];
 						u1j3 = U1_[icube][i][j+3][k][0];
@@ -1418,7 +1418,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						u4j3 = U1_[icube][i][j+3][k][3];
 						u5j3 = U1_[icube][i][j+3][k][4];
 
-					//}
+					}
 
 					// -------------------------- Y-direction --------------------------//
 					// -----------------------------------------------------------------//

@@ -47,23 +47,23 @@ int main(int argc, char **argv)
 
 	int dp_step = 10000;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 500;
-	int output_step = 100;
-	int count = 1000;	
+	int iteration_end_step = 1;
+	int output_step = 1;
+	int count = 1;	
 	int step;
 
 	double deltaT = 0.01;
 	//double deltaT = 0.03;
 	double deltaTau = deltaT/100.0;
-	double e = 0.00000004;
+	double e = 0.02;
 	double Th = 309.03531204896;
 	//double e = 0.00000001;
 	//double Th = 299.15681120;
 
 
-	int switch_initial = 1; // ---- 1 reading initial coniditon ---- //
+	int switch_initial = 0; // ---- 1 reading initial coniditon ---- //
 
-	int switch_IBM = 0;     // ---- 1 run IBM ---- //
+	int switch_IBM = 1;     // ---- 1 run IBM ---- //
 
 	int switch_output = 0;  // ---- 1 output grid file ---- //
 
@@ -660,7 +660,7 @@ int main(int argc, char **argv)
 
 
 
-
+	/*
 	BCM_FWS_Interface(myid,Ncube, 
 		MPI_Nadj,
 		Ncpu_eq, 
@@ -675,7 +675,7 @@ int main(int argc, char **argv)
 		adj_number, 
 		adjX_eq, adjY_eq, adjZ_eq,
 		FWS);
-
+*/
 
 
 
@@ -854,6 +854,11 @@ int main(int argc, char **argv)
 	// ---------------------------------------------------------- //
 
 
+
+
+// -------------------------------------------------------------------------------------- //
+// --------------------------- Reading IBM weight coefficient --------------------------- //
+
 	char Number_of_BC[1024] = "Number of Boundary Cells";
 
 
@@ -874,26 +879,16 @@ int main(int argc, char **argv)
 
 	NBC = NBC_minus;
 
-	double (*weight_minus) = new double[NBC*8+1];
+	double (*Dweight_minus) = new double[NBC*8+1];
+	double (*Nweight_minus) = new double[NBC*8+1];
 	int (*GCindex_minus) = new int[NBC*4+1];
 	int (*IPsur_minus) = new int[NBC*4+1];
 
 	mp_switch = -1;
-	BCM_Reading_IBM(myid, &NBC, mp_switch, weight_minus, GCindex_minus, IPsur_minus);
+	BCM_Reading_IBM(myid, &NBC, mp_switch, Dweight_minus, Nweight_minus, GCindex_minus, IPsur_minus);
 
-	double (*bU1_minus) = new double[NBC_minus+1];
-	double (*bU2_minus) = new double[NBC_minus+1];
-	double (*bU3_minus) = new double[NBC_minus+1];
-	double (*bU4_minus) = new double[NBC_minus+1];
-	double (*bU5_minus) = new double[NBC_minus+1];
 
-	double (*bU1_minus_store) = new double[NBC_minus+1];
-	double (*bU2_minus_store) = new double[NBC_minus+1];
-	double (*bU3_minus_store) = new double[NBC_minus+1];
-	double (*bU4_minus_store) = new double[NBC_minus+1];
-	double (*bU5_minus_store) = new double[NBC_minus+1];
-
-	// =========================================================== //
+// =================================================================================== //
 
 
 	char strp[1024];
@@ -915,92 +910,19 @@ int main(int argc, char **argv)
 	NBC = NBC_plus;
 
 
-	double (*weight_plus) = new double[NBC*8+1];
+	double (*Dweight_plus) = new double[NBC*8+1];
+	double (*Nweight_plus) = new double[NBC*8+1];
+
 	int (*GCindex_plus) = new int[NBC*4+1];
 	int (*IPsur_plus) = new int[NBC*4+1];
 
 	mp_switch = 1;
-	BCM_Reading_IBM(myid, &NBC, mp_switch, weight_plus, GCindex_plus, IPsur_plus);
-
-	double (*bU1_plus) = new double[NBC_plus+1];
-	double (*bU2_plus) = new double[NBC_plus+1];
-	double (*bU3_plus) = new double[NBC_plus+1];
-	double (*bU4_plus) = new double[NBC_plus+1];
-	double (*bU5_plus) = new double[NBC_plus+1];
-
-	double (*bU1_plus_store) = new double[NBC_plus+1];
-	double (*bU2_plus_store) = new double[NBC_plus+1];
-	double (*bU3_plus_store) = new double[NBC_plus+1];
-	double (*bU4_plus_store) = new double[NBC_plus+1];
-	double (*bU5_plus_store) = new double[NBC_plus+1];
-
-	NBC = max(NBC_plus,NBC_minus);
+	BCM_Reading_IBM(myid, &NBC, mp_switch, Dweight_plus, Nweight_plus, GCindex_plus, IPsur_plus);
 
 
+// --------------------------- Reading IBM weight coefficient --------------------------- //
+// -------------------------------------------------------------------------------------- //
 
-
-#pragma omp parallel for private(Ntemp,gicube,gi,gj,gk)
-	for (int iNBC = 1; iNBC <= NBC_minus; iNBC++) {
-
-		Ntemp = (iNBC-1)*4;
-
-		gicube = GCindex_minus[Ntemp+1];
-		gi = GCindex_minus[Ntemp+2];
-		gj = GCindex_minus[Ntemp+3];
-		gk = GCindex_minus[Ntemp+4];
-
-		bU1_minus[iNBC] = U1_[gicube][gi][gj][gk][0];
-		bU2_minus[iNBC] = U1_[gicube][gi][gj][gk][1];
-		bU3_minus[iNBC] = U1_[gicube][gi][gj][gk][2];
-		bU4_minus[iNBC] = U1_[gicube][gi][gj][gk][3];
-		bU5_minus[iNBC] = U1_[gicube][gi][gj][gk][4];
-
-	}
-
-
-#pragma omp parallel for private(Ntemp,gicube,gi,gj,gk)
-	for (int iNBC = 1; iNBC <= NBC_plus; iNBC++) {
-
-		Ntemp = (iNBC-1)*4;
-
-		gicube = GCindex_plus[Ntemp+1];
-		gi = GCindex_plus[Ntemp+2];
-		gj = GCindex_plus[Ntemp+3];
-		gk = GCindex_plus[Ntemp+4];
-
-		bU1_plus[iNBC] = U1_[gicube][gi][gj][gk][0];
-		bU2_plus[iNBC] = U1_[gicube][gi][gj][gk][1];
-		bU3_plus[iNBC] = U1_[gicube][gi][gj][gk][2];
-		bU4_plus[iNBC] = U1_[gicube][gi][gj][gk][3];
-		bU5_plus[iNBC] = U1_[gicube][gi][gj][gk][4];
-
-	}
-
-
-
-	// ---------------------------------------------------------- //
-	// ---------------------------------------------------------- //
-
-
-
-
-
-	// for (icube = 1; icube < Ncube; icube++) {  
-
-	// #pragma omp parallel for private(j,k)
-	// for (i = 0; i <= nxxx; i++) {
-	// for (j = 0; j <= nyyy; j++) {
-	// for (k = 0; k <= nzzz; k++) {  
-
-	// if ( FWS[icube][i][j][k] != ISOLID)
-
-	// FWS[icube][i][j][k] = IFLUID;
-
-	// }
-	// }
-	// }
-
-	// }
 
 
 
@@ -1088,8 +1010,8 @@ int main(int argc, char **argv)
 		adjX_eq, adjY_eq, adjZ_eq,
 		FWS);
 
-/*
 
+	/*
 #pragma omp parallel for private(Ntemp,gicube,gi,gj,gk)
 	for (int iNBC = 1; iNBC <= NBC_minus; iNBC++) {
 
@@ -1144,6 +1066,7 @@ int main(int argc, char **argv)
 
 	double xc,yc,zc,dis;
 
+	
 
 // =============================================== //
 	for (step = 1 ; step <= count; step++) {       //
@@ -1178,7 +1101,7 @@ int main(int argc, char **argv)
 					}
 
 				}
-
+				
 	
 	// -------------------------------- Runge-Kutta-Modification -------------------------------- //
 	// ------------------------------------------------------------------------------------------ //
@@ -1187,11 +1110,8 @@ int main(int argc, char **argv)
 
 
 	// ------------------------------------------ //
-			for (int RK = 1; RK < 4; ++RK) {      //
+			for (int RK = 1; RK < 2; ++RK) {      //
 	// ------------------------------------------ //
-
-
-
 
 
 
@@ -1207,22 +1127,23 @@ int main(int argc, char **argv)
 				BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
 				
 				//BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
-
+			
 				#pragma omp parallel 
 				for (int ig = 1; ig <= 1; ig++) {
 
-					//BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
+					BCM_Ghostcell_minus(myid, &NBC_minus, Dweight_minus, Nweight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
 
-					//BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
+					BCM_Ghostcell_plus(myid, &NBC_plus, Dweight_plus, Nweight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
 
 
-					BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
+					//BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, Dweight_minus, Nweight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
 
-					BCM_Ghostcell_plus_Tem(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
+					//BCM_Ghostcell_plus_Tem(myid, &NBC_plus, Th, Dweight_plus, Nweight_minus, GCindex_plus, IPsur_plus, FWS, U1_);
 
 
 				}
 				
+
 
 				BCM_Interface(myid,Ncube, 
 
@@ -1253,13 +1174,13 @@ int main(int argc, char **argv)
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
 				
-				
+
 				
 				BCM_Flux_XYZ_Viscous_Runge_kutta(myid, Ncube, RK, deltaT, deltaTau, e, FWS, csl, cube_size,
 					U1_,U1 ,U1q,U1p1,U1p2,Fabs,
 					Rku1,Residual1,
 					er);
-					
+				
 
 
 				BCM_Interface(myid,Ncube, 
@@ -1310,11 +1231,11 @@ int main(int argc, char **argv)
 			er[5] = er[5]/E5;
 
 
-			 //if (myid == 0) {
+			 if (myid == 0) {
 
-				 //printf("%d\t%f\t%f\t%f\t%f\t%f\n",iteration,er[1],er[2],er[3],er[4],er[5]);
+				 printf("%d\t%f\t%f\t%f\t%f\t%f\n",iteration,er[1],er[2],er[3],er[4],er[5]);
 
-			 //}
+			 }
 
 
 
