@@ -41,21 +41,22 @@ int main(int argc, char **argv)
 
 #include "Resolution.h"
 
+
 	int statistic_step = 100000;    // ---- periodic step ---- //
 
 	int start_step = 100000;    // ---- how many steps to reach the quasi steady ---- //
 
 	int dp_step = 10000;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 500;
-	int output_step = 100;
-	int count = 1000;	
+	int iteration_end_step =1;
+	int output_step = 1;
+	int count = 1;	
 	int step;
 
 	double deltaT = 0.01;
 	//double deltaT = 0.03;
 	double deltaTau = deltaT/100.0;
-	double e = 0.00000004;
+	double e = 0.02;
 	double Th = 309.03531204896;
 	//double e = 0.00000001;
 	//double Th = 299.15681120;
@@ -63,7 +64,7 @@ int main(int argc, char **argv)
 
 	int switch_initial = 1; // ---- 1 reading initial coniditon ---- //
 
-	int switch_IBM = 0;     // ---- 1 run IBM ---- //
+	int switch_IBM = 1;     // ---- 1 run IBM ---- //
 
 	int switch_output = 0;  // ---- 1 output grid file ---- //
 
@@ -1211,14 +1212,14 @@ int main(int argc, char **argv)
 				#pragma omp parallel 
 				for (int ig = 1; ig <= 1; ig++) {
 
-					//BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
+					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
 
-					//BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
+					BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
 
 
-					BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
+					//BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
 
-					BCM_Ghostcell_plus_Tem(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
+					//BCM_Ghostcell_plus_Tem(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
 
 
 				}
