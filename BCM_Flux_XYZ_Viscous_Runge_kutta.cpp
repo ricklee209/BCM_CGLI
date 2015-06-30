@@ -361,42 +361,12 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					u4 = U1_[icube][i][j][k][3];
 					u5 = U1_[icube][i][j][k][4];
 
-
-					#if ROE == 1 
-
-						Rp1 = -(3*u1-4*uu1+u1q)/(2*deltaT);
-						Rp2 = -(3*u2-4*uu2+u2q)/(2*deltaT);
-						Rp3 = -(3*u3-4*uu3+u3q)/(2*deltaT);
-						Rp4 = -(3*u4-4*uu4+u4q)/(2*deltaT);
-						Rp5 = -(3*u5-4*uu5+u5q)/(2*deltaT);
-
-					#elif ROE == 2
-
-						
-						Rp1 = -(3*u1-4*uu1+u1q)/(2*deltaT);
-						Rp2 = -(3*u2-4*uu2+u2q)/(2*deltaT);
-						Rp3 = -(3*u3-4*uu3+u3q)/(2*deltaT);
-						Rp4 = -(3*u4-4*uu4+u4q)/(2*deltaT);
-						Rp5 = -(3*u5-4*uu5+u5q)/(2*deltaT);
-
-
-					#elif ROE == 3
 					
-						Rp1 = (4*uu1-u1q)/(2*deltaT)/3.0;
-						Rp2 = (4*uu2-u2q)/(2*deltaT)/3.0;
-						Rp3 = (4*uu3-u3q)/(2*deltaT)/3.0;
-						Rp4 = (4*uu4-u4q)/(2*deltaT)/3.0;
-						Rp5 = (4*uu5-u5q)/(2*deltaT)/3.0;
-
-					#elif ROE == 4
-					
-						Rp1 = (4*uu1-u1q)/(2*deltaT)/3.0;
-						Rp2 = (4*uu2-u2q)/(2*deltaT)/3.0;
-						Rp3 = (4*uu3-u3q)/(2*deltaT)/3.0;
-						Rp4 = (4*uu4-u4q)/(2*deltaT)/3.0;
-						Rp5 = (4*uu5-u5q)/(2*deltaT)/3.0;
-
-					#endif
+					Rp1 = -(3*u1-4*uu1+u1q)/(2*deltaT);
+					Rp2 = -(3*u2-4*uu2+u2q)/(2*deltaT);
+					Rp3 = -(3*u3-4*uu3+u3q)/(2*deltaT);
+					Rp4 = -(3*u4-4*uu4+u4q)/(2*deltaT);
+					Rp5 = -(3*u5-4*uu5+u5q)/(2*deltaT);
 
 
 
