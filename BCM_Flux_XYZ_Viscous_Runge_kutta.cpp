@@ -2735,146 +2735,75 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					// ------------------------------------------------------------------------------------------- //
 					// --------------------------------------- Runge-Kutta --------------------------------------- //
 
+					rho = u1;
+					U = u2/u1;
+					V = u3/u1;
+					W = u4/u1;
+					VV = U*U+V*V+W*W;
+					P = (u5-0.5*rho*VV)*(K-1);
+					C = K*P/rho;
+					T = P/rho;
+					H = 0.5*VV+C/(K-1);
 
-					#if ROE == 1 
+					/* preconditioning */
 
-						rho = u1;
-						U = u2/u1;
-						V = u3/u1;
-						W = u4/u1;
-						VV = U*U+V*V+W*W;
-						P = (u5-0.5*rho*VV)*(K-1);
-						C = K*P/rho;
-						T = P/rho;
-						H = 0.5*VV+C/(K-1);
-
-						/* preconditioning */
-
-						beta = max(VV/C,e);
+					beta = max(VV/C,e);
 
 
-						/* M*inverse(gamma+3*deltaTau/(2*deltaT)*M) */
-						temp = K*T*(2*deltaT+3*deltaTau)*(2*deltaT+3*beta*deltaTau);
-						temp2 = (K-1)*(beta-1)*deltaT*deltaT;
-						temp3 = H-H*K-VV+K*(T+VV);
+					/* M*inverse(gamma+3*deltaTau/(2*deltaT)*M) */
+					temp = K*T*(2*deltaT+3*deltaTau)*(2*deltaT+3*beta*deltaTau);
+					temp2 = (K-1)*(beta-1)*deltaT*deltaT;
+					temp3 = H-H*K-VV+K*(T+VV);
 
-						d11 = (2*deltaT*(-2*(-(K-1)*(H-VV)-temp3*beta)*deltaT+3*K*T*beta*deltaTau))/temp;
-						d12 = (-4*U*temp2)/temp;
-						d13 = (-4*V*temp2)/temp;
-						d14 = (-4*W*temp2)/temp;
-						d15 = (4*temp2)/temp;
+					d11 = (2*deltaT*(-2*(-(K-1)*(H-VV)-temp3*beta)*deltaT+3*K*T*beta*deltaTau))/temp;
+					d12 = (-4*U*temp2)/temp;
+					d13 = (-4*V*temp2)/temp;
+					d14 = (-4*W*temp2)/temp;
+					d15 = (4*temp2)/temp;
 
-						d21 = (4*U*temp3*(beta-1)*deltaT*deltaT)/temp;
-						d22 = (2*deltaT*(2*K*(T-U*U*(beta-1))*deltaT+2*U*U*(beta-1)*deltaT+3*K*T*beta*deltaTau))/temp;
-						d23 = (-4*U*V*temp2)/temp;
-						d24 = (-4*U*W*temp2)/temp;
-						d25 = (4*U*temp2)/temp;
+					d21 = (4*U*temp3*(beta-1)*deltaT*deltaT)/temp;
+					d22 = (2*deltaT*(2*K*(T-U*U*(beta-1))*deltaT+2*U*U*(beta-1)*deltaT+3*K*T*beta*deltaTau))/temp;
+					d23 = (-4*U*V*temp2)/temp;
+					d24 = (-4*U*W*temp2)/temp;
+					d25 = (4*U*temp2)/temp;
 
-						d31 = (4*V*temp3*(beta-1)*deltaT*deltaT)/temp;
-						d32 = (-4*U*V*temp2)/temp;
-						d33 = (2*deltaT*(2*K*(T-V*V*(beta-1))*deltaT+2*V*V*(beta-1)*deltaT+3*K*T*beta*deltaTau))/temp;
-						d34 = (-4*V*W*temp2)/temp;
-						d35 = (4*V*temp2)/temp;
+					d31 = (4*V*temp3*(beta-1)*deltaT*deltaT)/temp;
+					d32 = (-4*U*V*temp2)/temp;
+					d33 = (2*deltaT*(2*K*(T-V*V*(beta-1))*deltaT+2*V*V*(beta-1)*deltaT+3*K*T*beta*deltaTau))/temp;
+					d34 = (-4*V*W*temp2)/temp;
+					d35 = (4*V*temp2)/temp;
 
-						d41 = (4*W*temp3*(beta-1)*deltaT*deltaT)/temp;
-						d42 = (-4*U*W*temp2)/temp;
-						d43 = (-4*V*W*temp2)/temp;
-						d44 = (2*deltaT*(2*K*(T-W*W*(beta-1))*deltaT+2*W*W*(beta-1)*deltaT+3*K*T*beta*deltaTau))/temp;
-						d45 = (4*W*temp2)/temp;
+					d41 = (4*W*temp3*(beta-1)*deltaT*deltaT)/temp;
+					d42 = (-4*U*W*temp2)/temp;
+					d43 = (-4*V*W*temp2)/temp;
+					d44 = (2*deltaT*(2*K*(T-W*W*(beta-1))*deltaT+2*W*W*(beta-1)*deltaT+3*K*T*beta*deltaTau))/temp;
+					d45 = (4*W*temp2)/temp;
 
-						d51 = (4*H*temp3*(beta-1)*deltaT*deltaT)/temp;
-						d52 = (-4*H*U*temp2)/temp;
-						d53 = (-4*H*V*temp2)/temp;
-						d54 = (-4*H*W*temp2)/temp;
-						d55 = (2*deltaT*(2*H*(K-1)*(beta-1)*deltaT+K*T*(2*deltaT+3*beta*deltaTau)))/temp;
-
-
-						if (IF == IFLUID) {
-
-							MR1 = deltaTau*(d11*Rk1+d12*Rk2+d13*Rk3+d14*Rk4+d15*Rk5);
-							MR2 = deltaTau*(d21*Rk1+d22*Rk2+d23*Rk3+d24*Rk4+d25*Rk5);
-							MR3 = deltaTau*(d31*Rk1+d32*Rk2+d33*Rk3+d34*Rk4+d35*Rk5);
-							MR4 = deltaTau*(d41*Rk1+d42*Rk2+d43*Rk3+d44*Rk4+d45*Rk5);
-							MR5 = deltaTau*(d51*Rk1+d52*Rk2+d53*Rk3+d54*Rk4+d55*Rk5);
-
-						}
-						else {
-
-							MR1 = 0;
-							MR2 = 0;
-							MR3 = 0;
-							MR4 = 0;
-							MR5 = 0;
-
-						}
-
-					#elif ROE == 2
-
-						if (IF == IFLUID) {
-
-							MR1 = deltaT*Rk1*2.0/3.0;
-							MR2 = deltaT*Rk2*2.0/3.0;
-							MR3 = deltaT*Rk3*2.0/3.0;
-							MR4 = deltaT*Rk4*2.0/3.0;
-							MR5 = deltaT*Rk5*2.0/3.0;
-
-						}
-						else {
-
-							MR1 = 0;
-							MR2 = 0;
-							MR3 = 0;
-							MR4 = 0;
-							MR5 = 0;
-
-						}
-
-					#elif ROE == 3
-
-						if (IF == IFLUID) {
-
-							
-							MR1 = deltaT*Rk1*2.0/3.0;
-							MR2 = deltaT*Rk2*2.0/3.0;
-							MR3 = deltaT*Rk3*2.0/3.0;
-							MR4 = deltaT*Rk4*2.0/3.0;
-							MR5 = deltaT*Rk5*2.0/3.0;
+					d51 = (4*H*temp3*(beta-1)*deltaT*deltaT)/temp;
+					d52 = (-4*H*U*temp2)/temp;
+					d53 = (-4*H*V*temp2)/temp;
+					d54 = (-4*H*W*temp2)/temp;
+					d55 = (2*deltaT*(2*H*(K-1)*(beta-1)*deltaT+K*T*(2*deltaT+3*beta*deltaTau)))/temp;
 
 
-						}
-						else {
+					if (IF == IFLUID) {
 
-							MR1 = 0;
-							MR2 = 0;
-							MR3 = 0;
-							MR4 = 0;
-							MR5 = 0;
+						MR1 = deltaTau*(d11*Rk1+d12*Rk2+d13*Rk3+d14*Rk4+d15*Rk5);
+						MR2 = deltaTau*(d21*Rk1+d22*Rk2+d23*Rk3+d24*Rk4+d25*Rk5);
+						MR3 = deltaTau*(d31*Rk1+d32*Rk2+d33*Rk3+d34*Rk4+d35*Rk5);
+						MR4 = deltaTau*(d41*Rk1+d42*Rk2+d43*Rk3+d44*Rk4+d45*Rk5);
+						MR5 = deltaTau*(d51*Rk1+d52*Rk2+d53*Rk3+d54*Rk4+d55*Rk5);
 
-						}
+					}
+					else {
 
+						MR1 = 0;
+						MR2 = 0;
+						MR3 = 0;
+						MR4 = 0;
+						MR5 = 0;
 
-					#elif ROE == 4
-
-						if (IF == IFLUID) {
-
-							MR1 = deltaT*Rk1*2.0/3.0;
-							MR2 = deltaT*Rk2*2.0/3.0;
-							MR3 = deltaT*Rk3*2.0/3.0;
-							MR4 = deltaT*Rk4*2.0/3.0;
-							MR5 = deltaT*Rk5*2.0/3.0;
-
-						}
-						else {
-
-							MR1 = 0;
-							MR2 = 0;
-							MR3 = 0;
-							MR4 = 0;
-							MR5 = 0;
-
-						}
-
-					#endif
+					}
 
 
 					// --------------------------------------- Runge-Kutta --------------------------------------- //
