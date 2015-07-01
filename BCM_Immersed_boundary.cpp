@@ -1047,117 +1047,107 @@ void BCM_Immersed_boundary
 			case 1:
 
 				Dweight[0] = wtmp[7];
-				Dweight[1] = wtmp[6];
+				Dweight[1] = wtmp[4];
 				Dweight[2] = wtmp[5];
-				Dweight[3] = wtmp[4];
-				Dweight[4] = wtmp[3];
+				Dweight[3] = wtmp[1];
+				Dweight[4] = wtmp[6];
 				Dweight[5] = wtmp[2];
-				Dweight[6] = wtmp[1];
+				Dweight[6] = wtmp[3];
 				Dweight[7] = wtmp[0];
 
-				swap(Dweight[3],Dweight[4]);
 				break;
 
 			case 2:
 				
-				Dweight[0] = wtmp[6];
+				Dweight[0] = wtmp[4];
 				Dweight[1] = wtmp[7];
-				Dweight[2] = wtmp[4];
+				Dweight[2] = wtmp[1];
 				Dweight[3] = wtmp[5];
 				Dweight[4] = wtmp[2];
-				Dweight[5] = wtmp[3];
+				Dweight[5] = wtmp[6];
 				Dweight[6] = wtmp[0];
-				Dweight[7] = wtmp[1];
+				Dweight[7] = wtmp[3];
 
-				swap(Dweight[2],Dweight[5]);
 				break;
 
 			case 3:
 
 
 				Dweight[0] = wtmp[5];
-				Dweight[1] = wtmp[4];
+				Dweight[1] = wtmp[1];
 				Dweight[2] = wtmp[7];
-				Dweight[3] = wtmp[6];
-				Dweight[4] = wtmp[1];
+				Dweight[3] = wtmp[4];
+				Dweight[4] = wtmp[3];
 				Dweight[5] = wtmp[0];
-				Dweight[6] = wtmp[3];
+				Dweight[6] = wtmp[6];
 				Dweight[7] = wtmp[2];
 				
-				swap(Dweight[1],Dweight[6]);
 				break;
 
 			case 4:
 				
 				
-				Dweight[0] = wtmp[4];
+				Dweight[0] = wtmp[1];
 				Dweight[1] = wtmp[5];
-				Dweight[2] = wtmp[6];
+				Dweight[2] = wtmp[4];
 				Dweight[3] = wtmp[7];
 				Dweight[4] = wtmp[0];
-				Dweight[5] = wtmp[1];
+				Dweight[5] = wtmp[3];
 				Dweight[6] = wtmp[2];
-				Dweight[7] = wtmp[3];
+				Dweight[7] = wtmp[6];
 
-				swap(Dweight[0],Dweight[7]);
 				break;
 
 			case 5:
 				
-				Dweight[0] = wtmp[3];
+				Dweight[0] = wtmp[6];
 				Dweight[1] = wtmp[2];
-				Dweight[2] = wtmp[1];
+				Dweight[2] = wtmp[3];
 				Dweight[3] = wtmp[0];
 				Dweight[4] = wtmp[7];
-				Dweight[5] = wtmp[6];
+				Dweight[5] = wtmp[4];
 				Dweight[6] = wtmp[5];
-				Dweight[7] = wtmp[4];
+				Dweight[7] = wtmp[1];
 				
-				swap(Dweight[0],Dweight[7]);
 				break;
 
 			case 6:
 				
 				Dweight[0] = wtmp[2];
-				Dweight[1] = wtmp[3];
+				Dweight[1] = wtmp[6];
 				Dweight[2] = wtmp[0];
-				Dweight[3] = wtmp[1];
-				Dweight[4] = wtmp[6];
+				Dweight[3] = wtmp[3];
+				Dweight[4] = wtmp[4];
 				Dweight[5] = wtmp[7];
-				Dweight[6] = wtmp[4];
+				Dweight[6] = wtmp[1];
 				Dweight[7] = wtmp[5];
 
-				swap(Dweight[1],Dweight[6]);
 				break;
 
 			case 7:
 
-				Dweight[0] = wtmp[1];
+				Dweight[0] = wtmp[3];
 				Dweight[1] = wtmp[0];
-				Dweight[2] = wtmp[3];
+				Dweight[2] = wtmp[6];
 				Dweight[3] = wtmp[2];
 				Dweight[4] = wtmp[5];
-				Dweight[5] = wtmp[4];
+				Dweight[5] = wtmp[1];
 				Dweight[6] = wtmp[7];
-				Dweight[7] = wtmp[6];
+				Dweight[7] = wtmp[4];
 
-				swap(Dweight[2],Dweight[5]);
 				break;
 
 			case 8:
 
-				
 				Dweight[0] = wtmp[0];
-				Dweight[1] = wtmp[1];
+				Dweight[1] = wtmp[3];
 				Dweight[2] = wtmp[2];
-				Dweight[3] = wtmp[3];
-				Dweight[4] = wtmp[4];
+				Dweight[3] = wtmp[6];
+				Dweight[4] = wtmp[1];
 				Dweight[5] = wtmp[5];
-				Dweight[6] = wtmp[6];
+				Dweight[6] = wtmp[4];
 				Dweight[7] = wtmp[7];
 
-
-				swap(Dweight[3],Dweight[4]);
 				break;
 
 		}
@@ -1213,117 +1203,107 @@ void BCM_Immersed_boundary
 			case 1:
 
 				Nweight[0] = wtmp[7];
-				Nweight[1] = wtmp[6];
+				Nweight[1] = wtmp[4];
 				Nweight[2] = wtmp[5];
-				Nweight[3] = wtmp[4];
-				Nweight[4] = wtmp[3];
+				Nweight[3] = wtmp[1];
+				Nweight[4] = wtmp[6];
 				Nweight[5] = wtmp[2];
-				Nweight[6] = wtmp[1];
+				Nweight[6] = wtmp[3];
 				Nweight[7] = wtmp[0];
 
-				swap(Nweight[3],Nweight[4]);
 				break;
 
 			case 2:
 				
-				Nweight[0] = wtmp[6];
+				Nweight[0] = wtmp[4];
 				Nweight[1] = wtmp[7];
-				Nweight[2] = wtmp[4];
+				Nweight[2] = wtmp[1];
 				Nweight[3] = wtmp[5];
 				Nweight[4] = wtmp[2];
-				Nweight[5] = wtmp[3];
+				Nweight[5] = wtmp[6];
 				Nweight[6] = wtmp[0];
-				Nweight[7] = wtmp[1];
+				Nweight[7] = wtmp[3];
 
-				swap(Nweight[2],Nweight[5]);
 				break;
 
 			case 3:
 
 
 				Nweight[0] = wtmp[5];
-				Nweight[1] = wtmp[4];
+				Nweight[1] = wtmp[1];
 				Nweight[2] = wtmp[7];
-				Nweight[3] = wtmp[6];
-				Nweight[4] = wtmp[1];
+				Nweight[3] = wtmp[4];
+				Nweight[4] = wtmp[3];
 				Nweight[5] = wtmp[0];
-				Nweight[6] = wtmp[3];
+				Nweight[6] = wtmp[6];
 				Nweight[7] = wtmp[2];
 				
-				swap(Nweight[1],Nweight[6]);
 				break;
 
 			case 4:
 				
 				
-				Nweight[0] = wtmp[4];
+				Nweight[0] = wtmp[1];
 				Nweight[1] = wtmp[5];
-				Nweight[2] = wtmp[6];
+				Nweight[2] = wtmp[4];
 				Nweight[3] = wtmp[7];
 				Nweight[4] = wtmp[0];
-				Nweight[5] = wtmp[1];
+				Nweight[5] = wtmp[3];
 				Nweight[6] = wtmp[2];
-				Nweight[7] = wtmp[3];
+				Nweight[7] = wtmp[6];
 
-				swap(Nweight[0],Nweight[7]);
 				break;
 
 			case 5:
 				
-				Nweight[0] = wtmp[3];
+				Nweight[0] = wtmp[6];
 				Nweight[1] = wtmp[2];
-				Nweight[2] = wtmp[1];
+				Nweight[2] = wtmp[3];
 				Nweight[3] = wtmp[0];
 				Nweight[4] = wtmp[7];
-				Nweight[5] = wtmp[6];
+				Nweight[5] = wtmp[4];
 				Nweight[6] = wtmp[5];
-				Nweight[7] = wtmp[4];
+				Nweight[7] = wtmp[1];
 				
-				swap(Nweight[0],Nweight[7]);
 				break;
 
 			case 6:
 				
 				Nweight[0] = wtmp[2];
-				Nweight[1] = wtmp[3];
+				Nweight[1] = wtmp[6];
 				Nweight[2] = wtmp[0];
-				Nweight[3] = wtmp[1];
-				Nweight[4] = wtmp[6];
+				Nweight[3] = wtmp[3];
+				Nweight[4] = wtmp[4];
 				Nweight[5] = wtmp[7];
-				Nweight[6] = wtmp[4];
+				Nweight[6] = wtmp[1];
 				Nweight[7] = wtmp[5];
 
-				swap(Nweight[1],Nweight[6]);
 				break;
 
 			case 7:
 
-				Nweight[0] = wtmp[1];
+				Nweight[0] = wtmp[3];
 				Nweight[1] = wtmp[0];
-				Nweight[2] = wtmp[3];
+				Nweight[2] = wtmp[6];
 				Nweight[3] = wtmp[2];
 				Nweight[4] = wtmp[5];
-				Nweight[5] = wtmp[4];
+				Nweight[5] = wtmp[1];
 				Nweight[6] = wtmp[7];
-				Nweight[7] = wtmp[6];
+				Nweight[7] = wtmp[4];
 
-				swap(Nweight[2],Nweight[5]);
 				break;
 
 			case 8:
 
-				
 				Nweight[0] = wtmp[0];
-				Nweight[1] = wtmp[1];
+				Nweight[1] = wtmp[3];
 				Nweight[2] = wtmp[2];
-				Nweight[3] = wtmp[3];
-				Nweight[4] = wtmp[4];
+				Nweight[3] = wtmp[6];
+				Nweight[4] = wtmp[1];
 				Nweight[5] = wtmp[5];
-				Nweight[6] = wtmp[6];
+				Nweight[6] = wtmp[4];
 				Nweight[7] = wtmp[7];
 
-
-				swap(Nweight[3],Nweight[4]);
 				break;
 
 		}

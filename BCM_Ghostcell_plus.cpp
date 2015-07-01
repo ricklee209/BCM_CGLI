@@ -142,21 +142,21 @@ double Dw[8], Nw[8];
 		W = W;
 		
 
-		if( U < -0.01  ) {
-			
-			//printf("%d\t%d\t%d\t%d\t\n",icube,i,j,k);
+		//if( U < -0.01  ) {
+		//	
+		//	//printf("%d\t%d\t%d\t%d\t\n",icube,i,j,k);
 
-			printf("%d\t%f\t%f\t%f\t%f\t%f\n",icase,rho,U,V,W,P);
+		//	printf("%d\t%f\t%f\t%f\t%f\t%f\n",icase,rho,U,V,W,P);
 
-			printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",Dw[0],Dw[1],Dw[2],Dw[3],Dw[4],Dw[5],Dw[6],Dw[7]);
+		//	printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",Dw[0],Dw[1],Dw[2],Dw[3],Dw[4],Dw[5],Dw[6],Dw[7]);
 
-			printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",u2[0],u2[1],u2[2],u2[3],u2[4],u2[5],u2[6],u2[7]);
+		//	printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",u2[0],u2[1],u2[2],u2[3],u2[4],u2[5],u2[6],u2[7]);
 
-			//printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n\n",Nw[0],Nw[1],Nw[2],Nw[3],Nw[4],Nw[5],Nw[6],Nw[7]);
+		//	//printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n\n",Nw[0],Nw[1],Nw[2],Nw[3],Nw[4],Nw[5],Nw[6],Nw[7]);
 
 
 
-		}
+		//}
 
 
 
