@@ -701,7 +701,8 @@ int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size]
 
 // -------------------------------------------- Hole treatment -------------------------------------------- //
 	
-	int end = 2;
+	int end = 0;
+	count_index = 0;
 
 	for (icube = 1; icube < ncube; icube++) { 
 
@@ -714,20 +715,26 @@ int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size]
 					for (j = n_buffer-1; j <= nyy; j++) {
 						for (k = n_buffer-1; k <= nzz; k++) { 
 
-							if ( FWS[icube][i][j][k] >= IGHOST  && (
-								(FWS[icube][i+1][j][k] + FWS[icube][i-1][j][k] ==  2*ISOLID ) |
-								(FWS[icube][i][j+1][k] + FWS[icube][i][j-1][k] ==  2*ISOLID ) |
-								(FWS[icube][i][j][k+1] + FWS[icube][i][j][k-1] ==  2*ISOLID ) 
+							if ( FWS[icube][i][j][k] == IFLUID  && (
+								(FWS[icube][i+1][j][k] + FWS[icube][i-1][j][k] <  IFLUID ) |
+								(FWS[icube][i][j+1][k] + FWS[icube][i][j-1][k] <  IFLUID ) |
+								(FWS[icube][i][j][k+1] + FWS[icube][i][j][k-1] <  IFLUID ) 
 								)) {
 								FWS[icube][i][j][k] = ISOLID;
-								//tempFWS[icube][i][j][k] = ISOLID;
-								end = end + 1;
+								count_index = 1;
+								
 							}
 
 						}
 					}
 				}
-				
+
+				if(count_index > 0) {
+					
+					end = end;
+					count_index = 0;
+
+				}
 
 			}    // ---- for (int iFWS = 1; iFWS < 100000; iFWS ++) ---- //
 

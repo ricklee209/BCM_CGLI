@@ -2511,9 +2511,6 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						MR4 = 0;
 						MR5 = 0;
 
-
-
-
 					}
 
 					// --------------------------------------- Runge-Kutta --------------------------------------- //
@@ -2679,7 +2676,19 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 							
 
 						}
-							
+
+						/*
+						if ( FWS[icube][i][j][k] == ISOLID ) {
+
+							U1_[icube][i][j][k][0] = rho0;
+							U1_[icube][i][j][k][1] = 0;
+							U1_[icube][i][j][k][2] = 0;
+							U1_[icube][i][j][k][3] = 0;
+							U1_[icube][i][j][k][4] = P0/(K-1.0);
+								
+						}
+						*/
+						
 
 					}
 				}

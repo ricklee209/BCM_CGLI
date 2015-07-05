@@ -82,6 +82,21 @@ void BCM_Initial_condition
 
 					}
 
+					
+						rho = rho0;
+						U = U0;
+						V = V0;
+						W = W0;
+						VV = U*U+V*V+W*W;
+						P = P0;
+
+						U1[icube][i][j][k][0] = rho;
+						U1[icube][i][j][k][1] = rho*U;
+						U1[icube][i][j][k][2] = rho*V;
+						U1[icube][i][j][k][3] = rho*W;
+						U1[icube][i][j][k][4] = P/(K-1)+0.5*rho*VV;
+
+
 				}
 			}
 		}

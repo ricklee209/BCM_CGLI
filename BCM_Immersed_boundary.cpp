@@ -759,7 +759,10 @@ void BCM_Immersed_boundary
 
 		}
 
-		// ---- if (dotp > 0) the point is ouside the object ---- //
+		// ---- if (dotp > 0) the point is inside the object ---- //
+		// ---- tmin always larger than 0 ---- //
+
+
 
 
 		if (iflag_total > 0) {
@@ -782,6 +785,8 @@ void BCM_Immersed_boundary
 				IPy = orig[1] + te*tmin*dir1;
 				IPz = orig[2] + te*tmin*dir2;
 
+
+
 			}  // ---- else if (dotp > 0) ---- //
 
 			else {
@@ -794,6 +799,7 @@ void BCM_Immersed_boundary
 				IPy = orig[1] - te*tmin*dir1;
 				IPz = orig[2] - te*tmin*dir2;
 
+
 			}
 
 			dis = (BIx-orig[0])*(BIx-orig[0])+(BIy-orig[1])*(BIy-orig[1])+(BIz-orig[2])*(BIz-orig[2]);
@@ -803,7 +809,7 @@ void BCM_Immersed_boundary
 
 
 
-		if (dis > 2*dx*dx | iflag_total == 0) {
+		if (dis > dx*dx | iflag_total == 0) {
 
 			Ndis_min = MAX;
 
@@ -820,14 +826,17 @@ void BCM_Immersed_boundary
 			BIy = BIp1;
 			BIz = BIp2;
 
+			
 			IPx = xcnt+te*(xcnt-BIx);
 			IPy = ycnt+te*(ycnt-BIy);
 			IPz = zcnt+te*(zcnt-BIz);
+			
+
 
 
 			dis = (BIx-xcnt)*(BIx-xcnt)+(BIy-ycnt)*(BIy-ycnt)+(BIz-zcnt)*(BIz-zcnt);
 
-			if (dis > 2*dx*dx) {
+			if (dis > dx*dx) {
 				
 				FWS[icube][i][j][k] = IFLUID; 
 				continue;
@@ -835,7 +844,7 @@ void BCM_Immersed_boundary
 			}
 
 		}
-		
+
 
 
 
@@ -1072,7 +1081,6 @@ void BCM_Immersed_boundary
 
 			case 3:
 
-
 				Dweight[0] = wtmp[5];
 				Dweight[1] = wtmp[1];
 				Dweight[2] = wtmp[7];
@@ -1173,7 +1181,9 @@ void BCM_Immersed_boundary
 		GetInverseMatrix( V, V, 8 );
 		*/
 
-		
+		dir0 = 10000*dir0;
+		dir1 = 10000*dir1;
+		dir2 = 10000*dir2;
 
 		BIvan[0] = BIx*BIy*dir2 + BIx*BIz*dir1 + BIz*BIy*dir0;
 		BIvan[1] = BIx*dir1 + BIy*dir0;
@@ -1183,6 +1193,8 @@ void BCM_Immersed_boundary
 		BIvan[5] = dir1;
 		BIvan[6] = dir2;
 		BIvan[7] = 0.0;
+
+		
 
 		Neumann_Vandermonde_matrix(dx,dy,dz,V,BIvan);
 
@@ -1195,8 +1207,8 @@ void BCM_Immersed_boundary
 			wtmp[vi] = V[vi]*s1*s2*s3+V[vi+8]*s1*s2+V[vi+16]*s1*s3+V[vi+24]*s2*s3+V[vi+32]*s1+V[vi+40]*s2+V[vi+48]*s3+V[vi+56];
 
 		}
-				
 
+		
 
 		switch (icase)  {
 
@@ -1307,7 +1319,6 @@ void BCM_Immersed_boundary
 				break;
 
 		}
-
 
 
 // ------------------------------------ Neumann  ------------------------------------ //
@@ -1637,9 +1648,31 @@ void BI_detect
 
 	dis = sqrt(nuvec[0]*nuvec[0]+nuvec[1]*nuvec[1]+nuvec[2]*nuvec[2]);
 
-	dir[0] = -nuvec[0]/dis;
-	dir[1] = -nuvec[1]/dis;
-	dir[2] = -nuvec[2]/dis;
+	*dotp = nuvec[0]*(vert0[0]-xcnt)+nuvec[1]*(vert0[1]-ycnt)+nuvec[2]*(vert0[2]-zcnt);
+
+
+	
+		dir[0] = -nuvec[0]/dis;
+		dir[1] = -nuvec[1]/dis;
+		dir[2] = -nuvec[2]/dis;
+
+	
+	/*
+	if(*dotp < 0) {
+
+		dir[0] = -nuvec[0]/dis;
+		dir[1] = -nuvec[1]/dis;
+		dir[2] = -nuvec[2]/dis;
+
+	}
+	else {
+
+		dir[0] = nuvec[0]/dis;
+		dir[1] = nuvec[1]/dis;
+		dir[2] = nuvec[2]/dis;
+
+	}
+	*/
 
 	orig[0] = xcnt;
 	orig[1] = ycnt;
@@ -1922,6 +1955,8 @@ int intersect_triangle
 	)
 {
 
+	double EPSILON = 0.00000000000001;
+
 	double edge1[3], edge2[3], tvec[3], pvec[3], qvec[3];
 	double det, inv_det;
 
@@ -1934,9 +1969,8 @@ int intersect_triangle
 
 	det = DOT(edge1, pvec);
 
-
-
-	if (det < 0.00000000000001)
+	
+	if (det < EPSILON)
 		return 0;
 
 	SUB(tvec, orig, vert0);
@@ -1964,6 +1998,34 @@ int intersect_triangle
 	*v *= inv_det;
 
 	return 1;
+	
+
+	/*
+	if (det > -EPSILON && det < EPSILON)
+		return 0;
+
+	inv_det = 1.0 / det;
+
+	SUB(tvec, orig, vert0);
+
+	*u = DOT(tvec, pvec) * inv_det;
+
+	if (*u < 0.0 || *u > 1.0)
+		return 0;
+
+	CROSS(qvec, tvec, edge1);
+
+	*v = DOT(dir, qvec) * inv_det;
+
+	if (*v < 0.0 || *u+*v > 1.0)
+		return 0;
+
+	*t = DOT(edge2, qvec)*inv_det;
+	
+
+	return 1;
+	
+	*/
 
 }
 

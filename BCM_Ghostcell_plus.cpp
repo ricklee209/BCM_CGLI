@@ -84,19 +84,17 @@ double Dw[8], Nw[8];
 		icase = (gi-i)*4+(gj-j)*2+gk-k+1;
 
 
-
-
 		for (ii = i; ii <= i+1; ii++) {
 			for (jj = j; jj <= j+1; jj++) {
 				for (kk = k; kk <= k+1; kk++) {  
 
 					if( ( (ii-i)*4 + 2*(jj-j) + (kk-k) + 1 ) != icase) {
 
-						rho = U1_[icube][ii][jj][kk][0];
-						U = U1_[icube][ii][jj][kk][1]/rho;
-						V = U1_[icube][ii][jj][kk][2]/rho;
-						W = U1_[icube][ii][jj][kk][3]/rho;
-						P = ( U1_[icube][ii][jj][kk][4]-0.5*rho*(U*U+V*V+W*W) )*(K-1);
+						rho = U1_[icube][ii][jj][kk][0]-rho0;
+						U = U1_[icube][ii][jj][kk][1]/U1_[icube][ii][jj][kk][0];
+						V = U1_[icube][ii][jj][kk][2]/U1_[icube][ii][jj][kk][0];
+						W = U1_[icube][ii][jj][kk][3]/U1_[icube][ii][jj][kk][0];
+						P = ( U1_[icube][ii][jj][kk][4]-0.5*rho*(U*U+V*V+W*W) )*(K-1)-P0;
 					
 					}
 					else {
@@ -135,8 +133,8 @@ double Dw[8], Nw[8];
 
 		}
 
-		rho = rho;
-		P = P;
+		rho = rho+rho0;
+		P = P+P0;
 		U = U;
 		V = V;
 		W = W;
