@@ -1161,9 +1161,9 @@ int main(int argc, char **argv)
 	// -------------------------------- Runge-Kutta-Modification -------------------------------- //
 
 	
+#pragma omp parallel for private(i, j,k)
 				for (icube = 1; icube < Ncube; icube++) {  
 
-#pragma omp parallel for private(j,k)
 					for (i = n_buffer; i < nxx; i++) {
 						for (j = n_buffer; j < nyy; j++) {
 							for (k = n_buffer; k < nzz; k++) {  

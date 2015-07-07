@@ -199,7 +199,6 @@ double er_p = 0.9999;
 
 			for( ii = 0; ii < 8; ii ++ ) {
 
-				
 				T = T + u1[ii]*w[ii];
 				U = U + u2[ii]*w[ii];
 				V = V + u3[ii]*w[ii];
