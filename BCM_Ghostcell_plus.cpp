@@ -53,7 +53,6 @@ double t0,t1,t2,t3,t4,t5,t6,t7;
 
 double wc1, wc2, wc3, wc4, wc5, wc6, wc7, wc8;
 
-
 double er_p = 0.9999;
 
 // ---- GCindex => IPsur => weight ---- //
@@ -169,9 +168,9 @@ double er_p = 0.9999;
 
 		
 		
-		rho = wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0)+rho0;
+		rho = wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0)+r0;
 
-		P = wc1*(p0-P0)+wc2*(p1-P0)+wc3*(p2-P0)+wc4*(p3-P0)+wc5*(p4-P0)+wc6*(p5-P0)+wc7*(p6-P0)+wc8*(p7-P0)+P0;
+		P = wc1*(p0-p0)+wc2*(p1-p0)+wc3*(p2-p0)+wc4*(p3-p0)+wc5*(p4-p0)+wc6*(p5-p0)+wc7*(p6-p0)+wc8*(p7-p0)+p0;
 		
 		U = wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc7*u6+wc8*u7;
 		V = wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7;
@@ -189,20 +188,9 @@ double er_p = 0.9999;
 		
 		if ( gi==(i  ) & gj==(j  ) & gk==(k  ) ) { 
 		
-			if (wc1 > er_p) {
+			rho = (wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc1+er_p)+r0;
+			P = (wc2*(p1-p0)+wc3*(p2-p0)+wc4*(p3-p0)+wc5*(p4-p0)+wc6*(p5-p0)+wc7*(p6-p0)+wc8*(p7-p0))/(1-wc1+er_p)+p0;
 
-				rho = r0;
-				P = p0;
-
-			}
-			else {
-
-				rho = (wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc1)+rho0;
-
-				P = (wc2*(p1-P0)+wc3*(p2-P0)+wc4*(p3-P0)+wc5*(p4-P0)+wc6*(p5-P0)+wc7*(p6-P0)+wc8*(p7-P0))/(1-wc1)+P0;
-
-			}
-				
 			U = (wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc7*u6+wc8*u7)/(2-wc1);
 			V = (wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7)/(2-wc1);
 			W = (wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6+wc8*w7)/(2-wc1);
@@ -220,22 +208,9 @@ double er_p = 0.9999;
 			
 		if ( gi==(i+1) & gj==(j  ) & gk==(k  ) ) { 
 		
-			
-			if (wc2 > er_p) {
+			rho = (wc1*(r0-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc2+er_p)+r0;
+			P = (wc1*(p0-p0)+wc3*(p2-p0)+wc4*(p3-p0)+wc5*(p4-p0)+wc6*(p5-p0)+wc7*(p6-p0)+wc8*(p7-p0))/(1-wc2+er_p)+p0;
 
-				rho = r1;
-				P = p1;
-
-			}
-			else {
-
-				rho = (wc1*(r0-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc2)+rho0;
-
-				P = (wc1*(p0-P0)+wc3*(p2-P0)+wc4*(p3-P0)+wc5*(p4-P0)+wc6*(p5-P0)+wc7*(p6-P0)+wc8*(p7-P0))/(1-wc2)+P0;
-
-			}
-				
-			
 			U = (wc1*u0+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc7*u6+wc8*u7)/(2-wc2);
 			V = (wc1*v0+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7)/(2-wc2);
 			W = (wc1*w0+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6+wc8*w7)/(2-wc2);
@@ -254,22 +229,9 @@ double er_p = 0.9999;
 			
 		if ( gi==(i  ) & gj==(j+1) & gk==(k  ) ) { 
 		
-			if (wc3 > er_p) {
+			rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc3+er_p)+r0;
+			P = (wc1*(p0-p0)+wc2*(p1-p0)+wc4*(p3-p0)+wc5*(p4-p0)+wc6*(p5-p0)+wc7*(p6-p0)+wc8*(p7-p0))/(1-wc3+er_p)+p0;
 
-				rho = r2;
-				P = p2;
-
-
-			}
-			else {
-
-				rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc3)+rho0;
-
-				P = (wc1*(p0-P0)+wc2*(p1-P0)+wc4*(p3-P0)+wc5*(p4-P0)+wc6*(p5-P0)+wc7*(p6-P0)+wc8*(p7-P0))/(1-wc3)+P0;
-
-			}
-				
-				
 			U = (wc1*u0+wc2*u1+wc4*u3+wc5*u4+wc6*u5+wc7*u6+wc8*u7)/(2-wc3);
 			V = (wc1*v0+wc2*v1+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7)/(2-wc3);
 			W = (wc1*w0+wc2*w1+wc4*w3+wc5*w4+wc6*w5+wc7*w6+wc8*w7)/(2-wc3);
@@ -287,21 +249,9 @@ double er_p = 0.9999;
 			
 		if ( gi==(i  ) & gj==(j  ) & gk==(k+1) ) { 
 		
-			if (wc4 > er_p) {
+			rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc4+er_p)+r0;
+			P = (wc1*(p0-p0)+wc2*(p1-p0)+wc3*(p2-p0)+wc5*(p4-p0)+wc6*(p5-p0)+wc7*(p6-p0)+wc8*(p7-p0))/(1-wc4+er_p)+p0;
 
-				rho = r3;
-				P = p3;
-
-			}
-			else {
-
-				rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc4)+rho0;
-
-				P = (wc1*(p0-P0)+wc2*(p1-P0)+wc3*(p2-P0)+wc5*(p4-P0)+wc6*(p5-P0)+wc7*(p6-P0)+wc8*(p7-P0))/(1-wc4)+P0;
-
-			}
-				
-			
 			U = (wc1*u0+wc2*u1+wc3*u2+wc5*u4+wc6*u5+wc7*u6+wc8*u7)/(2-wc4);
 			V = (wc1*v0+wc2*v1+wc3*v2+wc5*v4+wc6*v5+wc7*v6+wc8*v7)/(2-wc4);
 			W = (wc1*w0+wc2*w1+wc3*w2+wc5*w4+wc6*w5+wc7*w6+wc8*w7)/(2-wc4);
@@ -321,24 +271,9 @@ double er_p = 0.9999;
 			
 		if ( gi==(i+1) & gj==(j+1) & gk==(k  ) ) { 
 			
-			
-			if (wc5 > er_p) {
+			rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc5+er_p)+r0;
+			P = (wc1*(p0-p0)+wc2*(p1-p0)+wc3*(p2-p0)+wc4*(p3-p0)+wc6*(p5-p0)+wc7*(p6-p0)+wc8*(p7-p0))/(1-wc5+er_p)+p0;
 
-				rho = r4;
-				P = p4;
-
-
-			}
-			else {
-
-				rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc5)+rho0;
-
-				P = (wc1*(p0-P0)+wc2*(p1-P0)+wc3*(p2-P0)+wc4*(p3-P0)+wc6*(p5-P0)+wc7*(p6-P0)+wc8*(p7-P0))/(1-wc5)+P0;
-
-			}
-				
-			
-			
 			U = (wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc6*u5+wc7*u6+wc8*u7)/(2-wc5);
 			V = (wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc6*v5+wc7*v6+wc8*v7)/(2-wc5);
 			W = (wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc6*w5+wc7*w6+wc8*w7)/(2-wc5);
@@ -356,24 +291,9 @@ double er_p = 0.9999;
 			
 		if ( gi==(i+1) & gj==(j  ) & gk==(k+1) ) { 
 			
-			
-			if (wc6 > er_p) {
+			rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc6+er_p)+r0;
+			P = (wc1*(p0-p0)+wc2*(p1-p0)+wc3*(p2-p0)+wc4*(p3-p0)+wc5*(p4-p0)+wc7*(p6-p0)+wc8*(p7-p0))/(1-wc6+er_p)+p0;
 
-				rho = r5;
-				P = p5;
-
-
-			}
-			else {
-
-				rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc6)+rho0;
-
-				P = (wc1*(p0-P0)+wc2*(p1-P0)+wc3*(p2-P0)+wc4*(p3-P0)+wc5*(p4-P0)+wc7*(p6-P0)+wc8*(p7-P0))/(1-wc6)+P0;
-
-			}
-			
-				
-			
 			U = (wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc7*u6+wc8*u7)/(2-wc6);
 			V = (wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc7*v6+wc8*v7)/(2-wc6);
 			W = (wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc7*w6+wc8*w7)/(2-wc6);
@@ -390,22 +310,10 @@ double er_p = 0.9999;
 			}
 			
 		if ( gi==(i  ) & gj==(j+1) & gk==(k+1) ) { 
-			
-			if (wc7 > er_p) {
 
-				rho = r6;
-				P = p6;
+			rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc8*(r7-rho0))/(1-wc7+er_p)+r0;
+			P = (wc1*(p0-p0)+wc2*(p1-p0)+wc3*(p2-p0)+wc4*(p3-p0)+wc5*(p4-p0)+wc6*(p5-p0)+wc8*(p7-p0))/(1-wc7+er_p)+p0;
 
-			}
-			else {
-
-				rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc8*(r7-rho0))/(1-wc7)+rho0;
-
-				P = (wc1*(p0-P0)+wc2*(p1-P0)+wc3*(p2-P0)+wc4*(p3-P0)+wc5*(p4-P0)+wc6*(p5-P0)+wc8*(p7-P0))/(1-wc7)+P0;
-
-			}
-				
-				
 			U = (wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc8*u7)/(2-wc7);
 			V = (wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc8*v7)/(2-wc7);
 			W = (wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc8*w7)/(2-wc7);
@@ -423,22 +331,9 @@ double er_p = 0.9999;
 		if ( gi==(i+1) & gj==(j+1) & gk==(k+1) ) {
 			
 			
-			if (wc8 > er_p) {
+			rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0))/(1-wc8+er_p)+r0;
+			P = (wc1*(p0-p0)+wc2*(p1-p0)+wc3*(p2-p0)+wc4*(p3-p0)+wc5*(p4-p0)+wc6*(p5-p0)+wc7*(p6-p0))/(1-wc8+er_p)+p0;
 
-				rho = r7;
-				P = p7;
-
-
-			}
-			else {
-
-				rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0))/(1-wc8)+rho0;
-				
-				P = (wc1*(p0-P0)+wc2*(p1-P0)+wc3*(p2-P0)+wc4*(p3-P0)+wc5*(p4-P0)+wc6*(p5-P0)+wc7*(p6-P0))/(1-wc8)+P0;
-
-			}
-				
-			
 			U = (wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc7*u6)/(2-wc8);
 			V = (wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6)/(2-wc8);
 			W = (wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6)/(2-wc8);
@@ -460,5 +355,4 @@ double er_p = 0.9999;
 
 
 
-	
 }
