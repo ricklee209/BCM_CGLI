@@ -53,7 +53,7 @@ double t0,t1,t2,t3,t4,t5,t6,t7;
 
 double wc1, wc2, wc3, wc4, wc5, wc6, wc7, wc8;
 
-double er_p = 0.9999;
+double er_p = 0.00001;
 
 // ---- GCindex => IPsur => weight ---- //
 
