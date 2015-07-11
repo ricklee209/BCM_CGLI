@@ -176,8 +176,6 @@ double er_p = 0.00001;
 
 		T = wc1*(t0-T0)+wc2*(t1-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc5*(t4-T0)+wc6*(t5-T0)+wc7*(t6-T0)+wc8*(t7-T0)+T0;
 		
-		T = wc1*t0+wc2*t1+wc3*t2+wc4*t3+wc5*t4+wc6*t5+wc7*t6+wc8*t7;
-		
 		rho = P/R/(0.5*(T+Th));
 		
 		
@@ -195,7 +193,7 @@ double er_p = 0.00001;
 			U = (wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc7*u6+wc8*u7)/(2-wc1);
 			V = (wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7)/(2-wc1);
 			W = (wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6+wc8*w7)/(2-wc1);
-			T = (wc2*(t1-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc5*(t4-T0)+wc6*(t5-T0)+wc7*(t6-T0)+wc8*(t7-T0)+Th)/(2-wc1)+T0;
+			T = (wc2*(t1-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc5*(t4-T0)+wc6*(t5-T0)+wc7*(t6-T0)+wc8*(t7-T0)+(Th-T0))/(2-wc1)+T0;
 
 			VV = U*U+V*V+W*W;
 
@@ -217,7 +215,7 @@ double er_p = 0.00001;
 			U = (wc1*u0+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc7*u6+wc8*u7)/(2-wc2);
 			V = (wc1*v0+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7)/(2-wc2);
 			W = (wc1*w0+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6+wc8*w7)/(2-wc2);
-			T = (wc1*(t0-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc5*(t4-T0)+wc6*(t5-T0)+wc7*(t6-T0)+wc8*(t7-T0)+Th)/(2-wc2)+T0;
+			T = (wc1*(t0-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc5*(t4-T0)+wc6*(t5-T0)+wc7*(t6-T0)+wc8*(t7-T0)+(Th-T0))/(2-wc2)+T0;
 			
 			VV = U*U+V*V+W*W;
 			
@@ -238,7 +236,7 @@ double er_p = 0.00001;
 			U = (wc1*u0+wc2*u1+wc4*u3+wc5*u4+wc6*u5+wc7*u6+wc8*u7)/(2-wc3);
 			V = (wc1*v0+wc2*v1+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7)/(2-wc3);
 			W = (wc1*w0+wc2*w1+wc4*w3+wc5*w4+wc6*w5+wc7*w6+wc8*w7)/(2-wc3);
-			T = (wc1*(t0-T0)+wc2*(t1-T0)+wc4*(t3-T0)+wc5*(t4-T0)+wc6*(t5-T0)+wc7*(t6-T0)+wc8*(t7-T0)+Th)/(2-wc3)+T0;
+			T = (wc1*(t0-T0)+wc2*(t1-T0)+wc4*(t3-T0)+wc5*(t4-T0)+wc6*(t5-T0)+wc7*(t6-T0)+wc8*(t7-T0)+(Th-T0))/(2-wc3)+T0;
 
 			VV = U*U+V*V+W*W;
 			
@@ -259,7 +257,7 @@ double er_p = 0.00001;
 			U = (wc1*u0+wc2*u1+wc3*u2+wc5*u4+wc6*u5+wc7*u6+wc8*u7)/(2-wc4);
 			V = (wc1*v0+wc2*v1+wc3*v2+wc5*v4+wc6*v5+wc7*v6+wc8*v7)/(2-wc4);
 			W = (wc1*w0+wc2*w1+wc3*w2+wc5*w4+wc6*w5+wc7*w6+wc8*w7)/(2-wc4);
-			T = (wc1*(t0-T0)+wc2*(t1-T0)+wc3*(t2-T0)+wc5*(t4-T0)+wc6*(t5-T0)+wc7*(t6-T0)+wc8*(t7-T0)+Th)/(2-wc4)+T0;
+			T = (wc1*(t0-T0)+wc2*(t1-T0)+wc3*(t2-T0)+wc5*(t4-T0)+wc6*(t5-T0)+wc7*(t6-T0)+wc8*(t7-T0)+(Th-T0))/(2-wc4)+T0;
 
 			
 			VV = U*U+V*V+W*W;
@@ -282,7 +280,7 @@ double er_p = 0.00001;
 			U = (wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc6*u5+wc7*u6+wc8*u7)/(2-wc5);
 			V = (wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc6*v5+wc7*v6+wc8*v7)/(2-wc5);
 			W = (wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc6*w5+wc7*w6+wc8*w7)/(2-wc5);
-			T = (wc1*(t0-T0)+wc2*(t1-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc6*(t5-T0)+wc7*(t6-T0)+wc8*(t7-T0)+Th)/(2-wc5)+T0;
+			T = (wc1*(t0-T0)+wc2*(t1-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc6*(t5-T0)+wc7*(t6-T0)+wc8*(t7-T0)+(Th-T0))/(2-wc5)+T0;
 
 			VV = U*U+V*V+W*W;
 			
@@ -304,7 +302,7 @@ double er_p = 0.00001;
 			U = (wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc7*u6+wc8*u7)/(2-wc6);
 			V = (wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc7*v6+wc8*v7)/(2-wc6);
 			W = (wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc7*w6+wc8*w7)/(2-wc6);
-			T = (wc1*(t0-T0)+wc2*(t1-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc5*(t4-T0)+wc7*(t6-T0)+wc8*(t7-T0)+Th)/(2-wc6)+T0;
+			T = (wc1*(t0-T0)+wc2*(t1-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc5*(t4-T0)+wc7*(t6-T0)+wc8*(t7-T0)+(Th-T0))/(2-wc6)+T0;
 
 			VV = U*U+V*V+W*W;
 			
@@ -325,7 +323,7 @@ double er_p = 0.00001;
 			U = (wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc8*u7)/(2-wc7);
 			V = (wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc8*v7)/(2-wc7);
 			W = (wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc8*w7)/(2-wc7);
-			T = (wc1*(t0-T0)+wc2*(t1-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc5*(t4-T0)+wc6*(t5-T0)+wc8*(t7-T0)+Th)/(2-wc7)+T0;
+			T = (wc1*(t0-T0)+wc2*(t1-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc5*(t4-T0)+wc6*(t5-T0)+wc8*(t7-T0)+(Th-T0))/(2-wc7)+T0;
 
 			VV = U*U+V*V+W*W;
 			
@@ -346,7 +344,7 @@ double er_p = 0.00001;
 			U = (wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc7*u6)/(2-wc8);
 			V = (wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6)/(2-wc8);
 			W = (wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6)/(2-wc8);
-			T = (wc1*(t0-T0)+wc2*(t1-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc6*(t5-T0)+wc6*(t5-T0)+wc7*(t6-T0)+Th)/(2-wc8)+T0;
+			T = (wc1*(t0-T0)+wc2*(t1-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc6*(t5-T0)+wc6*(t5-T0)+wc7*(t6-T0)+(Th-T0))/(2-wc8)+T0;
 
 			VV = U*U+V*V+W*W;
 			
