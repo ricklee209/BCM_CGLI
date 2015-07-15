@@ -344,7 +344,7 @@ double er_p = 0.00001;
 			U = (wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc7*u6)/(2-wc8);
 			V = (wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6)/(2-wc8);
 			W = (wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6)/(2-wc8);
-			T = (wc1*(t0-T0)+wc2*(t1-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc6*(t5-T0)+wc6*(t5-T0)+wc7*(t6-T0)+(Th-T0))/(2-wc8)+T0;
+			T = (wc1*(t0-T0)+wc2*(t1-T0)+wc3*(t2-T0)+wc4*(t3-T0)+wc5*(t4-T0)+wc6*(t5-T0)+wc7*(t6-T0)+(Th-T0))/(2-wc8)+T0;
 
 			VV = U*U+V*V+W*W;
 			
