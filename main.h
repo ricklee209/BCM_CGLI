@@ -661,6 +661,7 @@ double (*Rku1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 
 double (*Residual1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
+double (*Wig)[3][X_size][Y_size][Z_size] = new double[Ncube][3][X_size][Y_size][Z_size],
 
 double (*er) = new double[10]
 
@@ -735,6 +736,26 @@ int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
 
 double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
 
+// ================================================================================ //
+);
+
+
+void BCM_Wiggle_detection
+	(
+	// ================================================================================ //
+	int myid,
+
+	int ncube,
+
+	double deltaT,
+
+	double deltaTau,
+
+	double e,
+
+	double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+	double (*Wig)[3][X_size][Y_size][Z_size] = new double[Ncube][3][X_size][Y_size][Z_size]
 // ================================================================================ //
 );
 

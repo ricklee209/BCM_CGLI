@@ -53,6 +53,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 	double (*Rku1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
 	double (*Residual1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+	
+	double (*Wig)[3][X_size][Y_size][Z_size] = new double[Ncube][3][X_size][Y_size][Z_size],
 
 	double (*er) = new double[10]
 
@@ -782,6 +784,17 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					Fav4 = fabs(W)*dU4+deltaU*rho*W+deltaP;
 					Fav5 = fabs(W)*dU5+deltaU*rho*H+deltaP*W;
 
+
+					#if iLES == 1
+						
+						Fav1 = Fav1*Wig[icube][3][i][j][k-1];
+						Fav2 = Fav2*Wig[icube][3][i][j][k-1];
+						Fav3 = Fav3*Wig[icube][3][i][j][k-1];
+						Fav4 = Fav4*Wig[icube][3][i][j][k-1];
+						Fav5 = Fav5*Wig[icube][3][i][j][k-1];
+
+					#endif
+
 					/* inviscid fluxes */
 
 					inFz1 = 0.5*((_rho*_W+rho_*W_-Ep*Fav1));
@@ -937,6 +950,16 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					Fav3 = fabs(W)*dU3+deltaU*rho*V;
 					Fav4 = fabs(W)*dU4+deltaU*rho*W+deltaP;
 					Fav5 = fabs(W)*dU5+deltaU*rho*H+deltaP*W;
+					
+					#if iLES == 1
+						
+						Fav1 = Fav1*Wig[icube][3][i][j][k];
+						Fav2 = Fav2*Wig[icube][3][i][j][k];
+						Fav3 = Fav3*Wig[icube][3][i][j][k];
+						Fav4 = Fav4*Wig[icube][3][i][j][k];
+						Fav5 = Fav5*Wig[icube][3][i][j][k];
+
+					#endif
 
 					/* inviscid fluxes */
 
@@ -1367,6 +1390,16 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					Fav4 = fabs(U)*dU4+deltaU*rho*W;
 					Fav5 = fabs(U)*dU5+deltaU*rho*H+deltaP*U;
 
+					#if iLES == 1
+						
+						Fav1 = Fav1*Wig[icube][1][i-1][j][k];
+						Fav2 = Fav2*Wig[icube][1][i-1][j][k];
+						Fav3 = Fav3*Wig[icube][1][i-1][j][k];
+						Fav4 = Fav4*Wig[icube][1][i-1][j][k];
+						Fav5 = Fav5*Wig[icube][1][i-1][j][k];
+
+					#endif
+
 					/* inviscid fluxes */
 					inFx1 = 0.5*((_rho*_U+rho_*U_)-Ep*Fav1);
 					inFx2 = 0.5*((_rho*_U*_U+_P+rho_*U_*U_+P_)-Ep*Fav2);
@@ -1529,6 +1562,16 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					Fav3 = fabs(U)*dU3+deltaU*rho*V;
 					Fav4 = fabs(U)*dU4+deltaU*rho*W;
 					Fav5 = fabs(U)*dU5+deltaU*rho*H+deltaP*U;
+					
+					#if iLES == 1
+						
+						Fav1 = Fav1*Wig[icube][1][i][j][k];
+						Fav2 = Fav2*Wig[icube][1][i][j][k];
+						Fav3 = Fav3*Wig[icube][1][i][j][k];
+						Fav4 = Fav4*Wig[icube][1][i][j][k];
+						Fav5 = Fav5*Wig[icube][1][i][j][k];
+
+					#endif
 
 					/* inviscid fluxes */
 					inFx1i = 0.5*((_rho*_U+rho_*U_)-Ep*Fav1);
@@ -1948,13 +1991,23 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						deltaP = C_p*V/S*(P_-_P)+(C_p-fabs(V))*rho*(V_-_V);
 
 					#endif
-
+					
 					/* artificial viscosity */
 					Fav1 = fabs(V)*dU1+deltaU*rho;
 					Fav2 = fabs(V)*dU2+deltaU*rho*U;
 					Fav3 = fabs(V)*dU3+deltaU*rho*V+deltaP;
 					Fav4 = fabs(V)*dU4+deltaU*rho*W;
 					Fav5 = fabs(V)*dU5+deltaU*rho*H+deltaP*V;
+					
+					#if iLES == 1
+						
+						Fav1 = Fav1*Wig[icube][2][i][j-1][k];
+						Fav2 = Fav2*Wig[icube][2][i][j-1][k];
+						Fav3 = Fav3*Wig[icube][2][i][j-1][k];
+						Fav4 = Fav4*Wig[icube][2][i][j-1][k];
+						Fav5 = Fav5*Wig[icube][2][i][j-1][k];
+
+					#endif
 
 					/* inviscid fluxes */
 					inFy1 = 0.5*((_rho*_V+rho_*V_-Ep*Fav1));
@@ -2115,6 +2168,16 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					Fav3 = fabs(V)*dU3+deltaU*rho*V+deltaP;
 					Fav4 = fabs(V)*dU4+deltaU*rho*W;
 					Fav5 = fabs(V)*dU5+deltaU*rho*H+deltaP*V;
+
+					#if iLES == 1
+						
+						Fav1 = Fav1*Wig[icube][2][i][j][k];
+						Fav2 = Fav2*Wig[icube][2][i][j][k];
+						Fav3 = Fav3*Wig[icube][2][i][j][k];
+						Fav4 = Fav4*Wig[icube][2][i][j][k];
+						Fav5 = Fav5*Wig[icube][2][i][j][k];
+
+					#endif
 
 					/* inviscid fluxes */
 					inFy1i = 0.5*((_rho*_V+rho_*V_-Ep*Fav1));

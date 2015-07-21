@@ -40,6 +40,7 @@ int main(int argc, char **argv)
 
 
 #include "Resolution.h"
+#include "Pre_selection.h"
 
 
 	int statistic_step = 100000;    // ---- periodic step ---- //
@@ -1255,10 +1256,17 @@ int main(int argc, char **argv)
 					U1_);
 				
 				
+				#if iLES == 1
+					
+					BCM_Wiggle_detection(myid, Ncube, deltaT, deltaTau, e, U1_, Wig);
+
+				#endif
+
+
 				
 				BCM_Flux_XYZ_Viscous_Runge_kutta(myid, Ncube, RK, deltaT, deltaTau, e, FWS, csl, cube_size,
 					U1_,U1 ,U1q,U1p1,U1p2,Fabs,
-					Rku1,Residual1,
+					Rku1,Residual1,Wig,
 					er);
 					
 

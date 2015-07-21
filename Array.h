@@ -79,3 +79,7 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 /**** Absorbing force term ****/
 double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim];
 
+
+/**** artificial dissipation coefficient ****/
+double (*Wig)[3][X_size][Y_size][Z_size] = new double[Ncube][3][X_size][Y_size][Z_size];
+

@@ -16,3 +16,12 @@
 // ---- PC : my desktop ---- //
 
 #define PC
+
+
+// ---- Implicit LES ---- //
+
+// ---- iLES=0 : DNS---- //
+
+// ---- iLES=1 : iLES model ---- //
+
+#define iLES 1
