@@ -48,23 +48,23 @@ int main(int argc, char **argv)
 
 	int dp_step = 10000;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step =1;
+	int iteration_end_step = 5;
 	int output_step = 1;
 	int count = 1;	
 	int step;
 
-	double deltaT = 0.01;
+	double deltaT = 0.005;
 	//double deltaT = 0.03;
-	double deltaTau = deltaT/100.0;
-	double e = 0.02;
+	double deltaTau = deltaT/200.0;
+	double e = 0.1;
 	double Th = 309.03531204896;
 	//double e = 0.00000001;
 	//double Th = 299.15681120;
 
 
-	int switch_initial = 1; // ---- 1 reading initial coniditon ---- //
+	int switch_initial = 0; // ---- 1 reading initial coniditon ---- //
 
-	int switch_IBM = 1;     // ---- 1 run IBM ---- //
+	int switch_IBM = 0;     // ---- 1 run IBM ---- //
 
 	int switch_output = 0;  // ---- 1 output grid file ---- //
 
@@ -1196,7 +1196,7 @@ int main(int argc, char **argv)
 
 
 
-				BCM_X_boundary_condition(myid, NXbc_l, NXbc_u, Xbc_l, Xbc_u, U1_);
+				//BCM_X_boundary_condition(myid, NXbc_l, NXbc_u, Xbc_l, Xbc_u, U1_);
 
 				//BCM_Y_boundary_condition(NYbc_l, NYbc_u, Ybc_l, Ybc_u, U1_);
 				
@@ -1207,15 +1207,15 @@ int main(int argc, char **argv)
 
 				BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
 				
-				//BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
+				BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
 
-				#pragma omp parallel 
+
 				for (int ig = 1; ig <= 1; ig++) {
 
 					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
 
 					BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
-
+					
 
 					//BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
 
@@ -1254,10 +1254,12 @@ int main(int argc, char **argv)
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
 				
+
+				BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
 				
 				
 				BCM_Flux_XYZ_Viscous_Runge_kutta(myid, Ncube, RK, deltaT, deltaTau, e, FWS, csl, cube_size,
-					U1_,U1 ,U1q,U1p1,U1p2,Fabs,
+					U1_,U1 ,U1q,U1p1,U1p2,Fabs,Roe_dis,
 					Rku1,Residual1,
 					er);
 					
@@ -1398,7 +1400,7 @@ int main(int argc, char **argv)
 
 		if ( step%output_step == 0 ) {
 
-			BCM_Nusselt_Sphere(myid, Ncube, Th, csl, Xcnt, Ycnt, Zcnt, FWS, U1);
+			//BCM_Nusselt_Sphere(myid, Ncube, Th, csl, Xcnt, Ycnt, Zcnt, FWS, U1);
 
 			BCM_Output(myid, Ncube, step, switch_output, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt);
 

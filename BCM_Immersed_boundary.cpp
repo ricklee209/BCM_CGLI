@@ -798,7 +798,7 @@ void BCM_Immersed_boundary
 
 
 
-		if (dis > 3*dx*dx | iflag_total == 0) {
+		if (dis > dx*dx | iflag_total == 0) {
 
 			Ndis_min = MAX;
 
@@ -821,7 +821,7 @@ void BCM_Immersed_boundary
 
 			dis = (BIx-xcnt)*(BIx-xcnt)+(BIy-ycnt)*(BIy-ycnt)+(BIz-zcnt)*(BIz-zcnt);
 
-			if (dis > 3*dx*dx) {
+			if (dis > dx*dx) {
 				
 				FWS[icube][i][j][k] = IFLUID; 
 				continue;
