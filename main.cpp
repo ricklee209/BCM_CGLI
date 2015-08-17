@@ -212,6 +212,8 @@ int main(int argc, char **argv)
 					Fabs[icube][i][j][k][3] = 0; 
 					Fabs[icube][i][j][k][4] = 0;  
 
+					Roe_dis[icube][i][j][k] = 1.0;
+
 				}
 			}
 		}

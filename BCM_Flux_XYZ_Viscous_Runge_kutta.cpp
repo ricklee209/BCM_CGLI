@@ -2771,10 +2771,10 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 					Rk1 = Fabs[icube][i][j][k][0]+Rp1+Rf1;
-					Rk2 = Fabs[icube][i][j][k][1]+Rp2+Rf2+vF2-(rho-rho0)*9.81;
+					Rk2 = Fabs[icube][i][j][k][1]+Rp2+Rf2+vF2;
 					Rk3 = Fabs[icube][i][j][k][2]+Rp3+Rf3+vF3;
 					Rk4 = Fabs[icube][i][j][k][3]+Rp4+Rf4+vF4;
-					Rk5 = Fabs[icube][i][j][k][4]+Rp5+Rf5+vF5-(rho-rho0)*9.81*U;
+					Rk5 = Fabs[icube][i][j][k][4]+Rp5+Rf5+vF5;
 					// ------------------------------------------------------------------------------------------- //
 					// --------------------------------------- Runge-Kutta --------------------------------------- //
 
