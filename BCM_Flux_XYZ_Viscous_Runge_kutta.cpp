@@ -773,7 +773,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-fabs(W))*temp1+temp2;
 
-						deltaP = C_p*W/S*(P_-_P)+(C_p-fabs(W))*rho*(W_-_W);
+						deltaP = beta*W/S*(P_-_P)+(C_p-fabs(W))*rho*(W_-_W);
 
 					#endif
 
@@ -922,7 +922,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaP = W/S*(P_-_P)+(C_p-fabs(W))*rho*(W_-_W);
 
-						#elif ROE == 4
+					#elif ROE == 4
 
 						S = sqrt(C);
 
@@ -938,7 +938,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-fabs(W))*temp1+temp2;
 
-						deltaP = C_p*W/S*(P_-_P)+(C_p-fabs(W))*rho*(W_-_W);
+						deltaP = beat*W/S*(P_-_P)+(C_p-fabs(W))*rho*(W_-_W);
 
 
 					#endif
@@ -1374,7 +1374,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-fabs(U))*temp1+temp2;
 
-						deltaP = C_p*U/S*(P_-_P)+(C_p-fabs(U))*rho*(U_-_U);
+						deltaP = beta*U/S*(P_-_P)+(C_p-fabs(U))*rho*(U_-_U);
 
 
 					#endif
@@ -1543,7 +1543,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-fabs(U))*temp1+temp2;
 
-						deltaP = C_p*U/S*(P_-_P)+(C_p-fabs(U))*rho*(U_-_U);
+						deltaP = beta*U/S*(P_-_P)+(C_p-fabs(U))*rho*(U_-_U);
 
 
 					#endif
@@ -1976,7 +1976,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-fabs(V))*temp1+temp2;
 
-						deltaP = C_p*V/S*(P_-_P)+(C_p-fabs(V))*rho*(V_-_V);
+						deltaP = beta*V/S*(P_-_P)+(C_p-fabs(V))*rho*(V_-_V);
 
 					#endif
 
@@ -2140,7 +2140,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-fabs(V))*temp1+temp2;
 
-						deltaP = C_p*V/S*(P_-_P)+(C_p-fabs(V))*rho*(V_-_V);
+						deltaP = beta*V/S*(P_-_P)+(C_p-fabs(V))*rho*(V_-_V);
 
 
 
