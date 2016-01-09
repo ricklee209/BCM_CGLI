@@ -40,6 +40,7 @@ int main(int argc, char **argv)
 
 
 #include "Resolution.h"
+#include "Pre_selection.h"
 
 
 	int statistic_step = 100000;    // ---- periodic step ---- //
@@ -1146,6 +1147,13 @@ int main(int argc, char **argv)
 */
 
 	double xc,yc,zc,dis;
+	
+	
+	#ifdef NODT
+	
+		iteration_end_step = 1;
+	
+	#endif
 
 
 // =============================================== //
@@ -1212,7 +1220,7 @@ int main(int argc, char **argv)
 				BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
 
 
-				for (int ig = 1; ig <= 1; ig++) {
+				for (int ig = 1; ig <= 10; ig++) {
 
 					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
 
@@ -1257,7 +1265,7 @@ int main(int argc, char **argv)
 					U1_);
 				
 
-				BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
+				// BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
 				
 				
 				BCM_Flux_XYZ_Viscous_Runge_kutta(myid, Ncube, RK, deltaT, deltaTau, e, FWS, csl, cube_size,

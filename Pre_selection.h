@@ -16,3 +16,9 @@
 // ---- PC : my desktop ---- //
 
 #define PC
+
+
+// ---- DT : dual time stepping ---- //
+// ---- NODT : No dual time stepping ---- //
+
+#define NODT 
