@@ -366,11 +366,6 @@ void BCM_Initial_condition
 					U1_[icube][i][j][k][3] = U1[icube][i][j][k][3]; 
 					U1_[icube][i][j][k][4] = U1[icube][i][j][k][4]; 
 
-					U1q[icube][i][j][k][0] = U1[icube][i][j][k][0]; 
-					U1q[icube][i][j][k][1] = U1[icube][i][j][k][1]; 
-					U1q[icube][i][j][k][2] = U1[icube][i][j][k][2]; 
-					U1q[icube][i][j][k][3] = U1[icube][i][j][k][3]; 
-					U1q[icube][i][j][k][4] = U1[icube][i][j][k][4]; 
 					
 				}
 			}
