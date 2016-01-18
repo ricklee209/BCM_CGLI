@@ -88,32 +88,6 @@ void BCM_Initial_condition
 	}
 
 	
-	for (icube = 1; icube < ncube; icube++) {  
-
-#pragma omp parallel for private(j,k)
-
-		for (i = 0; i <= nxxx; i++) {
-			for (j = 0; j <= nyyy; j++) {
-				for (k = 0; k <= nzzz; k++) {  
-
-					U1_[icube][i][j][k][0] = U1[icube][i][j][k][0]; 
-					U1_[icube][i][j][k][1] = U1[icube][i][j][k][1]; 
-					U1_[icube][i][j][k][2] = U1[icube][i][j][k][2]; 
-					U1_[icube][i][j][k][3] = U1[icube][i][j][k][3]; 
-					U1_[icube][i][j][k][4] = U1[icube][i][j][k][4]; 
-
-					U1q[icube][i][j][k][0] = U1[icube][i][j][k][0]; 
-					U1q[icube][i][j][k][1] = U1[icube][i][j][k][1]; 
-					U1q[icube][i][j][k][2] = U1[icube][i][j][k][2]; 
-					U1q[icube][i][j][k][3] = U1[icube][i][j][k][3]; 
-					U1q[icube][i][j][k][4] = U1[icube][i][j][k][4]; 
-					
-				}
-			}
-		}
-
-	}
-
 
 	// --------------------------------------------------------------------------------------- //
 	// --------------------------------------------------------------------------------------- //		
@@ -367,6 +341,8 @@ void BCM_Initial_condition
 
 	// ------------------------- Previous_step ------------------------- //
 	// ----------------------------------------------------------------- //
+
+		
 	
 		
 		delete []Solution;
@@ -374,6 +350,34 @@ void BCM_Initial_condition
 
 	
 	}    // ---- if (switch_initial == 1) ---- //
+
+	
+	for (icube = 1; icube < ncube; icube++) {  
+
+#pragma omp parallel for private(j,k)
+
+		for (i = 0; i <= nxxx; i++) {
+			for (j = 0; j <= nyyy; j++) {
+				for (k = 0; k <= nzzz; k++) {  
+
+					U1_[icube][i][j][k][0] = U1[icube][i][j][k][0]; 
+					U1_[icube][i][j][k][1] = U1[icube][i][j][k][1]; 
+					U1_[icube][i][j][k][2] = U1[icube][i][j][k][2]; 
+					U1_[icube][i][j][k][3] = U1[icube][i][j][k][3]; 
+					U1_[icube][i][j][k][4] = U1[icube][i][j][k][4]; 
+
+					U1q[icube][i][j][k][0] = U1[icube][i][j][k][0]; 
+					U1q[icube][i][j][k][1] = U1[icube][i][j][k][1]; 
+					U1q[icube][i][j][k][2] = U1[icube][i][j][k][2]; 
+					U1q[icube][i][j][k][3] = U1[icube][i][j][k][3]; 
+					U1q[icube][i][j][k][4] = U1[icube][i][j][k][4]; 
+					
+				}
+			}
+		}
+
+	}
+
 
 
 }

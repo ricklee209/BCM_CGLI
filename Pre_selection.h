@@ -22,3 +22,5 @@
 // ---- NODT : No dual time stepping ---- //
 
 #define NODT 
+
+#define Char_D 1.0 

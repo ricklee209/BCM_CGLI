@@ -48,7 +48,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 
 #include "BCM.h"
 #include "prm.h"
-
+#include "Pre_selection.h"
 
 	
 	double rho,U,V,W,VV,P,C,T,h,H,E;
@@ -104,7 +104,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 
 						V_in_1 = pow( (ny-j+0.5)/(NcubeY*1.0), 3.0 )* V_in_0*C_plan;
 
-						Sigma_in = Sigma_in_0*V_in_1/0.000045;
+						Sigma_in = Sigma_in_0*V_in_1/Char_D;
 
 						Fabs[iicube][i][j][k][0] = -( V_in_1*( rho  -U1_[iicube][i][j-1][k][0] )/dy+Sigma_in*(rho  -rho0   ) );
 						Fabs[iicube][i][j][k][1] = -( V_in_1*( rho*U-U1_[iicube][i][j-1][k][1] )/dy+Sigma_in*(rho*U-rho0*U0) );
@@ -185,7 +185,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 
 						V_out_1 = pow( (j-n_buffer+0.5)/(NcubeY*1.0), 3.0 )* V_out_0*C_plan;
 
-						Sigma_out = Sigma_out_0*V_out_1/0.000045;
+						Sigma_out = Sigma_out_0*V_out_1/Char_D;
 
 						
 						Fabs[iicube][i][j][k][0] = -( V_out_1*( rho  -U1_[iicube][i][j-1][k][0] )/dy+Sigma_out*(rho  -rho0)    );
