@@ -482,71 +482,6 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 					if( IFk1 == IFLUID  && IF_k1 == IFLUID) { 
 
 						if ( k==2 | IF_k2 != IFLUID ) {
@@ -691,23 +626,23 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					/* flux varibale */
 
+					#if ROE != 4
 					
-					temp5 = sqrt(_rho);
-					temp6 = sqrt(rho_);
+						temp5 = sqrt(_rho);
+						temp6 = sqrt(rho_);
 					
-					
-					// temp5 = 1.0;
-					// temp6 = 1.0;
-					temp4 = temp5+temp6;
+						temp4 = temp5+temp6;
 
-					rho = sqrt(_rho*rho_);
-					U = (temp5*_U+temp6*U_)/temp4;
-					V = (temp5*_V+temp6*V_)/temp4;
-					W = (temp5*_W+temp6*W_)/temp4;
-					VV = U*U+V*V+W*W;
-					H = (temp5*_H+temp6*H_)/temp4;
-					C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-					P = rho*C/K;
+						rho = sqrt(_rho*rho_);
+						U = (temp5*_U+temp6*U_)/temp4;
+						V = (temp5*_V+temp6*V_)/temp4;
+						W = (temp5*_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
+
+					#endif
 
 
 
@@ -718,7 +653,6 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						temp = 0.5*(1+beta)*W;    // ---- U' ---- //
 
 						S = 0.5*sqrt(4*beta*C+W*W*(1-beta)*(1-beta));   // ---- C' ---- //
-
 
 						temp1 = (P_-_P)/rho/beta/C;
 
@@ -775,13 +709,36 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					#elif ROE == 4
 
+						beta = sqrt(max(VV_/C_,_VV/_C));    // ---- theda ---- //
+
+						temp1 = 0.5*(_U+U_)+0.5*beta*(_U-U_);
+						temp2 = 0.5*(_V+V_)+0.5*beta*(_V-V_);
+						temp3 = 0.5*(_W+W_)+0.5*beta*(_W-W_);
+
+						U_ = 0.5*(U_+_U)+0.5*beta*(U_-_U);
+						V_ = 0.5*(V_+_V)+0.5*beta*(V_-_V);
+						W_ = 0.5*(W_+_W)+0.5*beta*(W_-_W);
+
+						_U = temp1;
+						_V = temp2;
+						_W = temp3;
+
+						temp5 = sqrt(_rho);
+						temp6 = sqrt(rho_);
+					
+						temp4 = temp5+temp6;
+
+						rho = sqrt(_rho*rho_);
+						U = (temp5*_U+temp6*U_)/temp4;
+						V = (temp5*_V+temp6*V_)/temp4;
+						W = (temp5*_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
+
+
 						S = sqrt(C);
-
-						theda_p = sqrt(VV)/S;
-						
-						beta = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1+theda_p*theda_p);
-
-						C_p = theda_p*S;
 
 						temp1 = (P_-_P)/rho/C;
 
@@ -789,7 +746,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-fabs(W))*temp1+temp2;
 
-						deltaP = beta*W/S*(P_-_P)+(C_p-fabs(W))*rho*(W_-_W);
+						deltaP = W/S*(P_-_P)+(S-fabs(W))*rho*(W_-_W);
 
 					#endif
 
@@ -863,33 +820,36 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					/* flux varibale */
 
 					
-					temp5 = sqrt(_rho);
-					temp6 = sqrt(rho_);
+					#if ROE != 4 
+
 					
+						temp5 = sqrt(_rho);
+						temp6 = sqrt(rho_);
+						temp4 = temp5+temp6;
+
+						rho = sqrt(_rho*rho_);
+						U = (temp5*_U+temp6*U_)/temp4;
+						V = (temp5*_V+temp6*V_)/temp4;
+						W = (temp5*_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
+
 					
-					// temp5 = 1.0;
-					// temp6 = 1.0;
-					temp4 = temp5+temp6;
-
-					rho = sqrt(_rho*rho_);
-					U = (temp5*_U+temp6*U_)/temp4;
-					V = (temp5*_V+temp6*V_)/temp4;
-					W = (temp5*_W+temp6*W_)/temp4;
-					VV = U*U+V*V+W*W;
-					H = (temp5*_H+temp6*H_)/temp4;
-					C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-					P = rho*C/K;
-
-
-					beta = max(VV/C,e);    // ---- theda ---- //
-					
-					temp = 0.5*(1+beta)*W;    // ---- U' ---- //
-
-					S = 0.5*sqrt(4*beta*C+W*W*(1-beta)*(1-beta));   // ---- C' ---- //
+					#endif
 
 
 
 					#if ROE == 1
+
+						
+						beta = max(VV/C,e);    // ---- theda ---- //
+					
+						temp = 0.5*(1+beta)*W;    // ---- U' ---- //
+
+						S = 0.5*sqrt(4*beta*C+W*W*(1-beta)*(1-beta));   // ---- C' ---- //
+
 
 						temp1 = (P_-_P)/rho/beta/C;
 
@@ -902,6 +862,14 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						deltaP = temp/S*(P_-_P)+(S-fabs(W)+temp3)*rho*(W_-_W);
 
 					#elif ROE == 2
+
+						
+						beta = max(VV/C,e);    // ---- theda ---- //
+					
+						temp = 0.5*(1+beta)*W;    // ---- U' ---- //
+
+						S = 0.5*sqrt(4*beta*C+W*W*(1-beta)*(1-beta));   // ---- C' ---- //
+
 
 						theda_p = VV/C;
 						U_p = 0.5*(1+theda_p)*W;
@@ -939,13 +907,36 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					#elif ROE == 4
 
+						beta = sqrt(max(VV_/C_,_VV/_C));    // ---- theda ---- //
+
+						temp1 = 0.5*(_U+U_)+0.5*beta*(_U-U_);
+						temp2 = 0.5*(_V+V_)+0.5*beta*(_V-V_);
+						temp3 = 0.5*(_W+W_)+0.5*beta*(_W-W_);
+
+						U_ = 0.5*(U_+_U)+0.5*beta*(U_-_U);
+						V_ = 0.5*(V_+_V)+0.5*beta*(V_-_V);
+						W_ = 0.5*(W_+_W)+0.5*beta*(W_-_W);
+
+						_U = temp1;
+						_V = temp2;
+						_W = temp3;
+
+						temp5 = sqrt(_rho);
+						temp6 = sqrt(rho_);
+					
+						temp4 = temp5+temp6;
+
+						rho = sqrt(_rho*rho_);
+						U = (temp5*_U+temp6*U_)/temp4;
+						V = (temp5*_V+temp6*V_)/temp4;
+						W = (temp5*_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
+
+
 						S = sqrt(C);
-
-						theda_p = sqrt(VV)/S;
-						
-						beta = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1+theda_p*theda_p);
-
-						C_p = theda_p*S;
 
 						temp1 = (P_-_P)/rho/C;
 
@@ -953,7 +944,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-fabs(W))*temp1+temp2;
 
-						deltaP = beat*W/S*(P_-_P)+(C_p-fabs(W))*rho*(W_-_W);
+						deltaP = W/S*(P_-_P)+(S-fabs(W))*rho*(W_-_W);
 
 
 					#endif
@@ -1290,33 +1281,34 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					/* flux varibale */
 
-					temp5 = sqrt(_rho);
-					temp6 = sqrt(rho_);
+					#if ROE != 4 
+
+						temp5 = sqrt(_rho);
+						temp6 = sqrt(rho_);
 					
-					
-					// temp5 = 1.0;
-					// temp6 = 1.0;
-					temp4 = temp5+temp6;
+						temp4 = temp5+temp6;
 
-					rho = sqrt(_rho*rho_);
-					U = (temp5*_U+temp6*U_)/temp4;
-					V = (temp5*_V+temp6*V_)/temp4;
-					W = (temp5*_W+temp6*W_)/temp4;
-					VV = U*U+V*V+W*W;
-					H = (temp5*_H+temp6*H_)/temp4;
-					C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-					P = rho*C/K;
+						rho = sqrt(_rho*rho_);
+						U = (temp5*_U+temp6*U_)/temp4;
+						V = (temp5*_V+temp6*V_)/temp4;
+						W = (temp5*_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
 
+					#endif
 
-					beta = max(VV/C,e);    // ---- theda ---- //
-					
-					temp = 0.5*(1+beta)*U;    // ---- U' ---- //
-
-					S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
 
 
 
 					#if ROE == 1
+						
+						beta = max(VV/C,e);    // ---- theda ---- //
+					
+						temp = 0.5*(1+beta)*U;    // ---- U' ---- //
+
+						S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
 
 						temp1 = (P_-_P)/rho/beta/C;
 
@@ -1332,10 +1324,14 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					
 					#elif ROE == 2
+						
+						beta = max(VV/C,e);    // ---- theda ---- //
+					
+						temp = 0.5*(1+beta)*U;    // ---- U' ---- //
+
+						S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
 
 						theda_p = VV/C;
-
-
 
 						U_p = 0.5*(1+theda_p)*U;
 						C_p = 0.5*sqrt(4*C*theda_p+U*U*(1-theda_p)*(1-theda_p));
@@ -1375,13 +1371,37 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					#elif ROE == 4
 
-						S = sqrt(C);
-
-						theda_p = sqrt(VV)/S;
 						
-						beta = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1+theda_p*theda_p);
+						beta = sqrt(max(VV_/C_,_VV/_C));    // ---- theda ---- //
 
-						C_p = theda_p*S;
+						temp1 = 0.5*(_U+U_)+0.5*beta*(_U-U_);
+						temp2 = 0.5*(_V+V_)+0.5*beta*(_V-V_);
+						temp3 = 0.5*(_W+W_)+0.5*beta*(_W-W_);
+
+						U_ = 0.5*(U_+_U)+0.5*beta*(U_-_U);
+						V_ = 0.5*(V_+_V)+0.5*beta*(V_-_V);
+						W_ = 0.5*(W_+_W)+0.5*beta*(W_-_W);
+
+						_U = temp1;
+						_V = temp2;
+						_W = temp3;
+
+						temp5 = sqrt(_rho);
+						temp6 = sqrt(rho_);
+					
+						temp4 = temp5+temp6;
+
+						rho = sqrt(_rho*rho_);
+						U = (temp5*_U+temp6*U_)/temp4;
+						V = (temp5*_V+temp6*V_)/temp4;
+						W = (temp5*_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
+
+
+						S = sqrt(C);
 
 						temp1 = (P_-_P)/rho/C;
 
@@ -1389,8 +1409,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-fabs(U))*temp1+temp2;
 
-						deltaP = beta*U/S*(P_-_P)+(C_p-fabs(U))*rho*(U_-_U);
-
+						deltaP = U/S*(P_-_P)+(S-fabs(U))*rho*(U_-_U);
 
 					#endif
 
@@ -1457,35 +1476,33 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					H_ = 0.5*VV_+C_/(K-1);
 
 					/* flux varibale */
-
-					temp5 = sqrt(_rho);
-					temp6 = sqrt(rho_);
 					
+					#if ROE != 4
+
+						temp5 = sqrt(_rho);
+						temp6 = sqrt(rho_);
 					
-					// temp5 = 1.0;
-					// temp6 = 1.0;
-					temp4 = temp5+temp6;
+						temp4 = temp5+temp6;
 
-					rho = sqrt(_rho*rho_);
-					U = (temp5*_U+temp6*U_)/temp4;
-					V = (temp5*_V+temp6*V_)/temp4;
-					W = (temp5*_W+temp6*W_)/temp4;
-					VV = U*U+V*V+W*W;
-					H = (temp5*_H+temp6*H_)/temp4;
-					C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-					P = rho*C/K;
+						rho = sqrt(_rho*rho_);
+						U = (temp5*_U+temp6*U_)/temp4;
+						V = (temp5*_V+temp6*V_)/temp4;
+						W = (temp5*_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
 
-
-					beta = max(VV/C,e);    // ---- theda ---- //
-					
-					temp = 0.5*(1+beta)*U;    // ---- U' ---- //
-
-					S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
+					#endif
 
 
 
 
 					#if ROE == 1
+						
+						beta = max(VV/C,e);    // ---- theda ---- //
+						temp = 0.5*(1+beta)*U;    // ---- U' ---- //
+						S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
 
 						temp1 = (P_-_P)/rho/beta/C;
 
@@ -1493,15 +1510,18 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						temp3 = 0.5*(1-beta)*U*temp/S;
 
-
-
 						deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
-
-
 
 						deltaP = temp/S*(P_-_P)+(S-fabs(U)+temp3)*rho*(U_-_U);
 
 					#elif ROE == 2
+						
+						beta = max(VV/C,e);    // ---- theda ---- //
+					
+						temp = 0.5*(1+beta)*U;    // ---- U' ---- //
+
+						S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
+
 
 						theda_p = VV/C;
 
@@ -1544,13 +1564,36 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						
 					#elif ROE == 4
 
-						S = sqrt(C);
-
-						theda_p = sqrt(VV)/S;
 						
-						beta = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1+theda_p*theda_p);
+						beta = sqrt(max(VV_/C_,_VV/_C));    // ---- theda ---- //
 
-						C_p = theda_p*S;
+						temp1 = 0.5*(_U+U_)+0.5*beta*(_U-U_);
+						temp2 = 0.5*(_V+V_)+0.5*beta*(_V-V_);
+						temp3 = 0.5*(_W+W_)+0.5*beta*(_W-W_);
+
+						U_ = 0.5*(U_+_U)+0.5*beta*(U_-_U);
+						V_ = 0.5*(V_+_V)+0.5*beta*(V_-_V);
+						W_ = 0.5*(W_+_W)+0.5*beta*(W_-_W);
+
+						_U = temp1;
+						_V = temp2;
+						_W = temp3;
+
+						temp5 = sqrt(_rho);
+						temp6 = sqrt(rho_);
+					
+						temp4 = temp5+temp6;
+
+						rho = sqrt(_rho*rho_);
+						U = (temp5*_U+temp6*U_)/temp4;
+						V = (temp5*_V+temp6*V_)/temp4;
+						W = (temp5*_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
+
+						S = sqrt(C);
 
 						temp1 = (P_-_P)/rho/C;
 
@@ -1558,8 +1601,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-fabs(U))*temp1+temp2;
 
-						deltaP = beta*U/S*(P_-_P)+(C_p-fabs(U))*rho*(U_-_U);
-
+						deltaP = U/S*(P_-_P)+(S-fabs(U))*rho*(U_-_U);
 
 					#endif
 
@@ -1892,34 +1934,31 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					/* flux varibale */
 
-					temp5 = sqrt(_rho);
-					temp6 = sqrt(rho_);
+					#if ROE != 4
+
+						temp5 = sqrt(_rho);
+						temp6 = sqrt(rho_);
 					
-					
-					// temp5 = 1.0;
-					// temp6 = 1.0;
-					temp4 = temp5+temp6;
+						temp4 = temp5+temp6;
 
-					rho = sqrt(_rho*rho_);
-					U = (temp5*_U+temp6*U_)/temp4;
-					V = (temp5*_V+temp6*V_)/temp4;
-					W = (temp5*_W+temp6*W_)/temp4;
-					VV = U*U+V*V+W*W;
-					H = (temp5*_H+temp6*H_)/temp4;
-					C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-					P = rho*C/K;
+						rho = sqrt(_rho*rho_);
+						U = (temp5*_U+temp6*U_)/temp4;
+						V = (temp5*_V+temp6*V_)/temp4;
+						W = (temp5*_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
 
-
-					beta = max(VV/C,e);    // ---- theda ---- //
-					
-					temp = 0.5*(1+beta)*V;    // ---- U' ---- //
-
-					S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
-
+					#endif
 
 
 					#if ROE == 1 
 
+						
+						beta = max(VV/C,e);    // ---- theda ---- //
+						temp = 0.5*(1+beta)*V;    // ---- U' ---- //
+						S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
 
 						temp1 = (P_-_P)/rho/beta/C;
 
@@ -1927,15 +1966,16 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						temp3 = 0.5*(1-beta)*V*temp/S;
 
-
-
 						deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
-
-
 
 						deltaP = temp/S*(P_-_P)+(S-fabs(V)+temp3)*rho*(V_-_V);
 
 					#elif ROE == 2
+						
+						beta = max(VV/C,e);    // ---- theda ---- //
+						temp = 0.5*(1+beta)*V;    // ---- U' ---- //
+						S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
+
 
 						theda_p = VV/C;
 						U_p = 0.5*(1+theda_p)*V;
@@ -1975,14 +2015,37 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						deltaP = V/S*(P_-_P)+(C_p-fabs(V))*rho*(V_-_V);
 
 					#elif ROE == 4
+					
+						
+						beta = sqrt(max(VV_/C_,_VV/_C));    // ---- theda ---- //
+
+						temp1 = 0.5*(_U+U_)+0.5*beta*(_U-U_);
+						temp2 = 0.5*(_V+V_)+0.5*beta*(_V-V_);
+						temp3 = 0.5*(_W+W_)+0.5*beta*(_W-W_);
+
+						U_ = 0.5*(U_+_U)+0.5*beta*(U_-_U);
+						V_ = 0.5*(V_+_V)+0.5*beta*(V_-_V);
+						W_ = 0.5*(W_+_W)+0.5*beta*(W_-_W);
+
+						_U = temp1;
+						_V = temp2;
+						_W = temp3;
+
+						temp5 = sqrt(_rho);
+						temp6 = sqrt(rho_);
+					
+						temp4 = temp5+temp6;
+
+						rho = sqrt(_rho*rho_);
+						U = (temp5*_U+temp6*U_)/temp4;
+						V = (temp5*_V+temp6*V_)/temp4;
+						W = (temp5*_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
 
 						S = sqrt(C);
-
-						theda_p = sqrt(VV)/S;
-						
-						beta = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1+theda_p*theda_p);
-
-						C_p = theda_p*S;
 
 						temp1 = (P_-_P)/rho/C;
 
@@ -1990,7 +2053,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-fabs(V))*temp1+temp2;
 
-						deltaP = beta*V/S*(P_-_P)+(C_p-fabs(V))*rho*(V_-_V);
+						deltaP = V/S*(P_-_P)+(S-fabs(V))*rho*(V_-_V);
 
 					#endif
 
@@ -2055,36 +2118,32 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					/* flux varibale */
 
-					temp5 = sqrt(_rho);
-					temp6 = sqrt(rho_);
+					#if ROE != 4
+
+						temp5 = sqrt(_rho);
+						temp6 = sqrt(rho_);
 					
-					
-					// temp5 = 1.0;
-					// temp6 = 1.0;
-					temp4 = temp5+temp6;
+						temp4 = temp5+temp6;
 
-					rho = sqrt(_rho*rho_);
-					U = (temp5*_U+temp6*U_)/temp4;
-					V = (temp5*_V+temp6*V_)/temp4;
-					W = (temp5*_W+temp6*W_)/temp4;
-					VV = U*U+V*V+W*W;
-					H = (temp5*_H+temp6*H_)/temp4;
-					C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-					P = rho*C/K;
+						rho = sqrt(_rho*rho_);
+						U = (temp5*_U+temp6*U_)/temp4;
+						V = (temp5*_V+temp6*V_)/temp4;
+						W = (temp5*_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
 
-
-
-					beta = max(VV/C,e);    // ---- theda ---- //
-					
-					temp = 0.5*(1+beta)*V;    // ---- U' ---- //
-
-					S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
+					#endif
 
 
 
 
 					#if ROE == 1 
-
+						
+						beta = max(VV/C,e);    // ---- theda ---- //
+						temp = 0.5*(1+beta)*V;    // ---- U' ---- //
+						S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
 
 						temp1 = (P_-_P)/rho/beta/C;
 
@@ -2100,6 +2159,10 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					#elif ROE == 2
 					
+						beta = max(VV/C,e);    // ---- theda ---- //
+						temp = 0.5*(1+beta)*V;    // ---- U' ---- //
+						S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
+
 						theda_p = VV/C;
 						U_p = 0.5*(1+theda_p)*V;
 						C_p = 0.5*sqrt(4*C*theda_p+V*V*(1-theda_p)*(1-theda_p));
@@ -2138,14 +2201,36 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						deltaP = V/S*(P_-_P)+(C_p-fabs(V))*rho*(V_-_V);
 
 					#elif ROE == 4
+					
+						beta = sqrt(max(VV_/C_,_VV/_C));    // ---- theda ---- //
+
+						temp1 = 0.5*(_U+U_)+0.5*beta*(_U-U_);
+						temp2 = 0.5*(_V+V_)+0.5*beta*(_V-V_);
+						temp3 = 0.5*(_W+W_)+0.5*beta*(_W-W_);
+
+						U_ = 0.5*(U_+_U)+0.5*beta*(U_-_U);
+						V_ = 0.5*(V_+_V)+0.5*beta*(V_-_V);
+						W_ = 0.5*(W_+_W)+0.5*beta*(W_-_W);
+
+						_U = temp1;
+						_V = temp2;
+						_W = temp3;
+
+						temp5 = sqrt(_rho);
+						temp6 = sqrt(rho_);
+					
+						temp4 = temp5+temp6;
+
+						rho = sqrt(_rho*rho_);
+						U = (temp5*_U+temp6*U_)/temp4;
+						V = (temp5*_V+temp6*V_)/temp4;
+						W = (temp5*_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
 
 						S = sqrt(C);
-
-						theda_p = sqrt(VV)/S;
-						
-						beta = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1+theda_p*theda_p);
-
-						C_p = theda_p*S;
 
 						temp1 = (P_-_P)/rho/C;
 
@@ -2153,9 +2238,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-fabs(V))*temp1+temp2;
 
-						deltaP = beta*V/S*(P_-_P)+(C_p-fabs(V))*rho*(V_-_V);
-
-
+						deltaP = V/S*(P_-_P)+(S-fabs(V))*rho*(V_-_V);
 
 					#endif
 
