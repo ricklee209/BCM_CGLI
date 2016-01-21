@@ -1264,8 +1264,14 @@ int main(int argc, char **argv)
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
 				
+				
+				#ifdef ILES
 
-				// BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
+					if ((step%10 == 0)) BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
+				
+				#endif
+
+				
 				
 				
 				BCM_Flux_XYZ_Viscous_Runge_kutta(myid, Ncube, RK, deltaT, deltaTau, e, FWS, csl, cube_size,

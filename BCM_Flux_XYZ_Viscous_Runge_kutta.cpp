@@ -389,8 +389,13 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					#endif 
 
-					//Cdiss = Roe_dis[icube][i][j][k];
-					Cdiss = 1.0;
+
+
+					#ifdef ILES
+					  Cdiss = Roe_dis[icube][i][j][k];
+					#else
+					  Cdiss = 1.0;
+					#endif 
 
 
 
@@ -756,17 +761,11 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 					/* artificial viscosity */
-					Fav1 = fabs(W)*dU1+deltaU*rho;
-					Fav2 = fabs(W)*dU2+deltaU*rho*U;
-					Fav3 = fabs(W)*dU3+deltaU*rho*V;
-					Fav4 = fabs(W)*dU4+deltaU*rho*W+deltaP;
-					Fav5 = fabs(W)*dU5+deltaU*rho*H+deltaP*W;
-
-					Fav1 = Cdiss*Fav1;
-					Fav2 = Cdiss*Fav2;
-					Fav3 = Cdiss*Fav3;
-					Fav4 = Cdiss*Fav4;
-					Fav5 = Cdiss*Fav5;
+					Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
+					Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
+					Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
+					Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
+					Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
 
 					/* inviscid fluxes */
 
@@ -951,17 +950,12 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 					/* artificial viscosity */
-					Fav1 = fabs(W)*dU1+deltaU*rho;
-					Fav2 = fabs(W)*dU2+deltaU*rho*U;
-					Fav3 = fabs(W)*dU3+deltaU*rho*V;
-					Fav4 = fabs(W)*dU4+deltaU*rho*W+deltaP;
-					Fav5 = fabs(W)*dU5+deltaU*rho*H+deltaP*W;
+					Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
+					Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
+					Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
+					Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
+					Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
 					
-					Fav1 = Cdiss*Fav1;
-					Fav2 = Cdiss*Fav2;
-					Fav3 = Cdiss*Fav3;
-					Fav4 = Cdiss*Fav4;
-					Fav5 = Cdiss*Fav5;
 
 					/* inviscid fluxes */
 
@@ -1414,18 +1408,12 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					#endif
 
 					/* artificial viscosity */
-					Fav1 = fabs(U)*dU1+deltaU*rho;
-					Fav2 = fabs(U)*dU2+deltaU*rho*U+deltaP;
-					Fav3 = fabs(U)*dU3+deltaU*rho*V;
-					Fav4 = fabs(U)*dU4+deltaU*rho*W;
-					Fav5 = fabs(U)*dU5+deltaU*rho*H+deltaP*U;
+					Fav1 = Cdiss*fabs(U)*dU1+deltaU*rho;
+					Fav2 = Cdiss*fabs(U)*dU2+deltaU*rho*U+deltaP;
+					Fav3 = Cdiss*fabs(U)*dU3+deltaU*rho*V;
+					Fav4 = Cdiss*fabs(U)*dU4+deltaU*rho*W;
+					Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
 					
-					Fav1 = Cdiss*Fav1;
-					Fav2 = Cdiss*Fav2;
-					Fav3 = Cdiss*Fav3;
-					Fav4 = Cdiss*Fav4;
-					Fav5 = Cdiss*Fav5;
-
 					/* inviscid fluxes */
 					inFx1 = 0.5*((_rho*_U+rho_*U_)-Ep*Fav1);
 					inFx2 = 0.5*((_rho*_U*_U+_P+rho_*U_*U_+P_)-Ep*Fav2);
@@ -1606,17 +1594,13 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					#endif
 
 					/* artificial viscosity */
-					Fav1 = fabs(U)*dU1+deltaU*rho;
-					Fav2 = fabs(U)*dU2+deltaU*rho*U+deltaP;
-					Fav3 = fabs(U)*dU3+deltaU*rho*V;
-					Fav4 = fabs(U)*dU4+deltaU*rho*W;
-					Fav5 = fabs(U)*dU5+deltaU*rho*H+deltaP*U;
+					Fav1 = Cdiss*fabs(U)*dU1+deltaU*rho;
+					Fav2 = Cdiss*fabs(U)*dU2+deltaU*rho*U+deltaP;
+					Fav3 = Cdiss*fabs(U)*dU3+deltaU*rho*V;
+					Fav4 = Cdiss*fabs(U)*dU4+deltaU*rho*W;
+					Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
 					
-					Fav1 = Cdiss*Fav1;
-					Fav2 = Cdiss*Fav2;
-					Fav3 = Cdiss*Fav3;
-					Fav4 = Cdiss*Fav4;
-					Fav5 = Cdiss*Fav5;
+
 
 					/* inviscid fluxes */
 					inFx1i = 0.5*((_rho*_U+rho_*U_)-Ep*Fav1);
@@ -2058,18 +2042,12 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					#endif
 
 					/* artificial viscosity */
-					Fav1 = fabs(V)*dU1+deltaU*rho;
-					Fav2 = fabs(V)*dU2+deltaU*rho*U;
-					Fav3 = fabs(V)*dU3+deltaU*rho*V+deltaP;
-					Fav4 = fabs(V)*dU4+deltaU*rho*W;
-					Fav5 = fabs(V)*dU5+deltaU*rho*H+deltaP*V;
+					Fav1 = Cdiss*fabs(V)*dU1+deltaU*rho;
+					Fav2 = Cdiss*fabs(V)*dU2+deltaU*rho*U;
+					Fav3 = Cdiss*fabs(V)*dU3+deltaU*rho*V+deltaP;
+					Fav4 = Cdiss*fabs(V)*dU4+deltaU*rho*W;
+					Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
 					
-					Fav1 = Cdiss*Fav1;
-					Fav2 = Cdiss*Fav2;
-					Fav3 = Cdiss*Fav3;
-					Fav4 = Cdiss*Fav4;
-					Fav5 = Cdiss*Fav5;
-
 					/* inviscid fluxes */
 					inFy1 = 0.5*((_rho*_V+rho_*V_-Ep*Fav1));
 					inFy2 = 0.5*((_rho*_U*_V+rho_*U_*V_)-Ep*Fav2);
@@ -2243,18 +2221,12 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					#endif
 
 					/* artificial viscosity */
-					Fav1 = fabs(V)*dU1+deltaU*rho;
-					Fav2 = fabs(V)*dU2+deltaU*rho*U;
-					Fav3 = fabs(V)*dU3+deltaU*rho*V+deltaP;
-					Fav4 = fabs(V)*dU4+deltaU*rho*W;
-					Fav5 = fabs(V)*dU5+deltaU*rho*H+deltaP*V;
+					Fav1 = Cdiss*fabs(V)*dU1+deltaU*rho;
+					Fav2 = Cdiss*fabs(V)*dU2+deltaU*rho*U;
+					Fav3 = Cdiss*fabs(V)*dU3+deltaU*rho*V+deltaP;
+					Fav4 = Cdiss*fabs(V)*dU4+deltaU*rho*W;
+					Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
 					
-					Fav1 = Cdiss*Fav1;
-					Fav2 = Cdiss*Fav2;
-					Fav3 = Cdiss*Fav3;
-					Fav4 = Cdiss*Fav4;
-					Fav5 = Cdiss*Fav5;
-
 					/* inviscid fluxes */
 					inFy1i = 0.5*((_rho*_V+rho_*V_-Ep*Fav1));
 					inFy2i = 0.5*((_rho*_U*_V+rho_*U_*V_)-Ep*Fav2);
