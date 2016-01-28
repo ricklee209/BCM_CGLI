@@ -2994,11 +2994,13 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						if (IF < IFLUID) {
 						
-								Residual1[icube][i][j][k][0] = -( -(dPxi-dPx)/dx )*dx*dy*dz;
+								Residual1[icube][i][j][k][0] = ( dTxi-dTx+dTyi-dTy+dTzi-dTz )/dx*dx*dy*dz;
 						
-								Residual1[icube][i][j][k][1] = -( vF2 )*dx*dy*dz;
+								Residual1[icube][i][j][k][1] = -( -(dPxi-dPx)/dx )*dx*dy*dz-( vF2 )*dx*dy*dz;
+
+								Residual1[icube][i][j][k][2] = -( -(dPyi-dPy)/dy )*dx*dy*dz-( vF3 )*dx*dy*dz;
 						
-								Residual1[icube][i][j][k][2] = ( dTxi-dTx+dTyi-dTy+dTzi-dTz )/dx*dx*dy*dz;
+								Residual1[icube][i][j][k][3] = -( -(dPzi-dPz)/dz )*dx*dy*dz-( vF4 )*dx*dy*dz;
 
 						}
 
@@ -3077,8 +3079,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 		if(RK == 3) {
 		
-
-	#pragma omp parallel for private(j,k,rho,P,U,V,W,T,VV,rhoold,Uold,Vold,Wold,VVold,Pold,Told) 
+	#pragma omp parallel for private(i,j,k)  reduction(+:e1,e2,e3,e4,e5)
 
 			for (icube = 1; icube < ncube; icube++) {  
 				for (i = n_buffer; i < nxx; i++) {
@@ -3102,38 +3103,35 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 			}
 
 			
-			
+	#pragma omp parallel for private(i,j,k)  reduction(+:e6,e7,e8,e9)
+
 			for (icube = 1; icube < ncube; icube++) {  
 				for (i = n_buffer; i <= nx; i++) {
 					for (j = n_buffer; j <= ny; j++) { 
 						for (k = n_buffer; k <= nz; k++) { 
 
-
 								e6 = e6+Residual1[icube][i][j][k][0];
 								e7 = e7+Residual1[icube][i][j][k][1];
-
 								e8 = e8+Residual1[icube][i][j][k][2];
+								e9 = e9+Residual1[icube][i][j][k][3];
+
 							
 						}
 					}
 				}
 			}
 
-			
-			double DN = 1./(MPI_Ncube*NcubeX*NcubeY*NcubeZ);
 
 			er[1] = U1_[2][2][2][1][0]/rho0;
-			er[2] = U1_[2][2][2][1][1]/(rho0*max(U0,max(V0,W0)));
-			er[3] = U1_[2][2][2][1][2]/(rho0*max(U0,max(V0,W0)));
-			er[4] = U1_[2][2][2][1][3]/(rho0*max(U0,max(V0,W0)));
-			er[5] = U1_[2][2][2][1][4]/(P0/(K-1.0));
-
 
 			MPI_Comm comm;
 			comm=MPI_COMM_WORLD;
 
 			MPI_Allreduce ((void*)&e6,(void*)&er[6], 1, MPI_DOUBLE, MPI_SUM, comm );
 			MPI_Allreduce ((void*)&e7,(void*)&er[7], 1, MPI_DOUBLE, MPI_SUM, comm );
+			MPI_Allreduce ((void*)&e8,(void*)&er[8], 1, MPI_DOUBLE, MPI_SUM, comm );
+			MPI_Allreduce ((void*)&e9,(void*)&er[9], 1, MPI_DOUBLE, MPI_SUM, comm );
+
 
 		}
 		
@@ -3204,7 +3202,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 		if(RK == 3) {
 		
 
-	#pragma omp parallel for private(j,k,rho,P,U,V,W,T,VV,rhoold,Uold,Vold,Wold,VVold,Pold,Told)  reduction(+:e1,e2,e3,e4,e5)
+	#pragma omp parallel for private(i,j,k,rho,P,U,V,W,T,VV,rhoold,Uold,Vold,Wold,VVold,Pold,Told)  reduction(+:e1,e2,e3,e4,e5)
 
 			for (icube = 1; icube < ncube; icube++) {  
 				for (i = n_buffer; i < nxx; i++) {

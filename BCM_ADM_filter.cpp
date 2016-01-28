@@ -409,8 +409,8 @@ void BCM_ADM_filter
 						u3i2 = u4-filter[icube][1][i][j][k][3];
 
 
-						tmp = ( (u2-u1i1)*(u2-u1i1)+(u3-u2i1)*(u3-u2i1)+(u4-u3i1)*(u4-u3i1) )/ \
-							  ( (u2-u1i2)*(u2-u1i2)+(u3-u2i2)*(u3-u2i2)+(u4-u3i2)*(u4-u3i2) );
+						tmp = ( u1i1*u1i1 + u2i1*u2i1 + u3i1*u3i1 )/ \
+							  ( u1i2*u1i2 + u2i2*u2i2 + u3i2*u3i2 );
 
 
 						if(tmp > 0.009) {

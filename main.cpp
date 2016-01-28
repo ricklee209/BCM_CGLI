@@ -1350,9 +1350,11 @@ int main(int argc, char **argv)
 				//// ============================================================================== ////
 				if (myid == 0) {
 
-					//printf("%d\t%d\t%f\t%f\t%f\t%f\t%f\n",iteration,step,er[1],er[2],er[3],er[4],er[5]);
-					printf("%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",iteration,-er[8],-er[6],-er[7],er[1],er[2],er[3],er[4],er[5]);
-
+					#ifdef NODT
+						printf("%d\t%4.8f\t%4.8f\t%4.8f\t%4.8f\t%4.8f\n",step,-er[6],-er[7],-er[8],er[9],er[1]);
+					#else
+						printf("%d\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\n",iteration,-er[8],-er[6],-er[7],er[1],er[2],er[3],er[4],er[5]);
+					#endif
 
 				}
 				//// ============================================================================= ////
