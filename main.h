@@ -740,6 +740,28 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 // ================================================================================ //
 );
 
+
+void BCM_Mean_pressure_coefficient_Sphere 
+(
+// ================================================================================ //
+int myid,
+int ncube,
+
+int (*csl) = new int[Ncube],
+
+double (*Xcnt)[X_size] = new double[Ncube][X_size],
+double (*Ycnt)[Y_size] = new double[Ncube][Y_size],
+double (*Zcnt)[Z_size] = new double[Ncube][Z_size],
+
+int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
+
+
+double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+
+// ================================================================================ //
+);
+
+
 void BCM_ADM_filter
 (
 // ================================================================================ //
