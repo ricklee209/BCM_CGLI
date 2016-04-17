@@ -2,6 +2,13 @@
 
 
 
+
+// --------------- Instruction --------------- //
+// Only available for sphere located in the center 
+
+
+
+
 #include <omp.h>
 #include <stdlib.h> 
 #include <stdio.h>
@@ -53,49 +60,31 @@ double Raidus = 0.005;
 
 char file_name[100];
 
-int icount, g_icount;
+int icount, g_icount, iCp;
 
 double rho, U, V, W, VV, P, T, temp;
 double dis,xc,yc,zc;
 double Cpre, Cpre_mean, g_Cpre_mean;
 
 
+double (*Cp_suf)[181] = new double[2][181];
+double (*gCp)[181] = new double[2][181];
 
 
 
-FILE *fptr;
+#pragma omp parallel
+for (iCp = 1; iCp <= 180; iCp++) {  
 
-sprintf(file_name,"Cp""%0.5d"".dat",myid);    
-fptr = fopen(file_name,"w"); 
+	Cp_suf[0][iCp] = 0.0;
+	Cp_suf[1][iCp] = 0.0;
+	gCp[0][iCp] = 0.0;
+	gCp[1][iCp] = 0.0;
 
-
-
-	icount = 0;
-	for (icube = 1; icube < ncube; icube++) {  
-
-		for (i = n_buffer; i < nxx; i++) {
-			for (j = n_buffer; j < nyy; j++) {
-				for (k = n_buffer; k < nzz; k++) {  
-
-					xc = Xcnt[icube][i];
-					yc = Ycnt[icube][j];
-					zc = Zcnt[icube][k];
-
-					dis = sqrt(xc*xc+yc*yc+zc*zc);
-
-
-					if(FWS[icube][i][j][k] == IGHOST && (dis - Raidus) > 0.0 ) icount = icount + 1;
-
-
-				}
-			}
-		}
-
-	}    // ---- for (icube = 1; icube < ncube; icube++) ---- //
+	}   
 
 	
-
 	Cpre_mean = 0.0;
+	icount = 0;
 
 //#pragma omp parallel for private(i,j,k,xc,yc,zc,dis,rho,U,V,W,P,T,Nu)
 
@@ -113,7 +102,7 @@ fptr = fopen(file_name,"w");
 
 						dis = sqrt(xc*xc+yc*yc+zc*zc);
 
-						if ( (dis - Raidus) > 0.0 && yc > 0 ) {
+						if ( (dis - Raidus) > 0.0 ) {
 
 							rho = U1_[icube][i][j][k][0];
 							U = U1_[icube][i][j][k][1]/rho;
@@ -124,13 +113,18 @@ fptr = fopen(file_name,"w");
 
 							Cpre = (P - P0) / (0.5*rho0*U0*U0);
 
-							Cpre_mean = Cpre_mean + Cpre;
-
 							temp = acos(-xc/dis)*180.0/3.1415926;
 
-							//fprintf(fptr,"%f\t%f\t%f\t%f\t%f\t%f\t%f\n",xc,yc,zc,temp,Nu,T-Th,rho);
 
-							fprintf(fptr,"%f\t%f\n",temp,Cpre);
+							for (iCp = 1; iCp <= 180; iCp++) {  
+
+								if (temp >= iCp*1.0 && temp <= iCp+1.0 ) {
+
+									Cp_suf[1][iCp] = Cp_suf[1][iCp] + 1.0;
+									Cp_suf[0][iCp] = Cp_suf[0][iCp] + Cpre;
+
+								}
+							}
 
 						}    // ---- if (xc*xc+yc*yc+zc*zc > 1.0) ---- //
 
@@ -143,9 +137,30 @@ fptr = fopen(file_name,"w");
 
 	}    // ---- for (icube = 1; icube < ncube; icube++) ---- //
 
+
+	MPI_Reduce ((void*)Cp_suf,(void*)gCp, 362, MPI_DOUBLE, MPI_SUM, 0, comm );
+
 	
-	fclose(fptr);
+	if(myid == 0) {
 
+		FILE *fptr;
 
+		fptr = fopen("Cp.dat","w"); 
+
+		for (iCp = 1; iCp <= 179; iCp++) { 
+
+			gCp[0][iCp] = gCp[0][iCp]/(gCp[1][iCp]+0.0000001);
+
+			fprintf(fptr,"%f\t%f\n",iCp*1.0-0.5,gCp[0][iCp]);
+			
+		}
+
+		fclose(fptr);
+
+	}
+
+	
+	delete []Cp_suf;
+	delete []gCp;
 
 }
