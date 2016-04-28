@@ -25,7 +25,9 @@ double (*weight) = new double[NBC*8+1],
 
 int (*GCindex) = new int[NBC*4+1],
 
-int (*IPsur) = new int[NBC*4+1]
+int (*IPsur) = new int[NBC*4+1],
+
+double (*Nor_D) = new double[NBC+1]
 
 // =================================================== //
 )
@@ -64,11 +66,12 @@ int (*IPsur) = new int[NBC*4+1]
 
 		Ntemp = (iNBC-1)*8;
 
-		fscanf(fptr,"%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n",
+		fscanf(fptr,"%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n",
+			   &Nor_D[iNBC],
 			   &weight[Ntemp+1],&weight[Ntemp+2],&weight[Ntemp+3],&weight[Ntemp+4],
 			   &weight[Ntemp+5],&weight[Ntemp+6],&weight[Ntemp+7],&weight[Ntemp+8]);
 		
-		//if (myid == 0 && mp_switch==-1) printf("%f\t%f\t%f\t%f\n",weight[Ntemp+1],weight[Ntemp+2],weight[Ntemp+3],weight[Ntemp+4]);
+		//if (myid == 0 && mp_switch==-1) printf("%f\t%f\t%f\t%f\n",Nor_D[iNBC],weight[Ntemp+2],weight[Ntemp+3],weight[Ntemp+4]);
 
 	}
 

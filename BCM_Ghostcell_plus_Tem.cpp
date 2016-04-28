@@ -25,6 +25,7 @@ double Th,
 double (*weight) = new double[NBC_plus*8+1],
 int (*GCindex) = new int[NBC_plus*4+1],
 int (*IPsur) = new int[NBC_plus*4+1],
+double (*Nor_D) = new double[NBC_plus+1],
 
 int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
 

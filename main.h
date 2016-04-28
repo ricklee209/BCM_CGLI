@@ -370,8 +370,9 @@ double (*weight) = new double[NBC*8+1],
 
 int (*GCindex) = new int[NBC*4+1],
 
-int (*IPsur) = new int[NBC*4+1]
+int (*IPsur) = new int[NBC*4+1],
 
+double (*Nor_D) = new double[NBC+1]
 // =================================================== //
 );
 
@@ -388,6 +389,7 @@ int (*IPsur) = new int[NBC*4+1]
  double (*weight) = new double[NBC_minus*8+1],
  int (*GCindex) = new int[NBC_minus*4+1],
  int (*IPsur) = new int[NBC_minus*4+1],
+ double (*Nor_D) = new double[NBC_minus+1],
 
  int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
 
@@ -409,6 +411,7 @@ int (*IPsur) = new int[NBC*4+1]
  double (*weight) = new double[NBC_plus*8+1],
  int (*GCindex) = new int[NBC_plus*4+1],
  int (*IPsur) = new int[NBC_plus*4+1],
+ double (*Nor_D) = new double[NBC_plus+1],
 
  int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
 
@@ -433,6 +436,7 @@ int (*IPsur) = new int[NBC*4+1]
  double (*weight) = new double[NBC_minus*8+1],
  int (*GCindex) = new int[NBC_minus*4+1],
  int (*IPsur) = new int[NBC_minus*4+1],
+  double (*Nor_D) = new double[NBC_minus+1],
 
  int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
 
@@ -454,6 +458,7 @@ int (*IPsur) = new int[NBC*4+1]
  double (*weight) = new double[NBC_plus*8+1],
  int (*GCindex) = new int[NBC_plus*4+1],
  int (*IPsur) = new int[NBC_plus*4+1],
+ double (*Nor_D) = new double[NBC_plus+1],
 
  int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
 

@@ -1003,7 +1003,7 @@ void BCM_Immersed_boundary
 
 				iNgc_minus = iNgc_minus+1;
 				fprintf(fptr_minus,"%d\t%d\t%d\t%d\n",icube,i,j,k);
-				fprintf(fptr_minus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",weight[0],weight[1],weight[2],weight[3],weight[4],weight[5],weight[6],weight[7]);
+				fprintf(fptr_minus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",sqrt(dis),weight[0],weight[1],weight[2],weight[3],weight[4],weight[5],weight[6],weight[7]);
 
 			}
 			else {
@@ -1013,7 +1013,7 @@ void BCM_Immersed_boundary
 
 				iNgc_plus = iNgc_plus+1;
 				fprintf(fptr_plus,"%d\t%d\t%d\t%d\n",icube,i,j,k);
-				fprintf(fptr_plus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",weight[0],weight[1],weight[2],weight[3],weight[4],weight[5],weight[6],weight[7]);
+				fprintf(fptr_plus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",sqrt(dis),weight[0],weight[1],weight[2],weight[3],weight[4],weight[5],weight[6],weight[7]);
 
 			}
 

@@ -65,7 +65,7 @@ int main(int argc, char **argv)
 
 	int switch_initial = 0; // ---- 1 reading initial coniditon ---- //
 
-	int switch_IBM = 0;     // ---- 1 run IBM ---- //
+	int switch_IBM = 1;     // ---- 1 run IBM ---- //
 
 	int switch_output = 0;  // ---- 1 output grid file ---- //
 
@@ -823,7 +823,6 @@ int main(int argc, char **argv)
 	}
 
 
-
 	BCM_Interface(myid,Ncube, 
 
 		MPI_Nadj,
@@ -879,11 +878,13 @@ int main(int argc, char **argv)
 	NBC = NBC_minus;
 
 	double (*weight_minus) = new double[NBC*8+1];
+	double (*Nor_D_minus) = new double[NBC+1];
 	int (*GCindex_minus) = new int[NBC*4+1];
 	int (*IPsur_minus) = new int[NBC*4+1];
 
 	mp_switch = -1;
-	BCM_Reading_IBM(myid, &NBC, mp_switch, weight_minus, GCindex_minus, IPsur_minus);
+
+	BCM_Reading_IBM(myid, &NBC, mp_switch, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus);
 
 	double (*bU1_minus) = new double[NBC_minus+1];
 	double (*bU2_minus) = new double[NBC_minus+1];
@@ -920,11 +921,12 @@ int main(int argc, char **argv)
 
 
 	double (*weight_plus) = new double[NBC*8+1];
+	double (*Nor_D_plus) = new double[NBC+1];
 	int (*GCindex_plus) = new int[NBC*4+1];
 	int (*IPsur_plus) = new int[NBC*4+1];
 
 	mp_switch = 1;
-	BCM_Reading_IBM(myid, &NBC, mp_switch, weight_plus, GCindex_plus, IPsur_plus);
+	BCM_Reading_IBM(myid, &NBC, mp_switch, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus);
 
 	double (*bU1_plus) = new double[NBC_plus+1];
 	double (*bU2_plus) = new double[NBC_plus+1];
@@ -1222,14 +1224,14 @@ int main(int argc, char **argv)
 
 				for (int ig = 1; ig <= 10; ig++) {
 
-					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
+					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, FWS, U1_);
 
-					BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
+					BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, FWS, U1_);
 					
 
-					//BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
+					//BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, FWS, U1_);
 
-					//BCM_Ghostcell_plus_Tem(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
+					//BCM_Ghostcell_plus_Tem(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, FWS, U1_);
 
 
 				}

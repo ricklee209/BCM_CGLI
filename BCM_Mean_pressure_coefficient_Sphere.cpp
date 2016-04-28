@@ -150,8 +150,8 @@ for (iCp = 1; iCp <= 180; iCp++) {
 		for (iCp = 1; iCp <= 179; iCp++) { 
 
 			gCp[0][iCp] = gCp[0][iCp]/(gCp[1][iCp]+0.0000001);
-
-			fprintf(fptr,"%f\t%f\n",iCp*1.0-0.5,gCp[0][iCp]);
+			
+			if( fabs(gCp[0][iCp])>0.0000001 ) fprintf(fptr,"%f\t%f\n",iCp*1.0-0.5,gCp[0][iCp]);
 			
 		}
 
