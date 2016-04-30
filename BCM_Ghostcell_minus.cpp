@@ -9,6 +9,9 @@
 #include <math.h>
 #include <mpi.h>
 
+#define min(a,b) (((a)<(b))?(a):(b)) 
+#define max(a,b) (((a)>(b))?(a):(b)) 
+
 #include "Resolution.h"
 
 extern int Ncube;    
@@ -32,7 +35,7 @@ double mu_model_mius
 
 	double Tau_w, U_tau, Y_plus;
 
-	Tau_w = (mu_E+mu_t)*Vn/(Nd+SML);
+	Tau_w = (mu_E)*Vn/(Nd+SML);
 	U_tau = sqrt(Tau_w/rho);
 	Y_plus = rho*U_tau*Nd/mu_E;
 
@@ -55,6 +58,7 @@ double (*weight) = new double[NBC_minus*8+1],
 int (*GCindex) = new int[NBC_minus*4+1],
 int (*IPsur) = new int[NBC_minus*4+1],
 double (*Nor_D) = new double[NBC_minus+1],
+double (*Nvec) = new double[NBC_minus*3+1],
 
 int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
 
@@ -80,6 +84,7 @@ double w0,w1,w2,w3,w4,w5,w6,w7;
 double vv0,vv1,vv2,vv3,vv4,vv5,vv6,vv7;
 double p0,p1,p2,p3,p4,p5,p6,p7;
 double t0,t1,t2,t3,t4,t5,t6,t7;
+double n1,n2,n3;
 
 double wc1, wc2, wc3, wc4, wc5, wc6, wc7, wc8;
 
@@ -98,6 +103,7 @@ double Uini, Nd, mu_in, mu_out;
 	p0, p1, p2, p3, p4, p5, p6, p7,\
 	vv0, vv1, vv2, vv3, vv4, vv5, vv6, vv7,\
 	t0, t1, t2, t3, t4, t5, t6, t7,\
+	n1,n2,n3,\
 	wc1,wc2,wc3,wc4,wc5,wc6,wc7,wc8,\
 	gicube,gi,gj,gk,\
 	rho,P,U,V,W,VV,T,\
@@ -112,6 +118,12 @@ double Uini, Nd, mu_in, mu_out;
 		i = IPsur[Ntemp+2];
 		j = IPsur[Ntemp+3];
 		k = IPsur[Ntemp+4];
+
+		Ntemp = (iNBC-1)*3;
+
+		n1 = Nvec[Ntemp+1];
+		n2 = Nvec[Ntemp+2];
+		n3 = Nvec[Ntemp+3];
 
 		Nd = Nor_D[iNBC];
 		
@@ -212,25 +224,43 @@ double Uini, Nd, mu_in, mu_out;
 		U = wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc7*u6+wc8*u7;
 		V = wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7;
 		W = wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6+wc8*w7;
-		
+
+		u1 = n1*U + n2*V + n3*W;
+
+		U = U - u1*n1;
+		V = V - u1*n2;
+		W = W - u1*n3;
+
 		VV = sqrt(U*U+V*V+W*W);
 		
 		Uini = VV;
 
-		for (ite = 1; ite <= 10; ite++) mu_out = mu_model_mius(mu_L, mu_out, Nd, VV, rho);
-
-
+		mu_out = mu_model_mius(mu_L, mu_out, 2*Nd, VV, rho);
+		
 		for (ite = 1; ite <= 10; ite++) {
 
-			mu_in = mu_model_mius(mu_L, mu_in, Nd, Uini, rho);
-
-			Uini = 0.5*(mu_L+mu_out)/(mu_L+mu_in)*VV;
+			mu_in = mu_model_mius(mu_L,mu_in, Nd, Uini, rho);
+			Uini = 0.5*VV*(mu_L+mu_out)/(mu_L+mu_in);
 			
+			// if(myid == 24) printf("%f\t%f\t%f\t%d\n",mu_in,Uini,VV,ite);
+
 		}
-
+		
 		wc1 = Uini/(VV+SML);
+		
+		// for (ite = 1; ite <= 10; ite++) mu_out = mu_model_mius(mu_L, mu_out, 2*Nd, VV, rho);
 
 
+		// for (ite = 1; ite <= 10; ite++) {
+
+			// mu_in = mu_model_mius(mu_L, mu_in, Nd, Uini, rho);
+
+			// Uini = 0.5*(mu_L+mu_out)/(mu_L+mu_in)*VV;
+			
+		// }
+
+		// wc1 = min(Uini/(VV+SML),1.0);
+		
 		U1_[gicube][gi][gj][gk][0] = rho;
 		U1_[gicube][gi][gj][gk][1] = wc1*rho*U;
 		U1_[gicube][gi][gj][gk][2] = wc1*rho*V;
@@ -241,7 +271,4 @@ double Uini, Nd, mu_in, mu_out;
 	}
 
 
-
-
-	
 }

@@ -27,8 +27,9 @@ int (*GCindex) = new int[NBC*4+1],
 
 int (*IPsur) = new int[NBC*4+1],
 
-double (*Nor_D) = new double[NBC+1]
+double (*Nor_D) = new double[NBC+1],
 
+double (*Nvec) = new double[NBC*3+1]
 // =================================================== //
 )
 
@@ -61,8 +62,11 @@ double (*Nor_D) = new double[NBC+1]
 
 		Ntemp = (iNBC-1)*4;
 
-		fscanf(fptr,"%d\t%d\t%d\t%d\t",&IPsur[Ntemp+1],&IPsur[Ntemp+2],&IPsur[Ntemp+3],&IPsur[Ntemp+4]);
+		fscanf(fptr,"%d\t%d\t%d\t%d\n",&IPsur[Ntemp+1],&IPsur[Ntemp+2],&IPsur[Ntemp+3],&IPsur[Ntemp+4]);
 
+		Ntemp = (iNBC-1)*3;
+
+		fscanf(fptr,"%lf\t%lf\t%lf\n",&Nvec[Ntemp+1],&Nvec[Ntemp+2],&Nvec[Ntemp+3]);
 
 		Ntemp = (iNBC-1)*8;
 
