@@ -994,6 +994,11 @@ void BCM_Immersed_boundary
 			)
 
 		{ 
+			s1 = orig[0]-BIx;
+			s2 = orig[1]-BIy;
+			s3 = orig[2]-BIz;
+
+			tmin = sqrt(s1*s1+s2*s2+s3*s3)+0.0000001;
 
 			if (dotp >= 0) {
 
@@ -1003,6 +1008,7 @@ void BCM_Immersed_boundary
 
 				iNgc_minus = iNgc_minus+1;
 				fprintf(fptr_minus,"%d\t%d\t%d\t%d\n",icube,i,j,k);
+				fprintf(fptr_minus,"%f\t%f\t%f\n",s1/tmin,s2/tmin,s3/tmin);
 				fprintf(fptr_minus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",sqrt(dis),weight[0],weight[1],weight[2],weight[3],weight[4],weight[5],weight[6],weight[7]);
 
 			}
@@ -1013,6 +1019,7 @@ void BCM_Immersed_boundary
 
 				iNgc_plus = iNgc_plus+1;
 				fprintf(fptr_plus,"%d\t%d\t%d\t%d\n",icube,i,j,k);
+				fprintf(fptr_plus,"%f\t%f\t%f\n",s1/tmin,s2/tmin,s3/tmin);
 				fprintf(fptr_plus,"%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n",sqrt(dis),weight[0],weight[1],weight[2],weight[3],weight[4],weight[5],weight[6],weight[7]);
 
 			}
