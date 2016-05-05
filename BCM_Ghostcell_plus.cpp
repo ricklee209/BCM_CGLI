@@ -24,9 +24,8 @@ double mu_model_plus
 (
 // =============================================================================== //
 	double mu_E, 
-	double mu_t,
+	double U_tau,
 	double Nd,
-	double Vn,
 	double rho
 // =============================================================================== //
 )
@@ -34,10 +33,8 @@ double mu_model_plus
 	double kappa = 0.4;
 	double A = 19.0;
 
-	double Tau_w, U_tau, Y_plus;
+	double mu_t, Y_plus;
 
-	Tau_w = (mu_E)*Vn/(Nd+SML);
-	U_tau = sqrt(Tau_w/rho);
 	Y_plus = rho*U_tau*Nd/mu_E;
 
 	mu_t = mu_E*kappa*Y_plus*( 1.0-exp(-Y_plus/A) )*( 1.0-exp(-Y_plus/A) );
@@ -91,7 +88,7 @@ double wc1, wc2, wc3, wc4, wc5, wc6, wc7, wc8;
 
 double er_p = 0.00001;
 
-double Uini, Nd, mu_in, mu_out;
+double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 
 // ---- GCindex => IPsur => weight ---- //
 
@@ -107,7 +104,7 @@ double Uini, Nd, mu_in, mu_out;
 	wc1,wc2,wc3,wc4,wc5,wc6,wc7,wc8,\
 	gicube,gi,gj,gk,\
 	rho,P,U,V,W,VV,T,\
-	Uini, Nd, mu_in, mu_out\
+	Uini, Nd, mu_in, mu_out, U_tau, Tau_w\
 	)
 	
 	for (iNBC = 1; iNBC <= *NNBC; iNBC++) {
@@ -230,43 +227,26 @@ double Uini, Nd, mu_in, mu_out;
 		V = V - u1*n2;
 		W = W - u1*n3;
 
-		VV = sqrt(U*U+V*V+W*W);
+		Uini = sqrt(U*U+V*V+W*W);
 
-		Uini = VV;
-		
-		
-		
-		mu_out = mu_model_plus(mu_L, mu_out, 2*Nd, VV, rho);
 		
 		for (ite = 1; ite <= 10; ite++) {
 
-			mu_in = mu_model_plus(mu_L,mu_in, Nd, Uini, rho);
-			Uini = 0.5*VV*(mu_L+mu_out)/(mu_L+mu_in);
+			Tau_w = (mu_L+mu_out)*Uini/(2*Nd+SML);
+			U_tau = sqrt(Tau_w/rho);
+			mu_out = mu_model_plus(mu_L, U_tau, Nd, rho);
 			
-			// if(myid == 24) printf("%f\t%f\t%f\t%d\n",mu_in,Uini,VV,ite);
-
 		}
-		
-		wc1 = Uini/(VV+SML);
-		
-		
-		// if(myid == 24) printf("%f\t%f\t%f\t%f\n",wc1,mu_out,mu_in,Uini);
 
-		// for (ite = 1; ite <= 10; ite++) mu_out = mu_model_plus(mu_L, mu_out, 2*Nd, VV, rho);
-		
-		// for (ite = 1; ite <= 10; ite++) {
+		mu_in = mu_model_plus(mu_L, U_tau, 0.5*Nd, rho);
 
-			// mu_in = mu_model_plus(mu_L,mu_in, Nd, Uini, rho);
-			// Uini = 0.5*(mu_L+mu_out)/(mu_L+mu_in)*VV;
-			
-			// // if(myid == 24) printf("%f\t%f\t%f\t%d\n",mu_in,Uini,VV,ite);
+		mu_out = mu_model_plus(mu_L, U_tau, 1.5*Nd, rho);
 
-		// }
+		VV = Uini-U_tau*U_tau*rho/(mu_L+mu_out)*Nd;
+
+		wc1 = VV/(Uini+SML);
 		
-		// wc1 = min(Uini/(VV+SML),1.0);
-		
-		// if(myid == 24) printf("%f\t%f\t%f\t%f\n",wc1,mu_out,mu_in,Uini);
-		// if(myid == 24) printf("%f\t%f\t%f\t%f\t%f\n",VV,n1,n2,n3,u1);
+		//if(myid == 24) printf("%f\t%f\t%f\t%f\n",wc1,mu_out,mu_in,Uini);
 		
 		U1_[gicube][gi][gj][gk][0] = rho;
 		U1_[gicube][gi][gj][gk][1] = wc1*rho*U;
@@ -274,7 +254,6 @@ double Uini, Nd, mu_in, mu_out;
 		U1_[gicube][gi][gj][gk][3] = wc1*rho*W;
 		U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*(wc1*VV)*(wc1*VV);
 		
-
 		
 	}
 
