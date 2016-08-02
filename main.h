@@ -126,6 +126,8 @@ double Ymax,
 double Zmin, 
 double Zmax, 
 
+double IPd,
+
 double (*cube_size) = new double[Ncube],
 int (*csl) = new int[Ncube],
 
@@ -388,6 +390,10 @@ double (*Nvec) = new double[NBC*3+1]
 
  double Th,
 
+ double IPd = 0.5,
+
+ double (*cube_size) = new double[Ncube],
+
  double (*weight) = new double[NBC_minus*8+1],
  int (*GCindex) = new int[NBC_minus*4+1],
  int (*IPsur) = new int[NBC_minus*4+1],
@@ -410,6 +416,10 @@ double (*Nvec) = new double[NBC*3+1]
  int *NNBC,
 
  double Th,
+ 
+ double IPd = 0.5,
+
+ double (*cube_size) = new double[Ncube],
 
  double (*weight) = new double[NBC_plus*8+1],
  int (*GCindex) = new int[NBC_plus*4+1],
@@ -436,6 +446,10 @@ double (*Nvec) = new double[NBC*3+1]
  int *NNBC,
 
  double Th,
+ 
+ double IPd = 0.5,
+
+ double (*cube_size) = new double[Ncube],
 
  double (*weight) = new double[NBC_minus*8+1],
  int (*GCindex) = new int[NBC_minus*4+1],
@@ -459,6 +473,10 @@ double (*Nvec) = new double[NBC*3+1]
  int *NNBC,
 
  double Th,
+ 
+ double IPd = 0.5,
+
+ double (*cube_size) = new double[Ncube],
 
  double (*weight) = new double[NBC_plus*8+1],
  int (*GCindex) = new int[NBC_plus*4+1],

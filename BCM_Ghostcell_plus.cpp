@@ -14,7 +14,7 @@
 
 #include "Resolution.h"
 
-extern int Nctbe;    
+extern int Ncube;    
 extern int NBC_plus;
 
 #define SML 0.00000001
@@ -52,15 +52,19 @@ int *NNBC,
 
 double Th,
 
+double IPd = 0.5,
+
+double (*cube_size) = new double[Ncube],
+
 double (*weight) = new double[NBC_plus*8+1],
 int (*GCindex) = new int[NBC_plus*4+1],
 int (*IPsur) = new int[NBC_plus*4+1],
 double (*Nor_D) = new double[NBC_plus+1],
 double (*Nvec) = new double[NBC_plus*3+1],
 
-int (*FWS)[X_size][Y_size][Z_size] = new int[Nctbe][X_size][Y_size][Z_size],
+int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
 
-double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Nctbe][X_size][Y_size][Z_size][Ndim]
+double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
 
 // =============================================================================== //
 )
@@ -220,39 +224,22 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 		U = wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc7*u6+wc8*u7;
 		V = wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7;
 		W = wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6+wc8*w7;
-
-		u1 = n1*U + n2*V + n3*W;
-
-		U = U - u1*n1;
-		V = V - u1*n2;
-		W = W - u1*n3;
-
-		Uini = sqrt(U*U+V*V+W*W);
-
 		
-		for (ite = 1; ite <= 10; ite++) {
+		wc1 = Nd/(IPd*(cube_size[gicube]/NcubeX));
 
-			Tau_w = (mu_L+mu_out)*Uini/(2*Nd+SML);
-			U_tau = sqrt(Tau_w/rho);
-			mu_out = mu_model_plus(mu_L, U_tau, Nd, rho);
-			
-		}
+		U = U*wc1;
+		V = V*wc1;
+		W = W*wc1;
 
-		mu_in = mu_model_plus(mu_L, U_tau, 0.5*Nd, rho);
-
-		mu_out = mu_model_plus(mu_L, U_tau, 1.5*Nd, rho);
-
-		VV = Uini-U_tau*U_tau*rho/(mu_L+mu_out)*Nd;
-
-		wc1 = VV/(Uini+SML);
+		VV = U*U+V*V+W*W;
 		
 		//if(myid == 24) printf("%f\t%f\t%f\t%f\n",wc1,mu_out,mu_in,Uini);
 		
 		U1_[gicube][gi][gj][gk][0] = rho;
-		U1_[gicube][gi][gj][gk][1] = wc1*rho*U;
-		U1_[gicube][gi][gj][gk][2] = wc1*rho*V;
-		U1_[gicube][gi][gj][gk][3] = wc1*rho*W;
-		U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*(wc1*VV)*(wc1*VV);
+		U1_[gicube][gi][gj][gk][1] = rho*U;
+		U1_[gicube][gi][gj][gk][2] = rho*V;
+		U1_[gicube][gi][gj][gk][3] = rho*W;
+		U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*VV;
 		
 		
 	}

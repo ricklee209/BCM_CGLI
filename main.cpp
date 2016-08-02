@@ -74,6 +74,8 @@ int main(int argc, char **argv)
 
 	double (*er) = new double[10];
 
+	double IPd = 1.0;
+
 	double E1 = 0;
 	double E2 = 0;
 	double E3 = 0;
@@ -817,7 +819,7 @@ int main(int argc, char **argv)
 	// --------------------------------------------------------------------------------------- //	
 
 
-		BCM_Immersed_boundary(myid, Ncube, N_wallcube, &NBC, Xmin, Xmax, Ymin, Ymax, Zmin, Zmax, 
+		BCM_Immersed_boundary(myid, Ncube, N_wallcube, &NBC, Xmin, Xmax, Ymin, Ymax, Zmin, Zmax, IPd,
 			cube_size, csl, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt, FWS, wallcube);				  
 
 	}
@@ -1191,14 +1193,14 @@ int main(int argc, char **argv)
 
 				for (int ig = 1; ig <= 10; ig++) {
 
-					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
+					BCM_Ghostcell_minus(myid, &NBC_minus, Th, IPd, cube_size, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
 
-					BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
+					BCM_Ghostcell_plus(myid, &NBC_plus, Th, IPd, cube_size, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
 					
 
-					//BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
+					//BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, IPd, cube_size, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
 
-					//BCM_Ghostcell_plus_Tem(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
+					//BCM_Ghostcell_plus_Tem(myid, &NBC_plus, IPd, cube_size, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
 
 
 				}

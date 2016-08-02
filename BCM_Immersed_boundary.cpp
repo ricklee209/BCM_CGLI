@@ -140,6 +140,8 @@ void BCM_Immersed_boundary
 	double Zmin, 
 	double Zmax, 
 
+	double IPd = 0.5,
+
 	double (*cube_size) = new double[Ncube],
 	int (*csl) = new int[Ncube],
 
@@ -773,9 +775,9 @@ void BCM_Immersed_boundary
 				BIy = orig[1] - tmin*dir1;
 				BIz = orig[2] - tmin*dir2;
 
-				IPx = orig[0] + tmin*dir0;
-				IPy = orig[1] + tmin*dir1;
-				IPz = orig[2] + tmin*dir2;
+				IPx = BIx + IPd*dx*dir0;
+				IPy = BIy + IPd*dy*dir1;
+				IPz = BIz + IPd*dz*dir2;
 
 			}  // ---- else if (dotp > 0) ---- //
 
@@ -785,9 +787,9 @@ void BCM_Immersed_boundary
 				BIy = orig[1] + tmin*dir1;
 				BIz = orig[2] + tmin*dir2;
 
-				IPx = orig[0] - tmin*dir0;
-				IPy = orig[1] - tmin*dir1;
-				IPz = orig[2] - tmin*dir2;
+				IPx = BIx - IPd*dx*dir0;
+				IPy = BIy - IPd*dy*dir1;
+				IPz = BIz - IPd*dz*dir2;
 
 			}
 
@@ -815,11 +817,11 @@ void BCM_Immersed_boundary
 			BIy = BIp1;
 			BIz = BIp2;
 
-			IPx = 2*xcnt-BIx;
-			IPy = 2*ycnt-BIy;
-			IPz = 2*zcnt-BIz;
-
 			dis = (BIx-xcnt)*(BIx-xcnt)+(BIy-ycnt)*(BIy-ycnt)+(BIz-zcnt)*(BIz-zcnt);
+
+			IPx = BIx+(xcnt-BIx)/(sqrt(dis)+0.00000001)*IPd*dx;
+			IPy = BIy+(ycnt-BIy)/(sqrt(dis)+0.00000001)*IPd*dy;
+			IPz = BIz+(zcnt-BIz)/(sqrt(dis)+0.00000001)*IPd*dz;
 
 			if (dis > dx*dx) {
 				
