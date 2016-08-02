@@ -29,9 +29,9 @@ double psi = 0.0001;
 
 double rho0 = 1.1842;
 
-double U0 = 38.8;
+double U0 = 15.6;
 
-double Uin = 38.8;
+double Uin = 15.6;
 
 double V0 = 0.;
 

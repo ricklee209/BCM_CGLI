@@ -7,7 +7,7 @@
 
 // ---- TDROE=4 : Roe modified by B. Thornber ---- //
 
-#define ROE 1
+#define ROE 3
 
 
 
@@ -28,7 +28,7 @@
 // ---- ILES : implicit turbulence model ---- //
 // ---- DNS : implicit turbulence model ---- //
 
-#define ILES 
+#define DNS 
 
 
 #define Char_D 1.0 

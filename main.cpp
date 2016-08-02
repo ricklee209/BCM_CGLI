@@ -47,14 +47,14 @@ int main(int argc, char **argv)
 
 	int start_step = 100000;    // ---- how many steps to reach the quasi steady ---- //
 
-	int dp_step = 10000;    // ---- how many steps for periodically outputing the dp ---- //
+	int dp_step = 1000000;    // ---- how many steps for periodically outputing the dp ---- //
 
 	int iteration_end_step = 5;
-	int output_step = 1;
-	int count = 1;	
+	int output_step = 10000;
+	int count = 10000000;	
 	int step;
 
-	double deltaT = 0.005;
+	double deltaT = 0.0000004;
 	//double deltaT = 0.03;
 	double deltaTau = deltaT/200.0;
 	double e = 0.1;
@@ -67,7 +67,7 @@ int main(int argc, char **argv)
 
 	int switch_IBM = 1;     // ---- 1 run IBM ---- //
 
-	int switch_output = 0;  // ---- 1 output grid file ---- //
+	int switch_output = 1;  // ---- 1 output grid file ---- //
 
 
 	int NBC,NBC_plus, NBC_minus, Ntemp, gicube, gi, gj, gk, mp_switch;

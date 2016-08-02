@@ -23,6 +23,10 @@ int *NNBC,
 
 double Th,
 
+double IPd = 0.5,
+
+double (*cube_size) = new double[Ncube],
+
 double (*weight) = new double[NBC_minus*8+1],
 int (*GCindex) = new int[NBC_minus*4+1],
 int (*IPsur) = new int[NBC_minus*4+1],
