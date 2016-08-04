@@ -140,7 +140,7 @@ void BCM_Immersed_boundary
 	double Zmin, 
 	double Zmax, 
 
-	double IPd = 0.5,
+	double IPd,
 
 	double (*cube_size) = new double[Ncube],
 	int (*csl) = new int[Ncube],
