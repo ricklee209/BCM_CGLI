@@ -23,22 +23,68 @@ double mu_model_minus
 (
 // =============================================================================== //
 	double mu_E, 
-	double U_tau,
+	double dx,
 	double Nd,
-	double rho
+	double rho,
+	double Vip
 // =============================================================================== //
 )
 {
 	double kappa = 0.4;
 	double A = 19.0;
+	double Int_value, tmp, Tau_w, U_tau_tmp, Vn;
 
 	double mu_t, Y_plus;
 
-	Y_plus = rho*U_tau*Nd/mu_E;
+	double U_tau = 0.0;
 
-	mu_t = mu_E*kappa*Y_plus*( 1.0-exp(-Y_plus/A) )*( 1.0-exp(-Y_plus/A) );
+	int Num_int = 100;
 
-	return mu_t;
+	int Num_int2 = 50;
+
+	int Num_ite = 100;
+
+	for(int ite = 1; ite <= Num_ite; ite++) {
+
+		Int_value = 0.0;
+
+		for (int i = 1; i <= Num_int; i++) {
+
+			Y_plus = rho*U_tau*0.5*i/Num_int*dx/mu_E;
+			mu_t = mu_E*kappa*Y_plus*( 1.0-exp(-Y_plus/A) )*( 1.0-exp(-Y_plus/A) );
+			Int_value = Int_value + 1.0/(mu_t+mu_E);
+
+		}
+
+		tmp = dx/Num_int*( 0.5*(1/(mu_t+mu_E) + 1.0/mu_E) + Int_value);
+
+		Tau_w = rho/tmp*Vip;
+
+		U_tau_tmp = sqrt(Tau_w/rho);
+
+		if( fabs(U_tau_tmp-U_tau)/U_tau_tmp < 0.0001 ) break;
+
+		U_tau = U_tau_tmp;
+
+
+	}
+
+
+	Int_value = 0.0;
+
+	for (int i = 1; i <= Num_int2; i++) {
+
+			Y_plus = rho*U_tau*0.5*i/Num_int2*Nd/mu_E;
+			mu_t = mu_E*kappa*Y_plus*( 1.0-exp(-Y_plus/A) )*( 1.0-exp(-Y_plus/A) );
+			Int_value = Int_value + 1.0/(mu_t+mu_E);
+
+		}
+
+	tmp = Nd/Num_int2*( 0.5*(1/(mu_t+mu_E) + 1.0/mu_E) + Int_value);
+
+	Vn = Tau_w*tmp/rho;
+	
+	return Vn;
 
 }
 
@@ -108,7 +154,7 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 	wc1,wc2,wc3,wc4,wc5,wc6,wc7,wc8,\
 	gicube,gi,gj,gk,\
 	rho,P,U,V,W,VV,T,\
-	Uini, Nd, mu_in, mu_out, U_tau, Tau_w\
+	Uini, Nd, mu_in, mu_out, U_tau, Tau_w, dx\
 	)
 	
 	for (iNBC = 1; iNBC <= *NNBC; iNBC++) {
@@ -226,7 +272,13 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 		V = wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7;
 		W = wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6+wc8*w7;
 
-		wc1 = Nd/(IPd*(cube_size[gicube]/NcubeX));
+		dx = cube_size[gicube]/NcubeX;
+
+		Uini = sqrt(U*U+V*V+W*W);
+
+		VV = mu_model_minus(mu_L,dx,Nd,rho,Uini);
+
+		wc1 = VV/(Uini+0.00000001);
 
 		U = U*wc1;
 		V = V*wc1;
