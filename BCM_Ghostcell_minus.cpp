@@ -23,22 +23,58 @@ double mu_model_minus
 (
 // =============================================================================== //
 	double mu_E, 
-	double U_tau,
+	double dx,
 	double Nd,
-	double rho
+	double rho,
+	double Vip
 // =============================================================================== //
 )
 {
 	double kappa = 0.4;
 	double A = 19.0;
+	double Int_value, Int_value_half,tmp, Tau_w, U_tau_tmp, Vn;
 
 	double mu_t, Y_plus;
 
-	Y_plus = rho*U_tau*Nd/mu_E;
+	double U_tau = 0.0;
 
-	mu_t = mu_E*kappa*Y_plus*( 1.0-exp(-Y_plus/A) )*( 1.0-exp(-Y_plus/A) );
+	int Num_int = 100;
 
-	return mu_t;
+	int Num_ite = 100;
+
+	for(int ite = 1; ite <= Num_ite; ite++) {
+
+		Int_value = 0.0;
+
+		for (int i = 1; i <= Num_int; i++) {
+
+			Y_plus = rho*U_tau*0.5*i/Num_int*dx/mu_E;
+			mu_t = mu_E*kappa*Y_plus*( 1.0-exp(-Y_plus/A) )*( 1.0-exp(-Y_plus/A) );
+			Int_value = Int_value + 1.0/(mu_t+mu_E);
+
+			if(i == Num_int/2) Int_value_half = Int_value;
+
+		}
+
+		tmp = dx/Num_int*( 0.5*(1/(mu_t+mu_E) + 1.0/mu_E) + Int_value);
+
+		Tau_w = rho/tmp*Vip;
+
+		U_tau_tmp = sqrt(Tau_w/rho);
+
+		if( fabs(U_tau_tmp-U_tau)/U_tau_tmp < 0.001 ) break;
+
+		U_tau = U_tau_tmp;
+
+
+	}
+
+
+	tmp = Nd/(Num_int/2)*( 0.5*(1/(mu_t+mu_E) + 1.0/mu_E) + Int_value_half);
+
+	Vn = Tau_w*tmp/rho;
+	
+	return Vn;
 
 }
 
@@ -104,7 +140,7 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 	wc1,wc2,wc3,wc4,wc5,wc6,wc7,wc8,\
 	gicube,gi,gj,gk,\
 	rho,P,U,V,W,VV,T,\
-	Uini, Nd, mu_in, mu_out, U_tau, Tau_w\
+	Uini, Nd, mu_in, mu_out, U_tau, Tau_w, dx\
 	)
 	
 	for (iNBC = 1; iNBC <= *NNBC; iNBC++) {
@@ -222,38 +258,29 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 		V = wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7;
 		W = wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6+wc8*w7;
 
-		u1 = n1*U + n2*V + n3*W;
+		Uini = U*n1+V*n2+W*n3;
 
-		U = U - u1*n1;
-		V = V - u1*n2;
-		W = W - u1*n3;
-		
+		U = U-Uini*n1;
+		V = V-Uini*n2;
+		W = W-Uini*n3;
+
 		Uini = sqrt(U*U+V*V+W*W);
 
-		
-		for (ite = 1; ite <= 10; ite++) {
+		VV = mu_model_minus(mu_L,2.0*Nd,Nd,rho,Uini);
 
-			Tau_w = (mu_L+mu_out)*Uini/(2*Nd+SML);
-			U_tau = sqrt(Tau_w/rho);
-			mu_out = mu_model_minus(mu_L, U_tau, Nd, rho);
-			
-		}
+		wc1 = VV/(Uini+0.00000001);
 
-		mu_in = mu_model_minus(mu_L, U_tau, 0.5*Nd, rho);
+		U = U*wc1;
+		V = V*wc1;
+		W = W*wc1;
 
-		mu_out = mu_model_minus(mu_L, U_tau, 1.5*Nd, rho);
+		VV = U*U+V*V+W*W;
 
-		VV = Uini-U_tau*U_tau*rho/(mu_L+mu_out)*Nd;
-
-		wc1 = VV/(Uini+SML);
-		
-		//if(myid == 24) printf("%f\t%f\t%f\t%f\n",wc1,mu_out,mu_in,Uini);
-		
 		U1_[gicube][gi][gj][gk][0] = rho;
-		U1_[gicube][gi][gj][gk][1] = wc1*rho*U;
-		U1_[gicube][gi][gj][gk][2] = wc1*rho*V;
-		U1_[gicube][gi][gj][gk][3] = wc1*rho*W;
-		U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*(wc1*VV)*(wc1*VV);
+		U1_[gicube][gi][gj][gk][1] = rho*U;
+		U1_[gicube][gi][gj][gk][2] = rho*V;
+		U1_[gicube][gi][gj][gk][3] = rho*W;
+		U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*VV;
 		
 		
 	}
