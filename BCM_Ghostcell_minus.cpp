@@ -46,15 +46,25 @@ double mu_model_minus
 
 		Int_value = 0.0;
 
-		for (int i = 1; i <= Num_int; i++) {
+		
+		for (int i = 1; i <= Num_int/2-1; i++) {
 
 			Y_plus = rho*U_tau*0.5*i/Num_int*dx/mu_E;
 			mu_t = mu_E*kappa*Y_plus*( 1.0-exp(-Y_plus/A) )*( 1.0-exp(-Y_plus/A) );
 			Int_value = Int_value + 1.0/(mu_t+mu_E);
 
-			if(i == Num_int/2) Int_value_half = Int_value;
+		}
+		
+		Int_value_half = Int_value;
+		
+		for (int i = Num_int/2; i <= Num_int; i++) {
+
+			Y_plus = rho*U_tau*0.5*i/Num_int*dx/mu_E;
+			mu_t = mu_E*kappa*Y_plus*( 1.0-exp(-Y_plus/A) )*( 1.0-exp(-Y_plus/A) );
+			Int_value = Int_value + 1.0/(mu_t+mu_E);
 
 		}
+
 
 		tmp = dx/Num_int*( 0.5*(1/(mu_t+mu_E) + 1.0/mu_E) + Int_value);
 
