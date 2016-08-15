@@ -39,7 +39,7 @@ double mu_model_plus
 
 	double U_tau = 0.0;
 
-	int Num_int = 100;
+	int Num_int = 40;
 
 	int Num_ite = 100;
 
@@ -275,9 +275,11 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 
 		Uini = sqrt(U*U+V*V+W*W);
 
+		Nd = Nd + SML;
+
 		VV = mu_model_plus(mu_L,2.0*Nd,Nd,rho,Uini);
 
-		wc1 = VV/(Uini+0.00000001);
+		wc1 = VV/(Uini+SML);
 
 		U = U*wc1;
 		V = V*wc1;
