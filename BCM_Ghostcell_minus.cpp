@@ -268,12 +268,12 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 		V = wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7;
 		W = wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6+wc8*w7;
 
-		Uini = U*n1+V*n2+W*n3;
+		// Uini = U*n1+V*n2+W*n3;
 
-		U = U-Uini*n1;
-		V = V-Uini*n2;
-		W = W-Uini*n3;
-
+		// U = U-Uini*n1;
+		// V = V-Uini*n2;
+		// W = W-Uini*n3;
+		
 		Uini = sqrt(U*U+V*V+W*W);
 
 		Nd = Nd + SML;
