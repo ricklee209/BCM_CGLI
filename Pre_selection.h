@@ -7,7 +7,7 @@
 
 // ---- TDROE=4 : Roe modified by B. Thornber ---- //
 
-#define ROE 1
+#define ROE 3
 
 
 
