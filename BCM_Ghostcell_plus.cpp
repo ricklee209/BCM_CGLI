@@ -50,7 +50,7 @@ double mu_model_plus
 		
 		for (int i = 1; i <= Num_int/2-1; i++) {
 
-			Y_plus = rho*U_tau*0.5*i/Num_int*dx/mu_E;
+			Y_plus = rho*U_tau*i/Num_int*dx/mu_E;
 			mu_t = mu_E*kappa*Y_plus*( 1.0-exp(-Y_plus/A) )*( 1.0-exp(-Y_plus/A) );
 			Int_value = Int_value + 1.0/(mu_t+mu_E);
 
@@ -60,7 +60,7 @@ double mu_model_plus
 		
 		for (int i = Num_int/2; i <= Num_int; i++) {
 
-			Y_plus = rho*U_tau*0.5*i/Num_int*dx/mu_E;
+			Y_plus = rho*U_tau*i/Num_int*dx/mu_E;
 			mu_t = mu_E*kappa*Y_plus*( 1.0-exp(-Y_plus/A) )*( 1.0-exp(-Y_plus/A) );
 			Int_value = Int_value + 1.0/(mu_t+mu_E);
 
@@ -80,22 +80,28 @@ double mu_model_plus
 
 	}
 
+	Y_plus = rho*U_tau*Nd/mu_E;
 
 	
-	if( rho*U_tau*Nd/mu_E > 30.0 ) {
-
-		tmp = Nd/(Num_int/2)*( 0.5*(1/(mu_t+mu_E) + 1.0/mu_E) + Int_value_half);
-
-		Vn = Tau_w*tmp/rho;
-
-	}
-
-	else {
+	if( Y_plus < 10.0 ) {
 
 		Vn = -100.0;
 
+	}
+
+	else if(Y_plus > 40.0 ){
+
+		Vn = 10000000.0;
+
 		}
+
+	else {	
 	
+		tmp = Nd/(Num_int/2)*( 0.5*(1/(mu_t+mu_E) + 1.0/mu_E) + Int_value_half);
+
+		Vn = Tau_w*tmp/rho;
+	
+	}
 	
 	return Vn;
 
@@ -293,20 +299,29 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 
 		wc1 = VV/(Uini+SML);
 
-		if(wc1 > 0.0) {
 
-			U = U*wc1;
-			V = V*wc1;
-			W = W*wc1;
-
-		}
-		else {
+		if(wc1 < 0.0) {
 
 			U = (U+vv0*n1)*0.5;
 			V = (V+vv0*n2)*0.5;
 			W = (W+vv0*n3)*0.5;
 
 		}
+		else if(wc1 > 10.0){
+			
+			U = (U+vv0*n1);
+			V = (V+vv0*n2);
+			W = (W+vv0*n3);
+
+		}
+		else {
+			
+			U = U*wc1;
+			V = V*wc1;
+			W = W*wc1;
+
+		}
+
 
 		VV = U*U+V*V+W*W;
 
