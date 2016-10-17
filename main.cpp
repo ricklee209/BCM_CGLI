@@ -43,31 +43,28 @@ int main(int argc, char **argv)
 #include "Pre_selection.h"
 
 
-	int statistic_step = 100000;    // ---- periodic step ---- //
+	int statistic_step = 10000;    // ---- periodic step ---- //
 
-	int start_step = 100000;    // ---- how many steps to reach the quasi steady ---- //
+	int start_step = 10000;    // ---- how many steps to reach the quasi steady ---- //
 
 	int dp_step = 10000;    // ---- how many steps for periodically outputing the dp ---- //
 
 	int iteration_end_step = 1;
-	int output_step = 1;
-	int count = 1;	
+	int output_step = 2000;
+	int count = 1000000;	
 	int step;
 
-	double deltaT = 0.005;
-	//double deltaT = 0.03;
+	double deltaT = 1.0e-9;
 	double deltaTau = deltaT/200.0;
-	double e = 0.1;
+	double e = 1.0;
 	double Th = 309.03531204896;
-	//double e = 0.00000001;
-	//double Th = 299.15681120;
 
 
 	int switch_initial = 0; // ---- 1 reading initial coniditon ---- //
 
 	int switch_IBM = 1;     // ---- 1 run IBM ---- //
 
-	int switch_output = 0;  // ---- 1 output grid file ---- //
+	int switch_output = 1;  // ---- 1 output grid file ---- //
 
 
 	int NBC,NBC_plus, NBC_minus, Ntemp, gicube, gi, gj, gk, mp_switch;

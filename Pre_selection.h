@@ -28,7 +28,7 @@
 // ---- ILES : implicit turbulence model ---- //
 // ---- DNS : implicit turbulence model ---- //
 
-#define ILES 
+#define DNS 
 
 
-#define Char_D 1.0 
+#define Char_D 4.5e-5 
