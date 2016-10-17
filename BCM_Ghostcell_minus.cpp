@@ -79,29 +79,21 @@ double mu_model_minus
 
 	}
 
-	
+	tmp = Nd/(Num_int/2)*( 0.5*(1/(mu_t+mu_E) + 1.0/mu_E) + Int_value_half);
+
 	Y_plus = rho*U_tau*Nd/mu_E;
 
-	
-	if( Y_plus < 10.0 ) {
-
-		Vn = -100.0;
-
-	}
-
-	else if(Y_plus > 40.0 ){
-
-		Vn = 10000000.0;
-
-		}
-
-	else {	
-	
-		tmp = Nd/(Num_int/2)*( 0.5*(1/(mu_t+mu_E) + 1.0/mu_E) + Int_value_half);
+	if( Y_plus < 60.0 ) {
 
 		Vn = Tau_w*tmp/rho;
-	
+
 	}
+	else {	
+	
+		Vn = -Tau_w*tmp/rho;
+
+	}
+	
 	
 	return Vn;
 
@@ -301,28 +293,27 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 
 		wc1 = VV/(Uini+SML);
 
-		if(wc1 < 0.0) {
 
-			U = (U+vv0*n1)*0.5;
-			V = (V+vv0*n2)*0.5;
-			W = (W+vv0*n3)*0.5;
+		if(wc1 > 0) {
 
-		}
-		else if(wc1 > 10.0){
-			
-			U = (U+vv0*n1);
-			V = (V+vv0*n2);
-			W = (W+vv0*n3);
+			wc1 = min(0.5,wc1);
+
+			U = (U+vv0*n1)*wc1;
+			V = (V+vv0*n2)*wc1;
+			W = (W+vv0*n3)*wc1;
 
 		}
 		else {
+
+			wc1 = -wc1;
 			
 			U = U*wc1;
 			V = V*wc1;
 			W = W*wc1;
 
 		}
-
+		
+		
 		VV = U*U+V*V+W*W;
 
 		U1_[gicube][gi][gj][gk][0] = rho;
