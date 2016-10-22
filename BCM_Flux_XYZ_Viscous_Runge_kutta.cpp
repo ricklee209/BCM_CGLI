@@ -68,14 +68,17 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 	int IF,
-		IFi1,IFi2,IFi3,
-		IF_i1,IF_i2,IF_i3,
+		IFi1,IFi2,IFi3,IFi4,IFi5,
+		IF_i1,IF_i2,IF_i3,IF_i4,IF_i5,
 
-		IFj1,IFj2,IFj3,
-		IF_j1,IF_j2,IF_j3,
+		IFj1,IFj2,IFj3,IFj4,IFj5,
+		IF_j1,IF_j2,IF_j3,IF_j4,IF_j5,
 
-		IFk1,IFk2,IFk3,
-		IF_k1,IF_k2,IF_k3;
+		IFk1,IFk2,IFk3,IFk4,IFk5,
+		IF_k1,IF_k2,IF_k3,IF_k4,IF_k5;
+
+	int id1,id2,id3,id4,di5;
+
 
 	double rho,U,V,W,VV,P,C,T,h,H;
 
@@ -190,7 +193,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 		Rfy1,Rfy2,Rfy3,Rfy4,Rfy5,
 		Rfz1,Rfz2,Rfz3,Rfz4,Rfz5,
 		Rk1,Rk2,Rk3,Rk4,Rk5,
-		vF1,vF2,vF3,vF4,vF5;
+		vF1,vF2,vF3,vF4,vF5,
+		Sx,Sy,Sz;
 
 	double d11,d12,d13,d14,d15,
 		d21,d22,d23,d24,d25,
@@ -201,25 +205,81 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 	double rhoold,Uold,Vold,Wold,VVold,Pold,Told;
 	
 
+	double dPx,dPy,dPz,dPxi,dPyi,dPzi;
+
+	double dTx,dTy,dTz,dTxi,dTyi,dTzi;
+
 	double e1 = 0;
 	double e2 = 0;
 	double e3 = 0;
 	double e4 = 0;
 	double e5 = 0;
 	
+	double e6 = 0;
+	double e7 = 0;
+	double e8 = 0;
+	double e9 = 0;
+
 	double theda_p, U_p, C_p;
+
+	double A2 = -5.0/9.0;
+	double A3 = -153.0/128.0;
+	double B1 = 1.0/3.0;
+	double B2 = 15.0/16.0;
+	double B3 = 8.0/15.0;
+	
 
 
 #pragma omp parallel for private(\
-	dx,dy,dz,\
-	invXI,invET,invZT,\
 	IF,\
-	IFi1,IFi2,IFi3,\
-	IF_i1,IF_i2,IF_i3,\
-	IFj1,IFj2,IFj3,\
-	IF_j1,IF_j2,IF_j3,\
-	IFk1,IFk2,IFk3,\
-	IF_k1,IF_k2,IF_k3,\
+	IFi1,IFi2,IFi3,IFi4,IFi5,\
+	IF_i1,IF_i2,IF_i3,IF_i4,IF_i5,\
+	IFj1,IFj2,IFj3,IFj4,IFj5,\
+	IF_j1,IF_j2,IF_j3,IF_j4,IF_j5,\
+	IFk1,IFk2,IFk3,IFk4,IFk5,\
+	IF_k1,IF_k2,IF_k3,IF_k4,IF_k5,\
+	id1,id2,id3,id4,di5,\
+	rho,U,V,W,VV,P,C,T,h,H,\
+	irho,iU,iV,iW,iP,iT,\
+	jrho,jU,jV,jW,jP,jT,\
+	krho,kU,kV,kW,kP,kT,\
+	rhoi,Ui,Vi,Wi,Pi,Ti,\
+	rhoj,Uj,Vj,Wj,Pj,Tj,\
+	rhok,Uk,Vk,Wk,Pk,Tk,\
+	ijrho,ijU,ijV,ijW,ijP,ijT,\
+	jkrho,jkU,jkV,jkW,jkP,jkT,\
+	ikrho,ikU,ikV,ikW,ikP,ikT,\
+	irhoj,iUj,iVj,iWj,iPj,iTj,\
+	irhok,iUk,iVk,iWk,iPk,iTk,\
+	jrhoi,jUi,jVi,jWi,jPi,jTi,\
+	jrhok,jUk,jVk,jWk,jPk,jTk,\
+	krhoj,kUj,kVj,kWj,kPj,kTj,\
+	krhoi,kUi,kVi,kWi,kPi,kTi,\
+	rhoij,Uij,Vij,Wij,Pij,Tij,\
+	rhoik,Uik,Vik,Wik,Pik,Tik,\
+	rhojk,Ujk,Vjk,Wjk,Pjk,Tjk,\
+	du_dx,du_dy,du_dz,dv_dx,dv_dy,dv_dz,dw_dx,dw_dy,dw_dz,\
+	dT_dx,dT_dy,dT_dz,\
+	mu_E,mu_T,Pr_E,\
+	sigma_xx,sigma_xy,sigma_xz,\
+	sigma_yx,sigma_yy,sigma_yz,\
+	sigma_zx,sigma_zy,sigma_zz,\
+	invXI,invET,invZT,\
+	Tx,Ty,Tz,\
+	Ux,Uy,Uz,\
+	Vx,Vy,Vz,\
+	Wx,Wy,Wz,\
+	LL1,LL2,LL3,LL4,LL5,\
+	LL1i,LL2i,LL3i,LL4i,LL5i,\
+	ML1,ML2,ML3,ML4,ML5,\
+	ML1j,ML2j,ML3j,ML4j,ML5j,\
+	NL1,NL2,NL3,NL4,NL5,\
+	NL1k,NL2k,NL3k,NL4k,NL5k,\
+	MR1,MR2,MR3,MR4,MR5,\
+	ML1i,ML2i,ML3i,ML4i,ML5i,\
+	MR1i,MR2i,MR3i,MR4i,MR5i,\
+	beta,S,deltaU,deltaP,\
+	temp,temp1,temp2,temp3,temp4,temp5,temp6,\
 	u1,u2,u3,u4,u5,\
 	u1i1,u2i1,u3i1,u4i1,u5i1,\
 	u1i2,u2i2,u3i2,u4i2,u5i2,\
@@ -239,16 +299,11 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 	u1_k1,u2_k1,u3_k1,u4_k1,u5_k1,\
 	u1_k2,u2_k2,u3_k2,u4_k2,u5_k2,\
 	u1_k3,u2_k3,u3_k3,u4_k3,u5_k3,\
-	ML1,ML2,ML3,ML4,ML5,\
-	MR1,MR2,MR3,MR4,MR5,\
-	ML1i,ML2i,ML3i,ML4i,ML5i,\
-	MR1i,MR2i,MR3i,MR4i,MR5i,\
-	dU1,dU2,dU3,dU4,dU5,\
+	uu1,uu2,uu3,uu4,uu5,\
+	u1q,u2q,u3q,u4q,u5q,\
 	_rho,_U,_V,_W,_VV,_P,_T,_C,_H,\
 	rho_,U_,V_,W_,VV_,P_,T_,C_,H_,\
-	temp,temp1,temp2,temp3,temp4,temp5,temp6,\
-	rho,U,V,W,VV,P,C,T,h,H,\
-	beta,S,deltaU,deltaP, theda_p, U_p, C_p,\
+	dU1,dU2,dU3,dU4,dU5,\
 	Fav1,Fav2,Fav3,Fav4,Fav5,\
 	inFx1,inFx2,inFx3,inFx4,inFx5,\
 	inFx1i,inFx2i,inFx3i,inFx4i,inFx5i,\
@@ -256,11 +311,24 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 	inFy1i,inFy2i,inFy3i,inFy4i,inFy5i,\
 	inFz1,inFz2,inFz3,inFz4,inFz5,\
 	inFz1i,inFz2i,inFz3i,inFz4i,inFz5i,\
+	Rp1,Rp2,Rp3,Rp4,Rp5,\
 	Rf1,Rf2,Rf3,Rf4,Rf5,\
 	Rfx1,Rfx2,Rfx3,Rfx4,Rfx5,\
 	Rfy1,Rfy2,Rfy3,Rfy4,Rfy5,\
 	Rfz1,Rfz2,Rfz3,Rfz4,Rfz5,\
-	i,j,k\
+	Rk1,Rk2,Rk3,Rk4,Rk5,\
+	vF1,vF2,vF3,vF4,vF5,\
+	Sx,Sy,Sz,\
+	d11,d12,d13,d14,d15,\
+	d21,d22,d23,d24,d25,\
+	d31,d32,d33,d34,d35,\
+	d41,d42,d43,d44,d45,\
+	d51,d52,d53,d54,d55,\
+	i,j,k,\
+	dx,dy,dz,\
+	dPx,dPy,dPz,dPxi,dPyi,dPzi,\
+	dTx,dTy,dTz,dTxi,dTyi,dTzi,\
+	theda_p, U_p, C_p\
 	) 
 
 
@@ -274,12 +342,33 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 				for (k = 2; k <= nz; k++) {
 
 
+					uu1 = U1[icube][i][j][k][0];
+					uu2 = U1[icube][i][j][k][1];
+					uu3 = U1[icube][i][j][k][2];
+					uu4 = U1[icube][i][j][k][3];
+					uu5 = U1[icube][i][j][k][4];
+
+					u1q = U1q[icube][i][j][k][0];
+					u2q = U1q[icube][i][j][k][1];
+					u3q = U1q[icube][i][j][k][2];
+					u4q = U1q[icube][i][j][k][3];
+					u5q = U1q[icube][i][j][k][4];
+
 					IF = FWS[icube][i][j][k];
 					u1 = U1_[icube][i][j][k][0];
 					u2 = U1_[icube][i][j][k][1];
 					u3 = U1_[icube][i][j][k][2];
 					u4 = U1_[icube][i][j][k][3];
 					u5 = U1_[icube][i][j][k][4];
+
+					
+					Rp1 = -(3*u1-4*uu1+u1q)/(2*deltaT);
+					Rp2 = -(3*u2-4*uu2+u2q)/(2*deltaT);
+					Rp3 = -(3*u3-4*uu3+u3q)/(2*deltaT);
+					Rp4 = -(3*u4-4*uu4+u4q)/(2*deltaT);
+					Rp5 = -(3*u5-4*uu5+u5q)/(2*deltaT);
+					
+
 
 					// -----------------------------------------------------------------//
 					// -------------------------- Z-direction --------------------------//
@@ -366,6 +455,12 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					// ------------------------------------------------------------------- //
 					// ----------------------------- MUSCL-Z ----------------------------- //
+
+
+
+
+
+
 
 
 					if( IFk1 == IFLUID  && IF_k1 == IFLUID) { 
@@ -634,7 +729,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					inFz4 = 0.5*((_rho*_W*_W+_P+rho_*W_*W_+P_)-Ep*Fav4);
 					inFz5 = 0.5*((_W*(3.5*_P+0.5*_rho*_VV)+W_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
-
+					dPz = 0.5*(_P+P_);
 					/* ----------- Backward ----------- */
 					/* -------------------------------- */
 
@@ -790,6 +885,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					inFz4i = 0.5*((_rho*_W*_W+_P+rho_*W_*W_+P_)-Ep*Fav4);
 					inFz5i = 0.5*((_W*(3.5*_P+0.5*_rho*_VV)+W_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
+
+					dPzi = 0.5*(_P+P_);
 					/* ------------ Forward ------------ */
 					/* --------------------------------- */
 
@@ -887,6 +984,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					// ------------------------------------------------------------------- //
 					// ----------------------------- MUSCL-X ----------------------------- //
+
+
 
 
 
@@ -1155,6 +1254,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					inFx4 = 0.5*((_rho*_W*_U+rho_*W_*U_)-Ep*Fav4);
 					inFx5 = 0.5*((_U*(3.5*_P+0.5*_rho*_VV)+U_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
+					
+					dPx = 0.5*(_P+P_);
 					/* ----------- Backward ----------- */
 					/* -------------------------------- */
 
@@ -1317,6 +1418,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					inFx5i = 0.5*((_U*(3.5*_P+0.5*_rho*_VV)+U_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
 					
+					dPxi = 0.5*(_P+P_);
 					/* ------------ Forward ------------ */
 					/* --------------------------------- */
 
@@ -1414,6 +1516,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					// ------------------------------------------------------------------- //
 					// ----------------------------- MUSCL-Y ----------------------------- //
+
+
+
 
 
 
@@ -1664,6 +1769,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaP = C_p*V/S*(P_-_P)+(C_p-fabs(V))*rho*(V_-_V);
 
+
+
 					#endif
 
 					/* artificial viscosity */
@@ -1679,6 +1786,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					inFy3 = 0.5*((_rho*_V*_V+_P+rho_*V_*V_+P_)-Ep*Fav3);
 					inFy4 = 0.5*((_rho*_W*_V+rho_*W_*V_)-Ep*Fav4);
 					inFy5 = 0.5*((_V*(3.5*_P+0.5*_rho*_VV)+V_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
+
+					dPy = 0.5*(_P+P_);
 
 
 					/* ----------- Backward ----------- */
@@ -1838,6 +1947,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					inFy4i = 0.5*((_rho*_W*_V+rho_*W_*V_)-Ep*Fav4);
 					inFy5i = 0.5*((_V*(3.5*_P+0.5*_rho*_VV)+V_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
+
+					dPyi = 0.5*(_P+P_);
 					/* ------------ Forward ------------ */
 					/* --------------------------------- */
 
@@ -1859,168 +1970,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					Rf4 = -(Rfx4/dx+Rfy4/dy+Rfz4/dz);
 					Rf5 = -(Rfx5/dx+Rfy5/dy+Rfz5/dz);
 
-					Residual1[icube][i][j][k][0] = Rf1;
-					Residual1[icube][i][j][k][1] = Rf2;
-					Residual1[icube][i][j][k][2] = Rf3;
-					Residual1[icube][i][j][k][3] = Rf4;
-					Residual1[icube][i][j][k][4] = Rf5;
 
 
-					}
-				}
-			}
-		}
-
-
-
-		
-#pragma omp parallel for private(\
-	dx,dy,dz,\
-	invXI,invET,invZT,\
-	uu1,uu2,uu3,uu4,uu5,\
-	u1q,u2q,u3q,u4q,u5q,\
-	IF,\
-	u1,u2,u3,u4,u5,\
-	Rp1,Rp2,Rp3,Rp4,Rp5,\
-	Rf1,Rf2,Rf3,Rf4,Rf5,\
-	u1i1,u2i1,u3i1,u4i1,u5i1,\
-	u1_i1,u2_i1,u3_i1,u4_i1,u5_i1,\
-	u1j1,u2j1,u3j1,u4j1,u5j1,\
-	u1_j1,u2_j1,u3_j1,u4_j1,u5_j1,\
-	u1k1,u2k1,u3k1,u4k1,u5k1,\
-	u1_k1,u2_k1,u3_k1,u4_k1,u5_k1,\
-	rho,U,V,W,VV,P,C,T,h,H,\
-	irho,iU,iV,iW,iP,iT,\
-	jrho,jU,jV,jW,jP,jT,\
-	krho,kU,kV,kW,kP,kT,\
-	rhoi,Ui,Vi,Wi,Pi,Ti,\
-	rhoj,Uj,Vj,Wj,Pj,Tj,\
-	rhok,Uk,Vk,Wk,Pk,Tk,\
-	ijrho,ijU,ijV,ijW,ijP,ijT,\
-	jkrho,jkU,jkV,jkW,jkP,jkT,\
-	ikrho,ikU,ikV,ikW,ikP,ikT,\
-	irhoj,iUj,iVj,iWj,iPj,iTj,\
-	irhok,iUk,iVk,iWk,iPk,iTk,\
-	jrhoi,jUi,jVi,jWi,jPi,jTi,\
-	jrhok,jUk,jVk,jWk,jPk,jTk,\
-	krhoj,kUj,kVj,kWj,kPj,kTj,\
-	krhoi,kUi,kVi,kWi,kPi,kTi,\
-	rhoij,Uij,Vij,Wij,Pij,Tij,\
-	rhoik,Uik,Vik,Wik,Pik,Tik,\
-	rhojk,Ujk,Vjk,Wjk,Pjk,Tjk,\
-	temp,temp2,temp3,\
-	Tx,Ty,Tz,\
-	Ux,Uy,Uz,\
-	Vx,Vy,Vz,\
-	Wx,Wy,Wz,\
-	du_dx,du_dy,du_dz,dv_dx,dv_dy,dv_dz,dw_dx,dw_dy,dw_dz,\
-	dT_dx,dT_dy,dT_dz,\
-	mu_E,mu_T,Pr_E,\
-	sigma_xx,sigma_xy,sigma_xz,\
-	sigma_yx,sigma_yy,sigma_yz,\
-	sigma_zx,sigma_zy,sigma_zz,\
-	LL1,LL2,LL3,LL4,LL5,\
-	LL1i,LL2i,LL3i,LL4i,LL5i,\
-	ML1,ML2,ML3,ML4,ML5,\
-	ML1j,ML2j,ML3j,ML4j,ML5j,\
-	NL1,NL2,NL3,NL4,NL5,\
-	NL1k,NL2k,NL3k,NL4k,NL5k,\
-	vF1,vF2,vF3,vF4,vF5,\
-	Rk1,Rk2,Rk3,Rk4,Rk5,\
-	beta,\
-	d11,d12,d13,d14,d15,\
-	d21,d22,d23,d24,d25,\
-	d31,d32,d33,d34,d35,\
-	d41,d42,d43,d44,d45,\
-	d51,d52,d53,d54,d55,\
-	MR1,MR2,MR3,MR4,MR5,\
-	i,j,k\
-	) 
-
-
-
-
-					
-	for (icube = 1; icube < ncube; icube++) {  
-
-		dx = dy = dz = cube_size[icube]/NcubeX;
-		invXI = invET = invZT = 1./dx;
-
-		for (i = 2; i <= nx; i++) {
-			for (j = 2; j <= ny; j++) {
-				for (k = 2; k <= nz; k++) {
-
-					
-					uu1 = U1[icube][i][j][k][0];
-					uu2 = U1[icube][i][j][k][1];
-					uu3 = U1[icube][i][j][k][2];
-					uu4 = U1[icube][i][j][k][3];
-					uu5 = U1[icube][i][j][k][4];
-
-					u1q = U1q[icube][i][j][k][0];
-					u2q = U1q[icube][i][j][k][1];
-					u3q = U1q[icube][i][j][k][2];
-					u4q = U1q[icube][i][j][k][3];
-					u5q = U1q[icube][i][j][k][4];
-
-					IF = FWS[icube][i][j][k];
-					u1 = U1_[icube][i][j][k][0];
-					u2 = U1_[icube][i][j][k][1];
-					u3 = U1_[icube][i][j][k][2];
-					u4 = U1_[icube][i][j][k][3];
-					u5 = U1_[icube][i][j][k][4];
-
-					
-					Rp1 = -(3*u1-4*uu1+u1q)/(2*deltaT);
-					Rp2 = -(3*u2-4*uu2+u2q)/(2*deltaT);
-					Rp3 = -(3*u3-4*uu3+u3q)/(2*deltaT);
-					Rp4 = -(3*u4-4*uu4+u4q)/(2*deltaT);
-					Rp5 = -(3*u5-4*uu5+u5q)/(2*deltaT);
-
-					Rf1 = Residual1[icube][i][j][k][0];
-					Rf2 = Residual1[icube][i][j][k][1];
-					Rf3 = Residual1[icube][i][j][k][2];
-					Rf4 = Residual1[icube][i][j][k][3];
-					Rf5 = Residual1[icube][i][j][k][4];
-
-					u1_k1 = U1_[icube][i][j][k-1][0];
-					u2_k1 = U1_[icube][i][j][k-1][1];
-					u3_k1 = U1_[icube][i][j][k-1][2];
-					u4_k1 = U1_[icube][i][j][k-1][3];
-					u5_k1 = U1_[icube][i][j][k-1][4];
-
-					u1k1 = U1_[icube][i][j][k+1][0];
-					u2k1 = U1_[icube][i][j][k+1][1];
-					u3k1 = U1_[icube][i][j][k+1][2];
-					u4k1 = U1_[icube][i][j][k+1][3];
-					u5k1 = U1_[icube][i][j][k+1][4];
-					
-					u1_i1 = U1_[icube][i-1][j][k][0];
-					u2_i1 = U1_[icube][i-1][j][k][1];
-					u3_i1 = U1_[icube][i-1][j][k][2];
-					u4_i1 = U1_[icube][i-1][j][k][3];
-					u5_i1 = U1_[icube][i-1][j][k][4];
-					
-
-					u1i1 = U1_[icube][i+1][j][k][0];
-					u2i1 = U1_[icube][i+1][j][k][1];
-					u3i1 = U1_[icube][i+1][j][k][2];
-					u4i1 = U1_[icube][i+1][j][k][3];
-					u5i1 = U1_[icube][i+1][j][k][4];
-
-
-					u1_j1 = U1_[icube][i][j-1][k][0];
-					u2_j1 = U1_[icube][i][j-1][k][1];
-					u3_j1 = U1_[icube][i][j-1][k][2];
-					u4_j1 = U1_[icube][i][j-1][k][3];
-					u5_j1 = U1_[icube][i][j-1][k][4];
-
-
-					u1j1 = U1_[icube][i][j+1][k][0];
-					u2j1 = U1_[icube][i][j+1][k][1];
-					u3j1 = U1_[icube][i][j+1][k][2];
-					u4j1 = U1_[icube][i][j+1][k][3];
-					u5j1 = U1_[icube][i][j+1][k][4];
 
 
 
@@ -2269,6 +2220,10 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					LL5 = Ux*sigma_xx+Vx*sigma_xy+Wx*sigma_xz+mu_E*Cv*K*dT_dx/(Pr_E);
 
 
+					dTx = dT_dx;
+					
+
+
 					/* ----------- Backward ----------- */
 					/* -------------------------------- */
 
@@ -2327,6 +2282,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					LL5i = Ux*sigma_xx+Vx*sigma_xy+Wx*sigma_xz+mu_E*Cv*K*dT_dx/(Pr_E);
 
+
+					dTxi = dT_dx;
 
 					/* ------------ Forward ------------ */
 					/* --------------------------------- */
@@ -2392,6 +2349,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					ML5 = Uy*sigma_yx+Vy*sigma_yy+Wy*sigma_yz+mu_E*Cv*K*dT_dy/(Pr_E);
 
+					dTy = dT_dy;
+
 					/* ----------- Backward ----------- */
 					/* -------------------------------- */
 
@@ -2446,6 +2405,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					ML4j = sigma_yz;
 
 					ML5j = Uy*sigma_yx+Vy*sigma_yy+Wy*sigma_yz+mu_E*Cv*K*dT_dy/(Pr_E);
+
+					dTyi = dT_dy;
 
 					/* ------------ Forward ------------ */
 					/* --------------------------------- */
@@ -2510,6 +2471,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					NL5 = Uz*sigma_zx+Vz*sigma_zy+Wz*sigma_zz+mu_E*Cv*K*dT_dz/(Pr_E);
 
+					dTz = dT_dz;
+
 					/* ----------- Backward ----------- */
 					/* -------------------------------- */
 
@@ -2567,6 +2530,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					NL5k = Uz*sigma_zx+Vz*sigma_zy+Wz*sigma_zz+mu_E*Cv*K*dT_dz/(Pr_E);
 
+					dTzi = dT_dz;
+
 					/* ------------ Forward ------------ */
 					/* --------------------------------- */
 
@@ -2587,14 +2552,23 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 					Rk1 = Fabs[icube][i][j][k][0]+Rp1+Rf1;
-					Rk2 = Fabs[icube][i][j][k][1]+Rp2+Rf2+vF2;
-					Rk3 = Fabs[icube][i][j][k][2]+Rp3+Rf3+vF3-(rho-rho0)*9.81;
+					Rk2 = Fabs[icube][i][j][k][1]+Rp2+Rf2+vF2-(rho-rho0)*9.81;
+					Rk3 = Fabs[icube][i][j][k][2]+Rp3+Rf3+vF3;
 					Rk4 = Fabs[icube][i][j][k][3]+Rp4+Rf4+vF4;
-					Rk5 = Fabs[icube][i][j][k][4]+Rp5+Rf5+vF5-(rho-rho0)*9.81*V;
+					Rk5 = Fabs[icube][i][j][k][4]+Rp5+Rf5+vF5-(rho-rho0)*9.81*U;
 					// ------------------------------------------------------------------------------------------- //
 					// --------------------------------------- Runge-Kutta --------------------------------------- //
 
+					
+					rho = u1;
+					U = u2/u1;
+					V = u3/u1;
+					W = u4/u1;
+					VV = U*U+V*V+W*W;
+					P = (u5-0.5*rho*VV)*(K-1);
+					C = K*P/rho;
 					T = P/rho;
+					H = 0.5*VV+C/(K-1);
 
 					/* preconditioning */
 
@@ -2656,7 +2630,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					}
 
-
+					
+					
 					// --------------------------------------- Runge-Kutta --------------------------------------- //
 					// ------------------------------------------------------------------------------------------- //
 
@@ -2666,6 +2641,17 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					Rku1[icube][i][j][k][3] = MR4;
 					Rku1[icube][i][j][k][4] = MR5;
 					
+
+					if (IF < IFLUID) {
+					
+							Residual1[icube][i][j][k][0] = -( -(dPxi-dPx)/dx )*dx*dy*dz;
+					
+							Residual1[icube][i][j][k][1] = -( vF2 )*dx*dy*dz;
+					
+							Residual1[icube][i][j][k][2] = ( dTxi-dTx+dTyi-dTy+dTzi-dTz )/dx*dx*dy*dz;
+
+					}
+
 
 				}
 				
@@ -2790,6 +2776,32 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 		
 		
+		for (icube = 1; icube < ncube; icube++) {  
+			for (i = n_buffer; i <= nx; i++) {
+				for (j = n_buffer; j <= ny; j++) { 
+					for (k = n_buffer; k <= nz; k++) { 
+
+
+							e6 = e6+Residual1[icube][i][j][k][0];
+							e7 = e7+Residual1[icube][i][j][k][1];
+
+							e8 = e8+Residual1[icube][i][j][k][2];
+						
+						//if ( FWS[icube][i][j][k] > ISOLID ) {
+						
+							// e1 = e1+Residual1[icube][i][j][k][2];
+							// e2 = e2+Residual1[icube][i][j][k][3];
+							// e3 = e3+Residual1[icube][i][j][k][4];
+							// e4 = e4+Residual1[icube][i][j][k][5];
+							// e5 = e5+Residual1[icube][i][j][k][6];
+							
+						//}
+						
+					}
+				}
+			}
+		}
+
 		
 		double DN = 1./(MPI_Ncube*NcubeX*NcubeY*NcubeZ);
 
@@ -2800,6 +2812,10 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 		e4 = sqrt(e4)*DN;
 		e5 = sqrt(e5)*DN;
 		
+		e6 = e6;
+		e7 = e7;
+		e8 = e8;
+
 
 		MPI_Comm comm;
 		comm=MPI_COMM_WORLD;
@@ -2810,6 +2826,12 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 		MPI_Allreduce ((void*)&e4,(void*)&er[4],1,MPI_DOUBLE,MPI_SUM,comm );
 		MPI_Allreduce ((void*)&e5,(void*)&er[5],1,MPI_DOUBLE,MPI_SUM,comm );
 		
+		
+		MPI_Allreduce ((void*)&e6,(void*)&er[6], 1, MPI_DOUBLE, MPI_SUM, comm );
+		MPI_Allreduce ((void*)&e7,(void*)&er[7], 1, MPI_DOUBLE, MPI_SUM, comm );
+		MPI_Allreduce ((void*)&e8,(void*)&er[8], 1, MPI_DOUBLE, MPI_SUM, comm );
+
+
 	}
 
 
