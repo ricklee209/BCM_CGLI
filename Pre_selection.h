@@ -7,7 +7,7 @@
 
 // ---- TDROE=4 : Roe modified by B. Thornber ---- //
 
-#define ROE 4
+#define ROE 2
 
 
 
@@ -16,3 +16,5 @@
 // ---- PC : my desktop ---- //
 
 #define PC
+
+#define Char_D 1.0 
