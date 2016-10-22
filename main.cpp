@@ -15,6 +15,7 @@
 
 #include "main.h"
 #include "prm.h"
+#include "Pre_selection.h"
 
 int main(int argc, char **argv)
 {   
@@ -48,25 +49,22 @@ int main(int argc, char **argv)
 
 	int dp_step = 10000;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step =1;
-	int output_step = 1;
-	int count = 1;	
+	int iteration_end_step =500;
+	int output_step = 10;
+	int count = 500;	
 	int step;
 
-	double deltaT = 0.01;
-	//double deltaT = 0.03;
+	double deltaT = 0.001;
 	double deltaTau = deltaT/100.0;
-	double e = 0.02;
-	double Th = 309.03531204896;
-	//double e = 0.00000001;
-	//double Th = 299.15681120;
+	double e = 0.005;
+	double Th = 413.9228;
 
 
-	int switch_initial = 1; // ---- 1 reading initial coniditon ---- //
+	int switch_initial = 0; // ---- 1 reading initial coniditon ---- //
 
 	int switch_IBM = 1;     // ---- 1 run IBM ---- //
 
-	int switch_output = 0;  // ---- 1 output grid file ---- //
+	int switch_output = 1;  // ---- 1 output grid file ---- //
 
 
 	int NBC,NBC_plus, NBC_minus, Ntemp, gicube, gi, gj, gk, mp_switch;
@@ -1196,7 +1194,7 @@ int main(int argc, char **argv)
 
 
 
-				BCM_X_boundary_condition(myid, NXbc_l, NXbc_u, Xbc_l, Xbc_u, U1_);
+				//BCM_X_boundary_condition(myid, NXbc_l, NXbc_u, Xbc_l, Xbc_u, U1_);
 
 				//BCM_Y_boundary_condition(NYbc_l, NYbc_u, Ybc_l, Ybc_u, U1_);
 				
@@ -1207,22 +1205,68 @@ int main(int argc, char **argv)
 
 				BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
 				
-				//BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
+				BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
 
 				#pragma omp parallel 
 				for (int ig = 1; ig <= 1; ig++) {
 
-					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
+					//BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
 
-					BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
+					//BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
 
 
-					//BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
+					BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, FWS, U1_);
 
-					//BCM_Ghostcell_plus_Tem(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
+					BCM_Ghostcell_plus_Tem(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, FWS, U1_);
+
+
 
 
 				}
+
+				
+				for (icube = 1; icube < Ncube; icube++) {  
+
+#pragma omp parallel for private(j,k,xc,yc,zc,dis)
+					for (i = n_buffer; i < nxx; i++) {
+						for (j = n_buffer; j < nyy; j++) {
+							for (k = n_buffer; k < nzz; k++) {  
+										
+								xc = Xcnt[icube][i];
+								yc = Ycnt[icube][j];
+								zc = Zcnt[icube][k];
+
+
+								dis = sqrt(xc*xc+yc*yc+zc*zc);
+
+
+								if( dis < Char_D/2.0 ) {
+								
+									U1_[icube][i][j][k][0] = rho0;
+									U1_[icube][i][j][k][1] = 0.0;
+									U1_[icube][i][j][k][2] = 0.0;
+									U1_[icube][i][j][k][3] = 0.0;
+									U1_[icube][i][j][k][4] = P0/(K-1);
+								
+								
+								}
+								else {
+									
+									U1p1[icube][i][j][k][0] = U1_[icube][i][j][k][0]; 
+									U1p1[icube][i][j][k][1] = U1_[icube][i][j][k][1]; 
+									U1p1[icube][i][j][k][2] = U1_[icube][i][j][k][2]; 
+									U1p1[icube][i][j][k][3] = U1_[icube][i][j][k][3]; 
+									U1p1[icube][i][j][k][4] = U1_[icube][i][j][k][4];
+								}
+									
+							}
+						}
+					}
+
+				}
+
+				
+				
 				
 
 				BCM_Interface(myid,Ncube, 
