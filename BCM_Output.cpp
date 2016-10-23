@@ -47,7 +47,7 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 	
 	MPI_Comm comm;
 	comm=MPI_COMM_WORLD;
-	MPI_Status istat[8];
+	MPI_Status status;
 	MPI_Offset disp;
 
 	
@@ -66,12 +66,21 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 
 	int double_dize = sizeof(double);
 
+	int header[3*MPI_Ncube+1];
+
 	MPI_Offset  x_gcount[np], x_gdisp[np], q_gcount[np], q_gdisp[np];
 
 
 	istart = 0;
 	x_gdisp[0] = 0; 
 	q_gdisp[0] = 0; 
+
+	header[0] = MPI_Ncube;
+	for (i = 1; i <= 3*MPI_Ncube; i++) { 
+	
+		header[i] = nx_out;
+	
+	}
 	
 	for (i = 0; i < np; i++) { 
 
@@ -109,25 +118,7 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 
 		MPI_File_open( MPI_COMM_WORLD, data,  MPI_MODE_RDWR | MPI_MODE_CREATE, MPI_INFO_NULL, &fh0 ) ; 
 
-		if (myid == idest) {
-
-			FILE *fptr_xyz;
-
-			fptr_xyz = fopen(data,"wb");
-
-			fwrite(&ncube_out, sizeof(int), 1,fptr_xyz);
-
-			for (icube = 0; icube < MPI_Ncube; icube++)  {
-
-				fwrite(&nx_out, sizeof(int), 1,fptr_xyz);
-				fwrite(&ny_out, sizeof(int), 1,fptr_xyz);
-				fwrite(&nz_out, sizeof(int), 1,fptr_xyz);
-
-			}
-
-			fclose(fptr_xyz);
-
-		}
+		MPI_File_write_at(fh0, idest, header, 3*MPI_Ncube+1, MPI_INT, &status); 
 
 		float (*Grid) = new float[(ncube-1)*nx_out*ny_out*nz_out*3];
 
@@ -204,25 +195,7 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 
 	MPI_File_open( MPI_COMM_WORLD, data,  MPI_MODE_RDWR | MPI_MODE_CREATE, MPI_INFO_NULL, &fh1 ) ; 
 
-	if (myid == 0) {
-
-		FILE *fptr_solution;
-
-		fptr_solution = fopen(data,"wb");
-		
-		fwrite(&ncube_out, sizeof(int), 1,fptr_solution);
-
-		for (icube = 0; icube < MPI_Ncube; icube++)  {
-
-			fwrite(&nx_out, sizeof(int), 1,fptr_solution);
-			fwrite(&ny_out, sizeof(int), 1,fptr_solution);
-			fwrite(&nz_out, sizeof(int), 1,fptr_solution);
-			
-		}
-
-		fclose(fptr_solution);
-
-	}
+	MPI_File_write_at(fh1, idest, header, 3*MPI_Ncube+1, MPI_INT, &status); 
 
 
 
@@ -323,25 +296,7 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 
 	MPI_File_open( MPI_COMM_WORLD, data,  MPI_MODE_RDWR | MPI_MODE_CREATE, MPI_INFO_NULL, &fh2 ) ; 
 
-	if (myid == 0) {
-
-		FILE *fptr_solution;
-
-		fptr_solution = fopen(data,"wb");
-		
-		fwrite(&ncube_out, sizeof(int), 1,fptr_solution);
-
-		for (icube = 0; icube < MPI_Ncube; icube++)  {
-
-			fwrite(&nx_out, sizeof(int), 1,fptr_solution);
-			fwrite(&ny_out, sizeof(int), 1,fptr_solution);
-			fwrite(&nz_out, sizeof(int), 1,fptr_solution);
-			
-		}
-
-		fclose(fptr_solution);
-
-	}
+	MPI_File_write_at(fh2, idest, header, 3*MPI_Ncube+1, MPI_INT, &status); 
 
 
 
