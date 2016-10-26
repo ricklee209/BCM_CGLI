@@ -17,4 +17,4 @@
 
 #define PC
 
-#define Char_D 1.0 
+#define Char_D 0.4
