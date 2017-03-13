@@ -40,6 +40,9 @@ double gXmin,
 double gYmax,
 double gYmin,
 
+double gdXmax,
+double gdYmax,
+
 double (*Xcube) = new double[Ncube],
 double (*Ycube) = new double[Ncube],
 
@@ -82,8 +85,6 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
     double xmin, xmax, ymin, ymax;
     double abs1, abs2 , abs3, abs4;
     double XX, YY, SML;
-    double dxmax = 0.0;
-    double dymax = 0.0;
     
     
     n_abs_xm = 4.4;
@@ -120,47 +121,18 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
     E0 = P0/(K-1.0)+0.5*rho0*U0*U0;
     
 
-    for (icube = 1; icube <= nXbc_l; icube++) {  
-
-        iicube = Xbc_l[icube];
-        if( cube_size[iicube]/NcubeX > dxmax ) dxmax = cube_size[iicube]/NcubeX;
-        
-    }
-
-	for (icube = 1; icube <= nYbc_l; icube++) {  
-
-         iicube = Ybc_l[icube];
-        if( cube_size[iicube]/NcubeY > dymax ) dymax = cube_size[iicube]/NcubeY;
-            
-    }
+    lenght_absXm = gdXmax * (n_abs_xm*NcubeX-1.0);
+    lenght_absYm = gdYmax * (n_abs_ym*NcubeY-1.0);
     
-    for (icube = 1; icube <= nXbc_u; icube++) {  
-
-        iicube = Xbc_u[icube];
-        if( cube_size[iicube]/NcubeX > dxmax ) dxmax = cube_size[iicube]/NcubeX;
-        
-    }
-
-	for (icube = 1; icube <= nYbc_u; icube++) {  
-
-        iicube = Ybc_u[icube];
-        if( cube_size[iicube]/NcubeY > dymax ) dymax = cube_size[iicube]/NcubeY;
-            
-    }
-    
-    
-    lenght_absXm = dxmax * (n_abs_xm*NcubeX-1.0);
-    lenght_absYm = dymax * (n_abs_ym*NcubeY-1.0);
-    
-    lenght_absXp = dxmax * (n_abs_xm*NcubeX-1.0);
-    lenght_absYp = dymax * (n_abs_ym*NcubeY-1.0);
+    lenght_absXp = gdXmax * (n_abs_xm*NcubeX-1.0);
+    lenght_absYp = gdYmax * (n_abs_ym*NcubeY-1.0);
     
     SML = 1.0e-6;
     
-    abs1 = gXmin + lenght_absXm + 0.5*dxmax + SML;
-    abs2 = gXmax - lenght_absXp - 0.5*dxmax - SML;
-    abs3 = gYmin + lenght_absYm + 0.5*dymax + SML;
-    abs4 = gYmax - lenght_absYp - 0.5*dymax - SML;
+    abs1 = gXmin + lenght_absXm + 0.5*gdXmax + SML;
+    abs2 = gXmax - lenght_absXp - 0.5*gdXmax - SML;
+    abs3 = gYmin + lenght_absYm + 0.5*gdYmax + SML;
+    abs4 = gYmax - lenght_absYp - 0.5*gdYmax - SML;
     
 	/*#pragma omp parallel for private(\
 	i,j,k,\
@@ -180,9 +152,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 		dx = dy = dz = cube_size[icube]/NcubeX;
         
         xmin = Xcube[icube]+0.5*dx;
-        xmax = Xcube[icube]+(NcubeX+0.5)*dx;
         ymin = Ycube[icube]+0.5*dy;
-        ymax = Ycube[icube]+(NcubeY+0.5)*dy;
 
 		for (i = n_buffer; i <= nx; i++) {
 			for (j = n_buffer; j <= ny; j++) {
@@ -214,6 +184,14 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         
                         xV_in_1 = xV_in_1*xV_in_0*C_plan;
                         
+
+						//if( k == 10 && j == 10) {
+
+							//printf("%d\t%f\t%f\t%f\n",i,(abs1-XX)/lenght_absXm, (abs1-XX)/dx,lenght_absXm/gdXmax);
+
+						//}
+
+
 						} 
 					else if ( XX > abs2 ) {
 
@@ -221,6 +199,14 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         xSigma_out = xV_out_1*xSigma_out_0/Char_D;
                         
                         xV_out_1 = xV_out_1*xV_out_0*C_plan;
+
+
+						//if( k == 10 && j == 10) {
+
+							//printf("%d\t%f\t%f\t%f\n",i,(XX-abs2)/lenght_absXp, (XX-abs2)/dx,lenght_absXp/gdXmax);
+
+						//}
+
                         
 						} 
 					else {
@@ -425,6 +411,62 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 		
 	}
 
+
+
+
+
+	
+	for (icube = 1; icube <= nYbc_l; icube++) {  
+
+		iicube = Ybc_l[icube];
+
+#pragma omp parallel for private(k)
+			for (i = 0; i <= nxxx; i++) {
+				for (k = 2; k <= nz; k++) {  
+
+					U1_[iicube][i][1][k][0] = U1_[iicube][i][2][k][0];
+					U1_[iicube][i][1][k][1] = U1_[iicube][i][2][k][1];
+					U1_[iicube][i][1][k][2] = U1_[iicube][i][2][k][2];
+					U1_[iicube][i][1][k][3] = U1_[iicube][i][2][k][3];
+					U1_[iicube][i][1][k][4] = U1_[iicube][i][2][k][4];
+
+					U1_[iicube][i][0][k][0] = U1_[iicube][i][2][k][0];
+					U1_[iicube][i][0][k][1] = U1_[iicube][i][2][k][1];
+					U1_[iicube][i][0][k][2] = U1_[iicube][i][2][k][2];
+					U1_[iicube][i][0][k][3] = U1_[iicube][i][2][k][3];
+					U1_[iicube][i][0][k][4] = U1_[iicube][i][2][k][4];
+
+				}
+			}
+
+	}			
+
+
+	for (icube = 1; icube <= nYbc_u; icube++) {  
+
+		iicube = Ybc_u[icube];
+
+#pragma omp parallel for private(k)
+		for (i = 0; i <= nxxx; i++) {
+			for (k = 2; k <= nz; k++) {  
+
+				U1_[iicube][i][nyy][k][0] = U1_[iicube][i][ny][k][0];
+				U1_[iicube][i][nyy][k][1] = U1_[iicube][i][ny][k][1];
+				U1_[iicube][i][nyy][k][2] = U1_[iicube][i][ny][k][2];
+				U1_[iicube][i][nyy][k][3] = U1_[iicube][i][ny][k][3];
+				U1_[iicube][i][nyy][k][4] = U1_[iicube][i][ny][k][4];
+
+				U1_[iicube][i][nyyy][k][0] = U1_[iicube][i][ny][k][0];
+				U1_[iicube][i][nyyy][k][1] = U1_[iicube][i][ny][k][1];
+				U1_[iicube][i][nyyy][k][2] = U1_[iicube][i][ny][k][2];
+				U1_[iicube][i][nyyy][k][3] = U1_[iicube][i][ny][k][3];
+				U1_[iicube][i][nyyy][k][4] = U1_[iicube][i][ny][k][4];
+
+			}
+		}
+		
+	}
+	
 
 
 

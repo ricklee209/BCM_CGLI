@@ -562,6 +562,9 @@ double gXmin,
 double gYmax,
 double gYmin,
 
+double gdXmax,
+double gdYmax,
+
 double (*Xcube) = new double[Ncube],
 double (*Ycube) = new double[Ncube],
 

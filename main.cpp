@@ -195,7 +195,27 @@ int main(int argc, char **argv)
 		if (fabs(Zcube[icube]-gZmin) < minimum) { NZbc_l = NZbc_l+1; Zbc_l[NZbc_l] = icube; }
 
 	};
-	
+
+
+	double dxmax = MIN;
+	double dymax = MIN;
+	double dzmax = MIN;
+
+	double gdXmax = MIN;
+	double gdYmax = MIN;
+	double gdZmax = MIN;
+
+    for (icube = 1; icube < Ncube; icube++) {  
+
+        if( cube_size[icube]/NcubeX > dxmax ) dxmax = cube_size[icube]/NcubeX;
+        
+    }
+
+	MPI_Allreduce ((void*)&dxmax, (void*)&gdXmax, 1, MPI_DOUBLE, MPI_MAX, comm );
+	gdYmax = gdZmax = gdXmax;
+
+
+
 #pragma omp parallel for private(i,j,k)
 
 	for (icube = 1; icube < Ncube; icube++) {  
@@ -1186,7 +1206,7 @@ int main(int argc, char **argv)
 				//BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
 
 				BCM_Abs_XY_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, NYbc_l, NYbc_u, 
-											  gXmax,gXmin,gYmax,gYmin,Xcube,Ycube,
+											  gXmax,gXmin,gYmax,gYmin,gdXmax,gdYmax,Xcube,Ycube,
 											  Xbc_l, Xbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
 
 
