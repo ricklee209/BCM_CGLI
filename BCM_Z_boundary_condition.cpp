@@ -50,14 +50,14 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					U1_[iicube][i][j][1][0] = U1_[iicube][i][j][2][0];
 					U1_[iicube][i][j][1][1] = U1_[iicube][i][j][2][1];
 					U1_[iicube][i][j][1][2] = U1_[iicube][i][j][2][2];
-					U1_[iicube][i][j][1][3] = U1_[iicube][i][j][2][3];
+					U1_[iicube][i][j][1][3] = -U1_[iicube][i][j][2][3];
 					U1_[iicube][i][j][1][4] = U1_[iicube][i][j][2][4];
 
-					U1_[iicube][i][j][0][0] = U1_[iicube][i][j][2][0];
-					U1_[iicube][i][j][0][1] = U1_[iicube][i][j][2][1];
-					U1_[iicube][i][j][0][2] = U1_[iicube][i][j][2][2];
-					U1_[iicube][i][j][0][3] = U1_[iicube][i][j][2][3];
-					U1_[iicube][i][j][0][4] = U1_[iicube][i][j][2][4];
+					U1_[iicube][i][j][0][0] = U1_[iicube][i][j][3][0];
+					U1_[iicube][i][j][0][1] = U1_[iicube][i][j][3][1];
+					U1_[iicube][i][j][0][2] = U1_[iicube][i][j][3][2];
+					U1_[iicube][i][j][0][3] = -U1_[iicube][i][j][3][3];
+					U1_[iicube][i][j][0][4] = U1_[iicube][i][j][3][4];
 
 				}
 			}
@@ -78,14 +78,14 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					U1_[iicube][i][j][nzz][0] = U1_[iicube][i][j][nz][0];
 					U1_[iicube][i][j][nzz][1] = U1_[iicube][i][j][nz][1];
 					U1_[iicube][i][j][nzz][2] = U1_[iicube][i][j][nz][2];
-					U1_[iicube][i][j][nzz][3] = U1_[iicube][i][j][nz][3];
+					U1_[iicube][i][j][nzz][3] = -U1_[iicube][i][j][nz][3];
 					U1_[iicube][i][j][nzz][4] = U1_[iicube][i][j][nz][4];
 
-					U1_[iicube][i][j][nzzz][0] = U1_[iicube][i][j][nz][0];
-					U1_[iicube][i][j][nzzz][1] = U1_[iicube][i][j][nz][1];
-					U1_[iicube][i][j][nzzz][2] = U1_[iicube][i][j][nz][2];
-					U1_[iicube][i][j][nzzz][3] = U1_[iicube][i][j][nz][3];
-					U1_[iicube][i][j][nzzz][4] = U1_[iicube][i][j][nz][4];
+					U1_[iicube][i][j][nzzz][0] = U1_[iicube][i][j][nz-1][0];
+					U1_[iicube][i][j][nzzz][1] = U1_[iicube][i][j][nz-1][1];
+					U1_[iicube][i][j][nzzz][2] = U1_[iicube][i][j][nz-1][2];
+					U1_[iicube][i][j][nzzz][3] = -U1_[iicube][i][j][nz-1][3];
+					U1_[iicube][i][j][nzzz][4] = U1_[iicube][i][j][nz-1][4];
 
 				}
 			}

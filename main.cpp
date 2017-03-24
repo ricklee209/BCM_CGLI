@@ -1208,6 +1208,8 @@ int main(int argc, char **argv)
 				BCM_Abs_XY_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, NYbc_l, NYbc_u, 
 											  gXmax,gXmin,gYmax,gYmin,gdXmax,gdYmax,Xcube,Ycube,
 											  Xbc_l, Xbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
+                                              
+                BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
 
 
 				for (int ig = 1; ig <= 10; ig++) {
