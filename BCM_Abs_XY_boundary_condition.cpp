@@ -127,7 +127,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
     lenght_absXp = gdXmax * (n_abs_xm*NcubeX-1.0);
     lenght_absYp = gdYmax * (n_abs_ym*NcubeY-1.0);
     
-    SML = 1.0e-6;
+    SML = 1.0e-8;
     
     abs1 = gXmin + lenght_absXm + 0.5*gdXmax + SML;
     abs2 = gXmax - lenght_absXp - 0.5*gdXmax - SML;
@@ -410,63 +410,6 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 		}
 		
 	}
-
-
-
-
-
-	
-	for (icube = 1; icube <= nYbc_l; icube++) {  
-
-		iicube = Ybc_l[icube];
-
-#pragma omp parallel for private(k)
-			for (i = 0; i <= nxxx; i++) {
-				for (k = 2; k <= nz; k++) {  
-
-					U1_[iicube][i][1][k][0] = U1_[iicube][i][2][k][0];
-					U1_[iicube][i][1][k][1] = U1_[iicube][i][2][k][1];
-					U1_[iicube][i][1][k][2] = U1_[iicube][i][2][k][2];
-					U1_[iicube][i][1][k][3] = U1_[iicube][i][2][k][3];
-					U1_[iicube][i][1][k][4] = U1_[iicube][i][2][k][4];
-
-					U1_[iicube][i][0][k][0] = U1_[iicube][i][2][k][0];
-					U1_[iicube][i][0][k][1] = U1_[iicube][i][2][k][1];
-					U1_[iicube][i][0][k][2] = U1_[iicube][i][2][k][2];
-					U1_[iicube][i][0][k][3] = U1_[iicube][i][2][k][3];
-					U1_[iicube][i][0][k][4] = U1_[iicube][i][2][k][4];
-
-				}
-			}
-
-	}			
-
-
-	for (icube = 1; icube <= nYbc_u; icube++) {  
-
-		iicube = Ybc_u[icube];
-
-#pragma omp parallel for private(k)
-		for (i = 0; i <= nxxx; i++) {
-			for (k = 2; k <= nz; k++) {  
-
-				U1_[iicube][i][nyy][k][0] = U1_[iicube][i][ny][k][0];
-				U1_[iicube][i][nyy][k][1] = U1_[iicube][i][ny][k][1];
-				U1_[iicube][i][nyy][k][2] = U1_[iicube][i][ny][k][2];
-				U1_[iicube][i][nyy][k][3] = U1_[iicube][i][ny][k][3];
-				U1_[iicube][i][nyy][k][4] = U1_[iicube][i][ny][k][4];
-
-				U1_[iicube][i][nyyy][k][0] = U1_[iicube][i][ny][k][0];
-				U1_[iicube][i][nyyy][k][1] = U1_[iicube][i][ny][k][1];
-				U1_[iicube][i][nyyy][k][2] = U1_[iicube][i][ny][k][2];
-				U1_[iicube][i][nyyy][k][3] = U1_[iicube][i][ny][k][3];
-				U1_[iicube][i][nyyy][k][4] = U1_[iicube][i][ny][k][4];
-
-			}
-		}
-		
-	}
-	
 
 
 

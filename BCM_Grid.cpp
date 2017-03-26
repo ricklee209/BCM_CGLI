@@ -340,10 +340,4 @@ double size_min = MAX;
 
 	fclose(fptr);
 
-	printf("myid\t %d\n\n",myid);
-
-	printf("Ncube\t Ncell\t N_wallcube\n");
-
-	printf("%d\t%d\t%d\n\n",BCM_ncube,BCM_n,BCM_n_wallcube);
-
 }

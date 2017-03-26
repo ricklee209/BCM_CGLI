@@ -218,8 +218,6 @@ void BCM_Immersed_boundary
 
 	rewind(fptr);    // ---- back to the beginning of the file ---- //
 
-	printf("triangle number = %d\n\n",Ntri);
-
 	// ========================================= //
 
 	int Ntemp, NNtemp, N_line = 15;
@@ -652,9 +650,6 @@ void BCM_Immersed_boundary
 
 
 	// ================  calculate the ghost cells ================ //
-
-	printf("Ghost cells = %d\n\n",Ngc);
-
 
 
 

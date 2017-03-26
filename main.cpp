@@ -888,10 +888,6 @@ int main(int argc, char **argv)
 	fclose(fptr);	
 
 
-	printf("NBC_minus = %d\n",NBC_minus);
-
-
-
 	NBC = NBC_minus;
 
 	double (*weight_minus) = new double[NBC*8+1];
@@ -919,10 +915,7 @@ int main(int argc, char **argv)
 
 	fclose(fptr);	
 
-
-	printf("NBC_plus = %d\n",NBC_plus);
-
-
+    
 	NBC = NBC_plus;
 
 
@@ -1140,6 +1133,55 @@ int main(int argc, char **argv)
 		iteration_end_step = 1;
 
 	#endif
+    
+    
+    // ---------------------------------------- //
+    // ------- Computational information ------ //
+    
+    
+    if ( myid == 0 ) {
+        
+        printf("\n");
+        printf("MPI ranks :\t%d\n",nproc);
+        
+        printf("-------- flow condition --------\n");
+        printf("density=%f\n",rho0);
+        printf("Pressure=%f\n",P0);
+        printf("Velocity=(%f\t%f\t%f)\n",U0,V0,W0);
+        printf("deltaT=%2.8f\n",deltaT);
+        printf("\n");
+        
+        printf("-------- Mesh information --------\n");
+        printf("Total Cube Number=%d\n",MPI_Ncube-myid);
+        printf("Total Cell Number=%d\n",MPI_Ncube*NcubeX*NcubeY*NcubeZ);
+        printf("\n");
+        
+        printf("-------- Other\tinformation --------\n");
+        
+        if( switch_initial == 0 ) printf("No initial condition\n");
+        else printf("With initial condition\n");
+        
+        if( switch_IBM == 0 ) printf("Doesn't run IBM\n");
+        else printf("run IBM\n");
+        
+        if( switch_output == 0 ) printf("Doesn't output grid\n");
+        else printf("Output grid\n");
+        
+        if( iteration_end_step == 1 ) printf("No Dual-time-stepping");
+        else printf("Dual-time-stepping\n");
+        
+        printf("\n");
+        
+        
+        printf("-------------------------------- Calculation is starting --------------------------------\n");
+        
+    }
+    
+    // ------- Computational information ------ //
+    // ---------------------------------------- //
+    
+    
+    
 
 
 // =============================================== //
@@ -1424,7 +1466,7 @@ int main(int argc, char **argv)
 // =============================================== //
 
 
-	printf("\n--------------------------------------------\n");
+	if(myid == 0) printf("\n--------------- Normal End ---------------\n");
 
 
 	delete []MPI_cube;
