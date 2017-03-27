@@ -3018,9 +3018,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 	#ifdef NODT
 	
 	
-		
-		
-		if(RK == 1) {
+		#ifdef	RKO5
+
+			if(RK == 1) {
 
 	#pragma omp parallel for private(i,j,k)
 			for (icube = 1; icube < ncube; icube++) {  
@@ -3030,11 +3030,11 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 							if ( FWS[icube][i][j][k] == IFLUID ) {
 
-								U1_[icube][i][j][k][0] = U1p1[icube][i][j][k][0]+Rku1[icube][i][j][k][0];
-								U1_[icube][i][j][k][1] = U1p1[icube][i][j][k][1]+Rku1[icube][i][j][k][1];
-								U1_[icube][i][j][k][2] = U1p1[icube][i][j][k][2]+Rku1[icube][i][j][k][2];
-								U1_[icube][i][j][k][3] = U1p1[icube][i][j][k][3]+Rku1[icube][i][j][k][3];
-								U1_[icube][i][j][k][4] = U1p1[icube][i][j][k][4]+Rku1[icube][i][j][k][4];
+								U1_[icube][i][j][k][0] = U1p1[icube][i][j][k][0]+0.181575486*Rku1[icube][i][j][k][0];
+								U1_[icube][i][j][k][1] = U1p1[icube][i][j][k][1]+0.181575486*Rku1[icube][i][j][k][1];
+								U1_[icube][i][j][k][2] = U1p1[icube][i][j][k][2]+0.181575486*Rku1[icube][i][j][k][2];
+								U1_[icube][i][j][k][3] = U1p1[icube][i][j][k][3]+0.181575486*Rku1[icube][i][j][k][3];
+								U1_[icube][i][j][k][4] = U1p1[icube][i][j][k][4]+0.181575486*Rku1[icube][i][j][k][4];
 
 
 							}
@@ -3057,18 +3057,78 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						for (k = n_buffer; k < nzz; k++) {  
 
 							if ( FWS[icube][i][j][k] == IFLUID ) {
-							
-								
-									U1_[icube][i][j][k][0] = 0.75*U1p1[icube][i][j][k][0]+0.25*U1_[icube][i][j][k][0]+0.25*Rku1[icube][i][j][k][0];
-									U1_[icube][i][j][k][1] = 0.75*U1p1[icube][i][j][k][1]+0.25*U1_[icube][i][j][k][1]+0.25*Rku1[icube][i][j][k][1];
-									U1_[icube][i][j][k][2] = 0.75*U1p1[icube][i][j][k][2]+0.25*U1_[icube][i][j][k][2]+0.25*Rku1[icube][i][j][k][2];
-									U1_[icube][i][j][k][3] = 0.75*U1p1[icube][i][j][k][3]+0.25*U1_[icube][i][j][k][3]+0.25*Rku1[icube][i][j][k][3];
-									U1_[icube][i][j][k][4] = 0.75*U1p1[icube][i][j][k][4]+0.25*U1_[icube][i][j][k][4]+0.25*Rku1[icube][i][j][k][4];
-				
-				
-								}
-								
 
+								U1_[icube][i][j][k][0] = U1p1[icube][i][j][k][0]+0.238260222*Rku1[icube][i][j][k][0];
+								U1_[icube][i][j][k][1] = U1p1[icube][i][j][k][1]+0.238260222*Rku1[icube][i][j][k][1];
+								U1_[icube][i][j][k][2] = U1p1[icube][i][j][k][2]+0.238260222*Rku1[icube][i][j][k][2];
+								U1_[icube][i][j][k][3] = U1p1[icube][i][j][k][3]+0.238260222*Rku1[icube][i][j][k][3];
+								U1_[icube][i][j][k][4] = U1p1[icube][i][j][k][4]+0.238260222*Rku1[icube][i][j][k][4];
+
+
+							}
+							
+							
+						}
+					}
+				}
+			}
+
+		}
+        
+        
+        
+        
+        
+        if(RK == 3) {
+
+	#pragma omp parallel for private(i,j,k)
+			for (icube = 1; icube < ncube; icube++) {  
+				for (i = n_buffer; i < nxx; i++) {
+					for (j = n_buffer; j < nyy; j++) {
+						for (k = n_buffer; k < nzz; k++) {  
+
+							if ( FWS[icube][i][j][k] == IFLUID ) {
+
+								U1_[icube][i][j][k][0] = U1p1[icube][i][j][k][0]+0.330500707*Rku1[icube][i][j][k][0];
+								U1_[icube][i][j][k][1] = U1p1[icube][i][j][k][1]+0.330500707*Rku1[icube][i][j][k][1];
+								U1_[icube][i][j][k][2] = U1p1[icube][i][j][k][2]+0.330500707*Rku1[icube][i][j][k][2];
+								U1_[icube][i][j][k][3] = U1p1[icube][i][j][k][3]+0.330500707*Rku1[icube][i][j][k][3];
+								U1_[icube][i][j][k][4] = U1p1[icube][i][j][k][4]+0.330500707*Rku1[icube][i][j][k][4];
+
+
+							}
+							
+							
+						}
+					}
+				}
+			}
+
+		}
+        
+        
+        
+        
+        if(RK == 4) {
+
+	#pragma omp parallel for private(i,j,k)
+			for (icube = 1; icube < ncube; icube++) {  
+				for (i = n_buffer; i < nxx; i++) {
+					for (j = n_buffer; j < nyy; j++) {
+						for (k = n_buffer; k < nzz; k++) {  
+
+							if ( FWS[icube][i][j][k] == IFLUID ) {
+
+								U1_[icube][i][j][k][0] = U1p1[icube][i][j][k][0]+0.5*Rku1[icube][i][j][k][0];
+								U1_[icube][i][j][k][1] = U1p1[icube][i][j][k][1]+0.5*Rku1[icube][i][j][k][1];
+								U1_[icube][i][j][k][2] = U1p1[icube][i][j][k][2]+0.5*Rku1[icube][i][j][k][2];
+								U1_[icube][i][j][k][3] = U1p1[icube][i][j][k][3]+0.5*Rku1[icube][i][j][k][3];
+								U1_[icube][i][j][k][4] = U1p1[icube][i][j][k][4]+0.5*Rku1[icube][i][j][k][4];
+
+
+							}
+							
+							
 						}
 					}
 				}
@@ -3077,7 +3137,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 		}
 
 
-		if(RK == 3) {
+
+		if(RK == 5) {
 		
 	#pragma omp parallel for private(i,j,k)  reduction(+:e1,e2,e3,e4,e5)
 
@@ -3088,12 +3149,12 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 							if ( FWS[icube][i][j][k] == IFLUID ) {
 							
-								U1_[icube][i][j][k][0] = 1.0/3.0*U1p1[icube][i][j][k][0]+2.0/3.0*U1_[icube][i][j][k][0]+2.0/3.0*Rku1[icube][i][j][k][0];
-								U1_[icube][i][j][k][1] = 1.0/3.0*U1p1[icube][i][j][k][1]+2.0/3.0*U1_[icube][i][j][k][1]+2.0/3.0*Rku1[icube][i][j][k][1];
-								U1_[icube][i][j][k][2] = 1.0/3.0*U1p1[icube][i][j][k][2]+2.0/3.0*U1_[icube][i][j][k][2]+2.0/3.0*Rku1[icube][i][j][k][2];
-								U1_[icube][i][j][k][3] = 1.0/3.0*U1p1[icube][i][j][k][3]+2.0/3.0*U1_[icube][i][j][k][3]+2.0/3.0*Rku1[icube][i][j][k][3];
-								U1_[icube][i][j][k][4] = 1.0/3.0*U1p1[icube][i][j][k][4]+2.0/3.0*U1_[icube][i][j][k][4]+2.0/3.0*Rku1[icube][i][j][k][4];
-										
+								U1_[icube][i][j][k][0] = U1p1[icube][i][j][k][0]+Rku1[icube][i][j][k][0];
+								U1_[icube][i][j][k][1] = U1p1[icube][i][j][k][1]+Rku1[icube][i][j][k][1];
+								U1_[icube][i][j][k][2] = U1p1[icube][i][j][k][2]+Rku1[icube][i][j][k][2];
+								U1_[icube][i][j][k][3] = U1p1[icube][i][j][k][3]+Rku1[icube][i][j][k][3];
+								U1_[icube][i][j][k][4] = U1p1[icube][i][j][k][4]+Rku1[icube][i][j][k][4];
+
 							}
 								
 
@@ -3134,8 +3195,128 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 		}
+
+
+
+		#else
+
 		
-	
+			if(RK == 1) {
+
+		#pragma omp parallel for private(i,j,k)
+				for (icube = 1; icube < ncube; icube++) {  
+					for (i = n_buffer; i < nxx; i++) {
+						for (j = n_buffer; j < nyy; j++) {
+							for (k = n_buffer; k < nzz; k++) {  
+
+								if ( FWS[icube][i][j][k] == IFLUID ) {
+
+									U1_[icube][i][j][k][0] = U1p1[icube][i][j][k][0]+Rku1[icube][i][j][k][0];
+									U1_[icube][i][j][k][1] = U1p1[icube][i][j][k][1]+Rku1[icube][i][j][k][1];
+									U1_[icube][i][j][k][2] = U1p1[icube][i][j][k][2]+Rku1[icube][i][j][k][2];
+									U1_[icube][i][j][k][3] = U1p1[icube][i][j][k][3]+Rku1[icube][i][j][k][3];
+									U1_[icube][i][j][k][4] = U1p1[icube][i][j][k][4]+Rku1[icube][i][j][k][4];
+
+
+								}
+							
+							
+							}
+						}
+					}
+				}
+
+			}
+
+
+			if(RK == 2) {
+
+		#pragma omp parallel for private(i,j,k)
+				for (icube = 1; icube < ncube; icube++) {  
+					for (i = n_buffer; i < nxx; i++) {
+						for (j = n_buffer; j < nyy; j++) {
+							for (k = n_buffer; k < nzz; k++) {  
+
+								if ( FWS[icube][i][j][k] == IFLUID ) {
+							
+								
+										U1_[icube][i][j][k][0] = 0.75*U1p1[icube][i][j][k][0]+0.25*U1_[icube][i][j][k][0]+0.25*Rku1[icube][i][j][k][0];
+										U1_[icube][i][j][k][1] = 0.75*U1p1[icube][i][j][k][1]+0.25*U1_[icube][i][j][k][1]+0.25*Rku1[icube][i][j][k][1];
+										U1_[icube][i][j][k][2] = 0.75*U1p1[icube][i][j][k][2]+0.25*U1_[icube][i][j][k][2]+0.25*Rku1[icube][i][j][k][2];
+										U1_[icube][i][j][k][3] = 0.75*U1p1[icube][i][j][k][3]+0.25*U1_[icube][i][j][k][3]+0.25*Rku1[icube][i][j][k][3];
+										U1_[icube][i][j][k][4] = 0.75*U1p1[icube][i][j][k][4]+0.25*U1_[icube][i][j][k][4]+0.25*Rku1[icube][i][j][k][4];
+				
+				
+									}
+								
+
+							}
+						}
+					}
+				}
+
+			}
+
+
+			if(RK == 3) {
+		
+		#pragma omp parallel for private(i,j,k)  reduction(+:e1,e2,e3,e4,e5)
+
+				for (icube = 1; icube < ncube; icube++) {  
+					for (i = n_buffer; i < nxx; i++) {
+						for (j = n_buffer; j < nyy; j++) {
+							for (k = n_buffer; k < nzz; k++) {  
+
+								if ( FWS[icube][i][j][k] == IFLUID ) {
+							
+									U1_[icube][i][j][k][0] = 1.0/3.0*U1p1[icube][i][j][k][0]+2.0/3.0*U1_[icube][i][j][k][0]+2.0/3.0*Rku1[icube][i][j][k][0];
+									U1_[icube][i][j][k][1] = 1.0/3.0*U1p1[icube][i][j][k][1]+2.0/3.0*U1_[icube][i][j][k][1]+2.0/3.0*Rku1[icube][i][j][k][1];
+									U1_[icube][i][j][k][2] = 1.0/3.0*U1p1[icube][i][j][k][2]+2.0/3.0*U1_[icube][i][j][k][2]+2.0/3.0*Rku1[icube][i][j][k][2];
+									U1_[icube][i][j][k][3] = 1.0/3.0*U1p1[icube][i][j][k][3]+2.0/3.0*U1_[icube][i][j][k][3]+2.0/3.0*Rku1[icube][i][j][k][3];
+									U1_[icube][i][j][k][4] = 1.0/3.0*U1p1[icube][i][j][k][4]+2.0/3.0*U1_[icube][i][j][k][4]+2.0/3.0*Rku1[icube][i][j][k][4];
+										
+								}
+								
+
+							}
+						}
+					}
+				}
+
+			
+		#pragma omp parallel for private(i,j,k)  reduction(+:e6,e7,e8,e9)
+
+				for (icube = 1; icube < ncube; icube++) {  
+					for (i = n_buffer; i <= nx; i++) {
+						for (j = n_buffer; j <= ny; j++) { 
+							for (k = n_buffer; k <= nz; k++) { 
+
+									e6 = e6+Residual1[icube][i][j][k][0];
+									e7 = e7+Residual1[icube][i][j][k][1];
+									e8 = e8+Residual1[icube][i][j][k][2];
+									e9 = e9+Residual1[icube][i][j][k][3];
+
+							
+							}
+						}
+					}
+				}
+
+
+				er[1] = U1_[2][2][2][1][0]/rho0;
+
+				MPI_Comm comm;
+				comm=MPI_COMM_WORLD;
+
+				MPI_Allreduce ((void*)&e6,(void*)&er[6], 1, MPI_DOUBLE, MPI_SUM, comm );
+				MPI_Allreduce ((void*)&e7,(void*)&er[7], 1, MPI_DOUBLE, MPI_SUM, comm );
+				MPI_Allreduce ((void*)&e8,(void*)&er[8], 1, MPI_DOUBLE, MPI_SUM, comm );
+				MPI_Allreduce ((void*)&e9,(void*)&er[9], 1, MPI_DOUBLE, MPI_SUM, comm );
+
+
+			}
+		
+		#endif
 	
 
 
