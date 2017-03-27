@@ -87,11 +87,11 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
     double XX, YY, SML;
     
     
-    n_abs_xm = 2.4;
-    n_abs_xp = 2.4;
+    n_abs_xm = 4.0;
+    n_abs_xp = 4.0;
     
-    n_abs_ym = 2.4;
-    n_abs_yp = 2.4;
+    n_abs_ym = 4.0;
+    n_abs_yp = 4.0;
     
     
     
@@ -179,8 +179,8 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     
                     if( XX < abs1 ) {
                     
-                        xV_in_1 = ((abs1-XX)/lenght_absXm)*((abs1-XX)/lenght_absXm);
-                        xSigma_in = xV_in_1*xSigma_in_0/Char_D;
+                        xV_in_1 = ((abs1-XX)/lenght_absXm)*((abs1-XX)/lenght_absXm)*((abs1-XX)/lenght_absXm);
+                        xSigma_in = xV_in_1*xSigma_in_0/Char_D*20.0;
                         
                         xV_in_1 = xV_in_1*xV_in_0*C_plan;
                         
@@ -195,8 +195,8 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 						} 
 					else if ( XX > abs2 ) {
 
-                        xV_out_1 = ((XX-abs2)/lenght_absXp)*((XX-abs2)/lenght_absXp);
-                        xSigma_out = xV_out_1*xSigma_out_0/Char_D;
+                        xV_out_1 = ((XX-abs2)/lenght_absXp)*((XX-abs2)/lenght_absXp)*((XX-abs2)/lenght_absXp);
+                        xSigma_out = xV_out_1*xSigma_out_0/Char_D*20.0;
                         
                         xV_out_1 = xV_out_1*xV_out_0*C_plan;
 
@@ -224,8 +224,8 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     
                     if( YY < abs3 ) {
                         
-                        yV_in_1 = ((abs3-YY)/lenght_absYm)*((abs3-YY)/lenght_absYm);
-                        ySigma_in = yV_in_1*ySigma_in_0/Char_D;
+                        yV_in_1 = ((abs3-YY)/lenght_absYm)*((abs3-YY)/lenght_absYm)*((abs3-YY)/lenght_absYm);
+                        ySigma_in = yV_in_1*ySigma_in_0/Char_D*20.0;
                         
                         yV_in_1 = yV_in_1*yV_in_0*C_plan;
                         
@@ -233,8 +233,8 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 						} 
 					else if( YY > abs4  ) {
                     
-                        yV_out_1 = ((YY-abs4)/lenght_absYp)*((YY-abs4)/lenght_absYp);
-                        ySigma_out = yV_out_1*ySigma_out_0/Char_D;
+                        yV_out_1 = ((YY-abs4)/lenght_absYp)*((YY-abs4)/lenght_absYp)*((YY-abs4)/lenght_absYp);
+                        ySigma_out = yV_out_1*ySigma_out_0/Char_D*20.0;
                         
                         yV_out_1 = yV_out_1*yV_out_0*C_plan;
                         
