@@ -128,8 +128,8 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 		
 		iicube = Xbc_l[icube];
 
-		for (j = 2; j <= ny; j++) {
-			for (k = 2; k <= nz; k++) {  
+		for (j = n_buffer; j <= ny; j++) {
+			for (k = n_buffer; k <= nz; k++) {  
 
 				rho = U1_[iicube][2][j][k][0];
 				U = U1_[iicube][2][j][k][1]/rho;
@@ -219,8 +219,8 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 
 		iicube = Xbc_u[icube];
 		
-		for (j = 2; j <= ny; j++) {
-			for (k = 2; k <= nz; k++) {  
+		for (j = n_buffer; j <= ny; j++) {
+			for (k = n_buffer; k <= nz; k++) {  
 
 				U1_[iicube][nxx][j][k][0] = U1_[iicube][nx][j][k][0];
 				U1_[iicube][nxx][j][k][1] = U1_[iicube][nx][j][k][1];

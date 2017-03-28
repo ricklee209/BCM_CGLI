@@ -129,21 +129,21 @@ int (*wallcube) = new int[Ncube]
 		#pragma omp parallel for 
 		for (i = 0; i <= nxxx; i++) {
 
-			Xcnt[icube][i] = Xcube[icube]+(i-1.5)*dx;
+			Xcnt[icube][i] = Xcube[icube]+(i-n_buffer+0.5)*dx;
 
 		}
 
 		#pragma omp parallel for
 		for (j = 0; j <= nyyy; j++) {
 
-			Ycnt[icube][j] = Ycube[icube]+(j-1.5)*dy;
+			Ycnt[icube][j] = Ycube[icube]+(j-n_buffer+0.5)*dy;
 
 		}
 
 		#pragma omp parallel for
 		for (k = 0; k <= nzzz; k++) {
 
-			Zcnt[icube][k] = Zcube[icube]+(k-1.5)*dz;
+			Zcnt[icube][k] = Zcube[icube]+(k-n_buffer+0.5)*dz;
 
 		}
 		

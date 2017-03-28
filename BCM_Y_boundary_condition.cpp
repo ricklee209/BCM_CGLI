@@ -39,7 +39,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 #pragma omp parallel for private(k)
 			for (i = 0; i <= nxxx; i++) {
-				for (k = 2; k <= nz; k++) {  
+				for (k = n_buffer; k <= nz; k++) {  
 
 					U1_[iicube][i][1][k][0] = U1_[iicube][i][2][k][0];
 					U1_[iicube][i][1][k][1] = U1_[iicube][i][2][k][1];
@@ -65,7 +65,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 #pragma omp parallel for private(k)
 		for (i = 0; i <= nxxx; i++) {
-			for (k = 2; k <= nz; k++) {  
+			for (k = n_buffer; k <= nz; k++) {  
 
 				U1_[iicube][i][nyy][k][0] = U1_[iicube][i][ny][k][0];
 				U1_[iicube][i][nyy][k][1] = U1_[iicube][i][ny][k][1];

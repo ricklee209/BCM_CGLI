@@ -342,9 +342,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 		dx = dy = dz = cube_size[icube]/NcubeX;
 		invXI = invET = invZT = 1./dx;
 
-		for (i = 2; i <= nx; i++) {
-			for (j = 2; j <= ny; j++) {
-				for (k = 2; k <= nz; k++) {
+		for (i = n_buffer; i <= nx; i++) {
+			for (j = n_buffer; j <= ny; j++) {
+				for (k = n_buffer; k <= nz; k++) {
 
 
 
