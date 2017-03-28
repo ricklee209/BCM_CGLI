@@ -485,6 +485,167 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					// ------------------------------------------------------------------- //
 					// ----------------------------- MUSCL-Z ----------------------------- //
 
+					#ifdef limiter
+
+					if( IFk1 == IFLUID  && IF_k1 == IFLUID) { 
+
+						if ( k==2 | IF_k2 != IFLUID ) {
+
+							ML1 = 1./6*(-1*u1_k2+5*u1_k1+2*u1);
+							ML2 = 1./6*(-1*u2_k2+5*u2_k1+2*u2);
+							ML3 = 1./6*(-1*u3_k2+5*u3_k1+2*u3);
+							ML4 = 1./6*(-1*u4_k2+5*u4_k1+2*u4);
+							ML5 = 1./6*(-1*u5_k2+5*u5_k1+2*u5);
+
+							MR1 = 1./6*(2*u1_k1+5*u1-1*u1k1);
+							MR2 = 1./6*(2*u2_k1+5*u2-1*u2k1);
+							MR3 = 1./6*(2*u3_k1+5*u3-1*u3k1);
+							MR4 = 1./6*(2*u4_k1+5*u4-1*u4k1);
+							MR5 = 1./6*(2*u5_k1+5*u5-1*u5k1);
+                            
+                            ML1 = u1_k1 + max(0.0, min( min(u1_k1-u1_k2, u1-u1_k1), ML1-u1_k1 ));
+                            ML2 = u2_k1 + max(0.0, min( min(u2_k1-u2_k2, u2-u1_k1), ML2-u2_k1 ));
+                            ML3 = u3_k1 + max(0.0, min( min(u3_k1-u3_k2, u3-u1_k1), ML3-u3_k1 ));
+                            ML4 = u4_k1 + max(0.0, min( min(u4_k1-u4_k2, u4-u1_k1), ML4-u4_k1 ));
+                            ML5 = u5_k1 + max(0.0, min( min(u5_k1-u5_k2, u5-u1_k1), ML5-u5_k1 ));
+                            
+                            MR1 = u1 - max(0.0, min( min(u1k1-u1, u1-u1_k1), MR1-u1 ));
+                            MR2 = u2 - max(0.0, min( min(u2k1-u2, u2-u2_k1), MR2-u2 ));
+                            MR3 = u3 - max(0.0, min( min(u3k1-u3, u3-u3_k1), MR3-u3 ));
+                            MR4 = u4 - max(0.0, min( min(u4k1-u4, u4-u4_k1), MR4-u4 ));
+                            MR5 = u5 - max(0.0, min( min(u5k1-u5, u5-u5_k1), MR5-u5 ));
+                            
+                            
+						}
+						else {
+
+							ML1 = 1./60*(2*u1_k3-13*u1_k2+47*u1_k1+27*u1-3*u1k1);
+							ML2 = 1./60*(2*u2_k3-13*u2_k2+47*u2_k1+27*u2-3*u2k1);
+							ML3 = 1./60*(2*u3_k3-13*u3_k2+47*u3_k1+27*u3-3*u3k1);
+							ML4 = 1./60*(2*u4_k3-13*u4_k2+47*u4_k1+27*u4-3*u4k1);
+							ML5 = 1./60*(2*u5_k3-13*u5_k2+47*u5_k1+27*u5-3*u5k1);
+
+							MR1 = 1./60*(-3*u1_k2+27*u1_k1+47*u1-13*u1k1+2*u1k2);
+							MR2 = 1./60*(-3*u2_k2+27*u2_k1+47*u2-13*u2k1+2*u2k2);
+							MR3 = 1./60*(-3*u3_k2+27*u3_k1+47*u3-13*u3k1+2*u3k2);
+							MR4 = 1./60*(-3*u4_k2+27*u4_k1+47*u4-13*u4k1+2*u4k2);
+							MR5 = 1./60*(-3*u5_k2+27*u5_k1+47*u5-13*u5k1+2*u5k2);
+                            
+                            
+                            ML1 = u1_k1 + max(0.0, min( min(u1_k1-u1_k2, u1-u1_k1), ML1-u1_k1 ));
+                            ML2 = u2_k1 + max(0.0, min( min(u2_k1-u2_k2, u2-u1_k1), ML2-u2_k1 ));
+                            ML3 = u3_k1 + max(0.0, min( min(u3_k1-u3_k2, u3-u1_k1), ML3-u3_k1 ));
+                            ML4 = u4_k1 + max(0.0, min( min(u4_k1-u4_k2, u4-u1_k1), ML4-u4_k1 ));
+                            ML5 = u5_k1 + max(0.0, min( min(u5_k1-u5_k2, u5-u1_k1), ML5-u5_k1 ));
+                            
+                            MR1 = u1 - max(0.0, min( min(u1k1-u1, u1-u1_k1), MR1-u1 ));
+                            MR2 = u2 - max(0.0, min( min(u2k1-u2, u2-u2_k1), MR2-u2 ));
+                            MR3 = u3 - max(0.0, min( min(u3k1-u3, u3-u3_k1), MR3-u3 ));
+                            MR4 = u4 - max(0.0, min( min(u4k1-u4, u4-u4_k1), MR4-u4 ));
+                            MR5 = u5 - max(0.0, min( min(u5k1-u5, u5-u5_k1), MR5-u5 ));
+
+						}
+						
+						
+						
+						
+						if ( k==nx | IFk2 != IFLUID) {
+
+							ML1i = 1./6*(-1*u1_k1+5*u1+2*u1k1);
+							ML2i = 1./6*(-1*u2_k1+5*u2+2*u2k1);
+							ML3i = 1./6*(-1*u3_k1+5*u3+2*u3k1);
+							ML4i = 1./6*(-1*u4_k1+5*u4+2*u4k1);
+							ML5i = 1./6*(-1*u5_k1+5*u5+2*u5k1);
+
+							MR1i = 1./6*(2*u1+5*u1k1-1*u1k2);
+							MR2i = 1./6*(2*u2+5*u2k1-1*u2k2);
+							MR3i = 1./6*(2*u3+5*u3k1-1*u3k2);
+							MR4i = 1./6*(2*u4+5*u4k1-1*u4k2);
+							MR5i = 1./6*(2*u5+5*u5k1-1*u5k2);
+                            
+                            
+                            ML1i = u1 + max(0.0, min( min(u1k1-u1, u1-u1_k1), MR1-u1 ));
+                            ML2i = u2 + max(0.0, min( min(u2k1-u2, u2-u2_k1), MR2-u2 ));
+                            ML3i = u3 + max(0.0, min( min(u3k1-u3, u3-u3_k1), MR3-u3 ));
+                            ML4i = u4 + max(0.0, min( min(u4k1-u4, u4-u4_k1), MR4-u4 ));
+                            ML5i = u5 + max(0.0, min( min(u5k1-u5, u5-u5_k1), MR5-u5 ));
+                            
+                            MR1i = u1k1 - max(0.0, min( min(u1k2-u1k1, u1k1-u1),MR1i-u1k1 ));
+                            MR2i = u2k1 - max(0.0, min( min(u2k2-u2k1, u2k1-u2),MR2i-u2k1 ));
+                            MR3i = u3k1 - max(0.0, min( min(u3k2-u3k1, u3k1-u3),MR3i-u3k1 ));
+                            MR4i = u4k1 - max(0.0, min( min(u4k2-u4k1, u4k1-u4),MR4i-u4k1 ));
+                            MR5i = u5k1 - max(0.0, min( min(u5k2-u5k1, u5k1-u5),MR5i-u5k1 ));
+                            
+
+						}
+						else {
+
+							ML1i = 1./60*(2*u1_k2-13*u1_k1+47*u1+27*u1k1-3*u1k2);
+							ML2i = 1./60*(2*u2_k2-13*u2_k1+47*u2+27*u2k1-3*u2k2);
+							ML3i = 1./60*(2*u3_k2-13*u3_k1+47*u3+27*u3k1-3*u3k2);
+							ML4i = 1./60*(2*u4_k2-13*u4_k1+47*u4+27*u4k1-3*u4k2);
+							ML5i = 1./60*(2*u5_k2-13*u5_k1+47*u5+27*u5k1-3*u5k2);
+
+							MR1i = 1./60*(-3*u1_k1+27*u1+47*u1k1-13*u1k2+2*u1k3);
+							MR2i = 1./60*(-3*u2_k1+27*u2+47*u2k1-13*u2k2+2*u2k3);
+							MR3i = 1./60*(-3*u3_k1+27*u3+47*u3k1-13*u3k2+2*u3k3);
+							MR4i = 1./60*(-3*u4_k1+27*u4+47*u4k1-13*u4k2+2*u4k3);
+							MR5i = 1./60*(-3*u5_k1+27*u5+47*u5k1-13*u5k2+2*u5k3);
+                            
+                            
+                            
+                            ML1i = u1 + max(0.0, min( min(u1k1-u1, u1-u1_k1), MR1-u1 ));
+                            ML2i = u2 + max(0.0, min( min(u2k1-u2, u2-u2_k1), MR2-u2 ));
+                            ML3i = u3 + max(0.0, min( min(u3k1-u3, u3-u3_k1), MR3-u3 ));
+                            ML4i = u4 + max(0.0, min( min(u4k1-u4, u4-u4_k1), MR4-u4 ));
+                            ML5i = u5 + max(0.0, min( min(u5k1-u5, u5-u5_k1), MR5-u5 ));
+                            
+                            MR1i = u1k1 - max(0.0, min( min(u1k2-u1k1, u1k1-u1),MR1i-u1k1 ));
+                            MR2i = u2k1 - max(0.0, min( min(u2k2-u2k1, u2k1-u2),MR2i-u2k1 ));
+                            MR3i = u3k1 - max(0.0, min( min(u3k2-u3k1, u3k1-u3),MR3i-u3k1 ));
+                            MR4i = u4k1 - max(0.0, min( min(u4k2-u4k1, u4k1-u4),MR4i-u4k1 ));
+                            MR5i = u5k1 - max(0.0, min( min(u5k2-u5k1, u5k1-u5),MR5i-u5k1 ));
+                            
+
+						}
+						
+						
+						
+						
+						
+					}
+					else {
+
+						ML1 = u1_k1 + max( 0.0, min( u1_k1-u1_k2, u1-u1_k1 ) );
+                        ML2 = u2_k1 + max( 0.0, min( u2_k1-u2_k2, u2-u2_k1 ) );
+                        ML3 = u3_k1 + max( 0.0, min( u3_k1-u3_k2, u3-u3_k1 ) );
+                        ML4 = u4_k1 + max( 0.0, min( u4_k1-u4_k2, u4-u4_k1 ) );
+                        ML5 = u5_k1 + max( 0.0, min( u5_k1-u5_k2, u5-u5_k1 ) );
+                        
+                        MR1 = u1 - max( 0.0, min( u1k1-u1, u1-u1_k1 ) );
+                        MR2 = u2 - max( 0.0, min( u2k1-u2, u2-u2_k1 ) );
+                        MR3 = u3 - max( 0.0, min( u3k1-u3, u3-u3_k1 ) );
+                        MR4 = u4 - max( 0.0, min( u4k1-u4, u4-u4_k1 ) );
+                        MR5 = u5 - max( 0.0, min( u5k1-u5, u5-u5_k1 ) );
+                        
+                        ML1i = u1 + max( 0.0, min( u1-u1_k1, u1k1-u1 ) );
+                        ML2i = u2 + max( 0.0, min( u2-u2_k1, u2k1-u2 ) );
+                        ML3i = u3 + max( 0.0, min( u3-u3_k1, u3k1-u3 ) );
+                        ML4i = u4 + max( 0.0, min( u4-u4_k1, u4k1-u4 ) );
+                        ML5i = u5 + max( 0.0, min( u5-u5_k1, u5k1-u5 ) );
+                        
+                        MR1i = u1k1 - max( 0.0, min( u1k2-u1k1, u1k1-u1 ) );
+                        MR2i = u2k1 - max( 0.0, min( u2k2-u2k1, u2k1-u2 ) );
+                        MR3i = u3k1 - max( 0.0, min( u3k2-u3k1, u3k1-u3 ) );
+                        MR4i = u4k1 - max( 0.0, min( u4k2-u4k1, u4k1-u4 ) );
+                        MR5i = u5k1 - max( 0.0, min( u5k2-u5k1, u5k1-u5 ) );
+
+					}
+
+
+
+
+					#else
 
 
 					if( IFk1 == IFLUID  && IF_k1 == IFLUID) { 
@@ -587,6 +748,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						MR5i = u5k1;
 
 					}
+
+					#endif
 
 					// ----------------------------- MUSCL-Z ----------------------------- //
 					// ------------------------------------------------------------------- //
@@ -1069,67 +1232,168 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					// ------------------------------------------------------------------- //
 					// ----------------------------- MUSCL-X ----------------------------- //
 
+                    #ifdef limiter
+                    
+                    
+                    
+                    if( IFi1 == IFLUID  && IF_i1 == IFLUID) { 
 
+						if ( i==2 | IF_i2 != IFLUID ) {
 
+							ML1 = 1./6*(-1*u1_i2+5*u1_i1+2*u1);
+							ML2 = 1./6*(-1*u2_i2+5*u2_i1+2*u2);
+							ML3 = 1./6*(-1*u3_i2+5*u3_i1+2*u3);
+							ML4 = 1./6*(-1*u4_i2+5*u4_i1+2*u4);
+							ML5 = 1./6*(-1*u5_i2+5*u5_i1+2*u5);
 
+							MR1 = 1./6*(2*u1_i1+5*u1-1*u1i1);
+							MR2 = 1./6*(2*u2_i1+5*u2-1*u2i1);
+							MR3 = 1./6*(2*u3_i1+5*u3-1*u3i1);
+							MR4 = 1./6*(2*u4_i1+5*u4-1*u4i1);
+							MR5 = 1./6*(2*u5_i1+5*u5-1*u5i1);
+                            
+                            ML1 = u1_i1 + max(0.0, min( min(u1_i1-u1_i2, u1-u1_i1), ML1-u1_i1 ));
+                            ML2 = u2_i1 + max(0.0, min( min(u2_i1-u2_i2, u2-u1_i1), ML2-u2_i1 ));
+                            ML3 = u3_i1 + max(0.0, min( min(u3_i1-u3_i2, u3-u1_i1), ML3-u3_i1 ));
+                            ML4 = u4_i1 + max(0.0, min( min(u4_i1-u4_i2, u4-u1_i1), ML4-u4_i1 ));
+                            ML5 = u5_i1 + max(0.0, min( min(u5_i1-u5_i2, u5-u1_i1), ML5-u5_i1 ));
+                            
+                            MR1 = u1 - max(0.0, min( min(u1i1-u1, u1-u1_i1), MR1-u1 ));
+                            MR2 = u2 - max(0.0, min( min(u2i1-u2, u2-u2_i1), MR2-u2 ));
+                            MR3 = u3 - max(0.0, min( min(u3i1-u3, u3-u3_i1), MR3-u3 ));
+                            MR4 = u4 - max(0.0, min( min(u4i1-u4, u4-u4_i1), MR4-u4 ));
+                            MR5 = u5 - max(0.0, min( min(u5i1-u5, u5-u5_i1), MR5-u5 ));
+                            
+                            
+						}
+						else {
 
+							ML1 = 1./60*(2*u1_i3-13*u1_i2+47*u1_i1+27*u1-3*u1i1);
+							ML2 = 1./60*(2*u2_i3-13*u2_i2+47*u2_i1+27*u2-3*u2i1);
+							ML3 = 1./60*(2*u3_i3-13*u3_i2+47*u3_i1+27*u3-3*u3i1);
+							ML4 = 1./60*(2*u4_i3-13*u4_i2+47*u4_i1+27*u4-3*u4i1);
+							ML5 = 1./60*(2*u5_i3-13*u5_i2+47*u5_i1+27*u5-3*u5i1);
 
+							MR1 = 1./60*(-3*u1_i2+27*u1_i1+47*u1-13*u1i1+2*u1i2);
+							MR2 = 1./60*(-3*u2_i2+27*u2_i1+47*u2-13*u2i1+2*u2i2);
+							MR3 = 1./60*(-3*u3_i2+27*u3_i1+47*u3-13*u3i1+2*u3i2);
+							MR4 = 1./60*(-3*u4_i2+27*u4_i1+47*u4-13*u4i1+2*u4i2);
+							MR5 = 1./60*(-3*u5_i2+27*u5_i1+47*u5-13*u5i1+2*u5i2);
+                            
+                            
+                            ML1 = u1_i1 + max(0.0, min( min(u1_i1-u1_i2, u1-u1_i1), ML1-u1_i1 ));
+                            ML2 = u2_i1 + max(0.0, min( min(u2_i1-u2_i2, u2-u1_i1), ML2-u2_i1 ));
+                            ML3 = u3_i1 + max(0.0, min( min(u3_i1-u3_i2, u3-u1_i1), ML3-u3_i1 ));
+                            ML4 = u4_i1 + max(0.0, min( min(u4_i1-u4_i2, u4-u1_i1), ML4-u4_i1 ));
+                            ML5 = u5_i1 + max(0.0, min( min(u5_i1-u5_i2, u5-u1_i1), ML5-u5_i1 ));
+                            
+                            MR1 = u1 - max(0.0, min( min(u1i1-u1, u1-u1_i1), MR1-u1 ));
+                            MR2 = u2 - max(0.0, min( min(u2i1-u2, u2-u2_i1), MR2-u2 ));
+                            MR3 = u3 - max(0.0, min( min(u3i1-u3, u3-u3_i1), MR3-u3 ));
+                            MR4 = u4 - max(0.0, min( min(u4i1-u4, u4-u4_i1), MR4-u4 ));
+                            MR5 = u5 - max(0.0, min( min(u5i1-u5, u5-u5_i1), MR5-u5 ));
 
+						}
+						
+						
+						
+						
+						if ( i==nx | IFi2 != IFLUID) {
 
+							ML1i = 1./6*(-1*u1_i1+5*u1+2*u1i1);
+							ML2i = 1./6*(-1*u2_i1+5*u2+2*u2i1);
+							ML3i = 1./6*(-1*u3_i1+5*u3+2*u3i1);
+							ML4i = 1./6*(-1*u4_i1+5*u4+2*u4i1);
+							ML5i = 1./6*(-1*u5_i1+5*u5+2*u5i1);
 
+							MR1i = 1./6*(2*u1+5*u1i1-1*u1i2);
+							MR2i = 1./6*(2*u2+5*u2i1-1*u2i2);
+							MR3i = 1./6*(2*u3+5*u3i1-1*u3i2);
+							MR4i = 1./6*(2*u4+5*u4i1-1*u4i2);
+							MR5i = 1./6*(2*u5+5*u5i1-1*u5i2);
+                            
+                            
+                            ML1i = u1 + max(0.0, min( min(u1i1-u1, u1-u1_i1), MR1-u1 ));
+                            ML2i = u2 + max(0.0, min( min(u2i1-u2, u2-u2_i1), MR2-u2 ));
+                            ML3i = u3 + max(0.0, min( min(u3i1-u3, u3-u3_i1), MR3-u3 ));
+                            ML4i = u4 + max(0.0, min( min(u4i1-u4, u4-u4_i1), MR4-u4 ));
+                            ML5i = u5 + max(0.0, min( min(u5i1-u5, u5-u5_i1), MR5-u5 ));
+                            
+                            MR1i = u1i1 - max(0.0, min( min(u1i2-u1i1, u1i1-u1),MR1i-u1i1 ));
+                            MR2i = u2i1 - max(0.0, min( min(u2i2-u2i1, u2i1-u2),MR2i-u2i1 ));
+                            MR3i = u3i1 - max(0.0, min( min(u3i2-u3i1, u3i1-u3),MR3i-u3i1 ));
+                            MR4i = u4i1 - max(0.0, min( min(u4i2-u4i1, u4i1-u4),MR4i-u4i1 ));
+                            MR5i = u5i1 - max(0.0, min( min(u5i2-u5i1, u5i1-u5),MR5i-u5i1 ));
+                            
 
+						}
+						else {
 
+							ML1i = 1./60*(2*u1_i2-13*u1_i1+47*u1+27*u1i1-3*u1i2);
+							ML2i = 1./60*(2*u2_i2-13*u2_i1+47*u2+27*u2i1-3*u2i2);
+							ML3i = 1./60*(2*u3_i2-13*u3_i1+47*u3+27*u3i1-3*u3i2);
+							ML4i = 1./60*(2*u4_i2-13*u4_i1+47*u4+27*u4i1-3*u4i2);
+							ML5i = 1./60*(2*u5_i2-13*u5_i1+47*u5+27*u5i1-3*u5i2);
 
+							MR1i = 1./60*(-3*u1_i1+27*u1+47*u1i1-13*u1i2+2*u1i3);
+							MR2i = 1./60*(-3*u2_i1+27*u2+47*u2i1-13*u2i2+2*u2i3);
+							MR3i = 1./60*(-3*u3_i1+27*u3+47*u3i1-13*u3i2+2*u3i3);
+							MR4i = 1./60*(-3*u4_i1+27*u4+47*u4i1-13*u4i2+2*u4i3);
+							MR5i = 1./60*(-3*u5_i1+27*u5+47*u5i1-13*u5i2+2*u5i3);
+                            
+                            
+                            
+                            ML1i = u1 + max(0.0, min( min(u1i1-u1, u1-u1_i1), MR1-u1 ));
+                            ML2i = u2 + max(0.0, min( min(u2i1-u2, u2-u2_i1), MR2-u2 ));
+                            ML3i = u3 + max(0.0, min( min(u3i1-u3, u3-u3_i1), MR3-u3 ));
+                            ML4i = u4 + max(0.0, min( min(u4i1-u4, u4-u4_i1), MR4-u4 ));
+                            ML5i = u5 + max(0.0, min( min(u5i1-u5, u5-u5_i1), MR5-u5 ));
+                            
+                            MR1i = u1i1 - max(0.0, min( min(u1i2-u1i1, u1i1-u1),MR1i-u1i1 ));
+                            MR2i = u2i1 - max(0.0, min( min(u2i2-u2i1, u2i1-u2),MR2i-u2i1 ));
+                            MR3i = u3i1 - max(0.0, min( min(u3i2-u3i1, u3i1-u3),MR3i-u3i1 ));
+                            MR4i = u4i1 - max(0.0, min( min(u4i2-u4i1, u4i1-u4),MR4i-u4i1 ));
+                            MR5i = u5i1 - max(0.0, min( min(u5i2-u5i1, u5i1-u5),MR5i-u5i1 ));
+                            
 
+						}
+						
+						
+						
+						
+						
+					}
+					else {
 
+						ML1 = u1_i1 + max( 0.0, min( u1_i1-u1_i2, u1-u1_i1 ) );
+                        ML2 = u2_i1 + max( 0.0, min( u2_i1-u2_i2, u2-u2_i1 ) );
+                        ML3 = u3_i1 + max( 0.0, min( u3_i1-u3_i2, u3-u3_i1 ) );
+                        ML4 = u4_i1 + max( 0.0, min( u4_i1-u4_i2, u4-u4_i1 ) );
+                        ML5 = u5_i1 + max( 0.0, min( u5_i1-u5_i2, u5-u5_i1 ) );
+                        
+                        MR1 = u1 - max( 0.0, min( u1i1-u1, u1-u1_i1 ) );
+                        MR2 = u2 - max( 0.0, min( u2i1-u2, u2-u2_i1 ) );
+                        MR3 = u3 - max( 0.0, min( u3i1-u3, u3-u3_i1 ) );
+                        MR4 = u4 - max( 0.0, min( u4i1-u4, u4-u4_i1 ) );
+                        MR5 = u5 - max( 0.0, min( u5i1-u5, u5-u5_i1 ) );
+                        
+                        ML1i = u1 + max( 0.0, min( u1-u1_i1, u1i1-u1 ) );
+                        ML2i = u2 + max( 0.0, min( u2-u2_i1, u2i1-u2 ) );
+                        ML3i = u3 + max( 0.0, min( u3-u3_i1, u3i1-u3 ) );
+                        ML4i = u4 + max( 0.0, min( u4-u4_i1, u4i1-u4 ) );
+                        ML5i = u5 + max( 0.0, min( u5-u5_i1, u5i1-u5 ) );
+                        
+                        MR1i = u1i1 - max( 0.0, min( u1i2-u1i1, u1i1-u1 ) );
+                        MR2i = u2i1 - max( 0.0, min( u2i2-u2i1, u2i1-u2 ) );
+                        MR3i = u3i1 - max( 0.0, min( u3i2-u3i1, u3i1-u3 ) );
+                        MR4i = u4i1 - max( 0.0, min( u4i2-u4i1, u4i1-u4 ) );
+                        MR5i = u5i1 - max( 0.0, min( u5i2-u5i1, u5i1-u5 ) );
 
+					}
+                    
+                    
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                    #else
 
 
 
@@ -1234,6 +1498,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					}
 
+                    #endif
+                    
 					// ----------------------------- MUSCL-X ----------------------------- //
 					// ------------------------------------------------------------------- //
 
@@ -1717,66 +1983,167 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					// ------------------------------------------------------------------- //
 					// ----------------------------- MUSCL-Y ----------------------------- //
 
+                    #ifdef limiter
+                    
+                    
+                    if( IFj1 == IFLUID  && IF_j1 == IFLUID) { 
 
+						if ( j==2 | IF_j2 != IFLUID ) {
 
+							ML1 = 1./6*(-1*u1_j2+5*u1_j1+2*u1);
+							ML2 = 1./6*(-1*u2_j2+5*u2_j1+2*u2);
+							ML3 = 1./6*(-1*u3_j2+5*u3_j1+2*u3);
+							ML4 = 1./6*(-1*u4_j2+5*u4_j1+2*u4);
+							ML5 = 1./6*(-1*u5_j2+5*u5_j1+2*u5);
 
+							MR1 = 1./6*(2*u1_j1+5*u1-1*u1j1);
+							MR2 = 1./6*(2*u2_j1+5*u2-1*u2j1);
+							MR3 = 1./6*(2*u3_j1+5*u3-1*u3j1);
+							MR4 = 1./6*(2*u4_j1+5*u4-1*u4j1);
+							MR5 = 1./6*(2*u5_j1+5*u5-1*u5j1);
+                            
+                            ML1 = u1_j1 + max(0.0, min( min(u1_j1-u1_j2, u1-u1_j1), ML1-u1_j1 ));
+                            ML2 = u2_j1 + max(0.0, min( min(u2_j1-u2_j2, u2-u1_j1), ML2-u2_j1 ));
+                            ML3 = u3_j1 + max(0.0, min( min(u3_j1-u3_j2, u3-u1_j1), ML3-u3_j1 ));
+                            ML4 = u4_j1 + max(0.0, min( min(u4_j1-u4_j2, u4-u1_j1), ML4-u4_j1 ));
+                            ML5 = u5_j1 + max(0.0, min( min(u5_j1-u5_j2, u5-u1_j1), ML5-u5_j1 ));
+                            
+                            MR1 = u1 - max(0.0, min( min(u1j1-u1, u1-u1_j1), MR1-u1 ));
+                            MR2 = u2 - max(0.0, min( min(u2j1-u2, u2-u2_j1), MR2-u2 ));
+                            MR3 = u3 - max(0.0, min( min(u3j1-u3, u3-u3_j1), MR3-u3 ));
+                            MR4 = u4 - max(0.0, min( min(u4j1-u4, u4-u4_j1), MR4-u4 ));
+                            MR5 = u5 - max(0.0, min( min(u5j1-u5, u5-u5_j1), MR5-u5 ));
+                            
+                            
+						}
+						else {
 
+							ML1 = 1./60*(2*u1_j3-13*u1_j2+47*u1_j1+27*u1-3*u1j1);
+							ML2 = 1./60*(2*u2_j3-13*u2_j2+47*u2_j1+27*u2-3*u2j1);
+							ML3 = 1./60*(2*u3_j3-13*u3_j2+47*u3_j1+27*u3-3*u3j1);
+							ML4 = 1./60*(2*u4_j3-13*u4_j2+47*u4_j1+27*u4-3*u4j1);
+							ML5 = 1./60*(2*u5_j3-13*u5_j2+47*u5_j1+27*u5-3*u5j1);
 
+							MR1 = 1./60*(-3*u1_j2+27*u1_j1+47*u1-13*u1j1+2*u1j2);
+							MR2 = 1./60*(-3*u2_j2+27*u2_j1+47*u2-13*u2j1+2*u2j2);
+							MR3 = 1./60*(-3*u3_j2+27*u3_j1+47*u3-13*u3j1+2*u3j2);
+							MR4 = 1./60*(-3*u4_j2+27*u4_j1+47*u4-13*u4j1+2*u4j2);
+							MR5 = 1./60*(-3*u5_j2+27*u5_j1+47*u5-13*u5j1+2*u5j2);
+                            
+                            
+                            ML1 = u1_j1 + max(0.0, min( min(u1_j1-u1_j2, u1-u1_j1), ML1-u1_j1 ));
+                            ML2 = u2_j1 + max(0.0, min( min(u2_j1-u2_j2, u2-u1_j1), ML2-u2_j1 ));
+                            ML3 = u3_j1 + max(0.0, min( min(u3_j1-u3_j2, u3-u1_j1), ML3-u3_j1 ));
+                            ML4 = u4_j1 + max(0.0, min( min(u4_j1-u4_j2, u4-u1_j1), ML4-u4_j1 ));
+                            ML5 = u5_j1 + max(0.0, min( min(u5_j1-u5_j2, u5-u1_j1), ML5-u5_j1 ));
+                            
+                            MR1 = u1 - max(0.0, min( min(u1j1-u1, u1-u1_j1), MR1-u1 ));
+                            MR2 = u2 - max(0.0, min( min(u2j1-u2, u2-u2_j1), MR2-u2 ));
+                            MR3 = u3 - max(0.0, min( min(u3j1-u3, u3-u3_j1), MR3-u3 ));
+                            MR4 = u4 - max(0.0, min( min(u4j1-u4, u4-u4_j1), MR4-u4 ));
+                            MR5 = u5 - max(0.0, min( min(u5j1-u5, u5-u5_j1), MR5-u5 ));
 
+						}
+						
+						
+						
+						
+						if ( j==nx | IFj2 != IFLUID) {
 
+							ML1i = 1./6*(-1*u1_j1+5*u1+2*u1j1);
+							ML2i = 1./6*(-1*u2_j1+5*u2+2*u2j1);
+							ML3i = 1./6*(-1*u3_j1+5*u3+2*u3j1);
+							ML4i = 1./6*(-1*u4_j1+5*u4+2*u4j1);
+							ML5i = 1./6*(-1*u5_j1+5*u5+2*u5j1);
 
+							MR1i = 1./6*(2*u1+5*u1j1-1*u1j2);
+							MR2i = 1./6*(2*u2+5*u2j1-1*u2j2);
+							MR3i = 1./6*(2*u3+5*u3j1-1*u3j2);
+							MR4i = 1./6*(2*u4+5*u4j1-1*u4j2);
+							MR5i = 1./6*(2*u5+5*u5j1-1*u5j2);
+                            
+                            
+                            ML1i = u1 + max(0.0, min( min(u1j1-u1, u1-u1_j1), MR1-u1 ));
+                            ML2i = u2 + max(0.0, min( min(u2j1-u2, u2-u2_j1), MR2-u2 ));
+                            ML3i = u3 + max(0.0, min( min(u3j1-u3, u3-u3_j1), MR3-u3 ));
+                            ML4i = u4 + max(0.0, min( min(u4j1-u4, u4-u4_j1), MR4-u4 ));
+                            ML5i = u5 + max(0.0, min( min(u5j1-u5, u5-u5_j1), MR5-u5 ));
+                            
+                            MR1i = u1j1 - max(0.0, min( min(u1j2-u1j1, u1j1-u1),MR1i-u1j1 ));
+                            MR2i = u2j1 - max(0.0, min( min(u2j2-u2j1, u2j1-u2),MR2i-u2j1 ));
+                            MR3i = u3j1 - max(0.0, min( min(u3j2-u3j1, u3j1-u3),MR3i-u3j1 ));
+                            MR4i = u4j1 - max(0.0, min( min(u4j2-u4j1, u4j1-u4),MR4i-u4j1 ));
+                            MR5i = u5j1 - max(0.0, min( min(u5j2-u5j1, u5j1-u5),MR5i-u5j1 ));
+                            
 
+						}
+						else {
 
+							ML1i = 1./60*(2*u1_j2-13*u1_j1+47*u1+27*u1j1-3*u1j2);
+							ML2i = 1./60*(2*u2_j2-13*u2_j1+47*u2+27*u2j1-3*u2j2);
+							ML3i = 1./60*(2*u3_j2-13*u3_j1+47*u3+27*u3j1-3*u3j2);
+							ML4i = 1./60*(2*u4_j2-13*u4_j1+47*u4+27*u4j1-3*u4j2);
+							ML5i = 1./60*(2*u5_j2-13*u5_j1+47*u5+27*u5j1-3*u5j2);
 
+							MR1i = 1./60*(-3*u1_j1+27*u1+47*u1j1-13*u1j2+2*u1j3);
+							MR2i = 1./60*(-3*u2_j1+27*u2+47*u2j1-13*u2j2+2*u2j3);
+							MR3i = 1./60*(-3*u3_j1+27*u3+47*u3j1-13*u3j2+2*u3j3);
+							MR4i = 1./60*(-3*u4_j1+27*u4+47*u4j1-13*u4j2+2*u4j3);
+							MR5i = 1./60*(-3*u5_j1+27*u5+47*u5j1-13*u5j2+2*u5j3);
+                            
+                            
+                            
+                            ML1i = u1 + max(0.0, min( min(u1j1-u1, u1-u1_j1), MR1-u1 ));
+                            ML2i = u2 + max(0.0, min( min(u2j1-u2, u2-u2_j1), MR2-u2 ));
+                            ML3i = u3 + max(0.0, min( min(u3j1-u3, u3-u3_j1), MR3-u3 ));
+                            ML4i = u4 + max(0.0, min( min(u4j1-u4, u4-u4_j1), MR4-u4 ));
+                            ML5i = u5 + max(0.0, min( min(u5j1-u5, u5-u5_j1), MR5-u5 ));
+                            
+                            MR1i = u1j1 - max(0.0, min( min(u1j2-u1j1, u1j1-u1),MR1i-u1j1 ));
+                            MR2i = u2j1 - max(0.0, min( min(u2j2-u2j1, u2j1-u2),MR2i-u2j1 ));
+                            MR3i = u3j1 - max(0.0, min( min(u3j2-u3j1, u3j1-u3),MR3i-u3j1 ));
+                            MR4i = u4j1 - max(0.0, min( min(u4j2-u4j1, u4j1-u4),MR4i-u4j1 ));
+                            MR5i = u5j1 - max(0.0, min( min(u5j2-u5j1, u5j1-u5),MR5i-u5j1 ));
+                            
 
+						}
+						
+						
+						
+						
+						
+					}
+					else {
 
+						ML1 = u1_j1 + max( 0.0, min( u1_j1-u1_j2, u1-u1_j1 ) );
+                        ML2 = u2_j1 + max( 0.0, min( u2_j1-u2_j2, u2-u2_j1 ) );
+                        ML3 = u3_j1 + max( 0.0, min( u3_j1-u3_j2, u3-u3_j1 ) );
+                        ML4 = u4_j1 + max( 0.0, min( u4_j1-u4_j2, u4-u4_j1 ) );
+                        ML5 = u5_j1 + max( 0.0, min( u5_j1-u5_j2, u5-u5_j1 ) );
+                        
+                        MR1 = u1 - max( 0.0, min( u1j1-u1, u1-u1_j1 ) );
+                        MR2 = u2 - max( 0.0, min( u2j1-u2, u2-u2_j1 ) );
+                        MR3 = u3 - max( 0.0, min( u3j1-u3, u3-u3_j1 ) );
+                        MR4 = u4 - max( 0.0, min( u4j1-u4, u4-u4_j1 ) );
+                        MR5 = u5 - max( 0.0, min( u5j1-u5, u5-u5_j1 ) );
+                        
+                        ML1i = u1 + max( 0.0, min( u1-u1_j1, u1j1-u1 ) );
+                        ML2i = u2 + max( 0.0, min( u2-u2_j1, u2j1-u2 ) );
+                        ML3i = u3 + max( 0.0, min( u3-u3_j1, u3j1-u3 ) );
+                        ML4i = u4 + max( 0.0, min( u4-u4_j1, u4j1-u4 ) );
+                        ML5i = u5 + max( 0.0, min( u5-u5_j1, u5j1-u5 ) );
+                        
+                        MR1i = u1j1 - max( 0.0, min( u1j2-u1j1, u1j1-u1 ) );
+                        MR2i = u2j1 - max( 0.0, min( u2j2-u2j1, u2j1-u2 ) );
+                        MR3i = u3j1 - max( 0.0, min( u3j2-u3j1, u3j1-u3 ) );
+                        MR4i = u4j1 - max( 0.0, min( u4j2-u4j1, u4j1-u4 ) );
+                        MR5i = u5j1 - max( 0.0, min( u5j2-u5j1, u5j1-u5 ) );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+					}
+                    
+                    
+                    
+					#else
 
 
 
@@ -1882,6 +2249,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						MR5i = u5j1;
 
 					}
+                    
+                    #endif
 
 
 					// ----------------------------- MUSCL-Y ----------------------------- //

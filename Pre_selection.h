@@ -10,6 +10,13 @@
 #define ROE 3
 
 
+// ---- limiter : limiter function ---- //
+// ---- Nolimter : No limiter function ---- //
+
+#define limiter 
+
+
+
 
 
 // ---- Kcomputer : K ---- //
@@ -33,6 +40,5 @@
 // ---- DNS : implicit turbulence model ---- //
 
 #define DNS 
-
 
 #define Char_D 4.5e-5 
