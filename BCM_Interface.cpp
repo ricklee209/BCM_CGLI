@@ -5636,29 +5636,29 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 	
 	
 
-
+	
 #pragma omp parallel for private(i,j,k)
 	for (icube = 1; icube < ncube; icube++) { 
 
-		for (i = n_buffer; i <= nx; i++) {
+		for (i = n_buffer-1; i <= nxx; i++) {
 
-			U1_[icube][i][1][1][0] =  0.5*(U1_[icube][i][1][2][0]+U1_[icube][i][2][1][0]);
-			U1_[icube][i][1][1][1] =  0.5*(U1_[icube][i][1][2][1]+U1_[icube][i][2][1][1]);
-			U1_[icube][i][1][1][2] =  0.5*(U1_[icube][i][1][2][2]+U1_[icube][i][2][1][2]);
-			U1_[icube][i][1][1][3] =  0.5*(U1_[icube][i][1][2][3]+U1_[icube][i][2][1][3]);
-			U1_[icube][i][1][1][4] =  0.5*(U1_[icube][i][1][2][4]+U1_[icube][i][2][1][4]);
+			U1_[icube][i][n_buffer-1][n_buffer-1][0] =  0.5*(U1_[icube][i][n_buffer-1][n_buffer][0]+U1_[icube][i][n_buffer][n_buffer-1][0]);
+			U1_[icube][i][n_buffer-1][n_buffer-1][1] =  0.5*(U1_[icube][i][n_buffer-1][n_buffer][1]+U1_[icube][i][n_buffer][n_buffer-1][1]);
+			U1_[icube][i][n_buffer-1][n_buffer-1][2] =  0.5*(U1_[icube][i][n_buffer-1][n_buffer][2]+U1_[icube][i][n_buffer][n_buffer-1][2]);
+			U1_[icube][i][n_buffer-1][n_buffer-1][3] =  0.5*(U1_[icube][i][n_buffer-1][n_buffer][3]+U1_[icube][i][n_buffer][n_buffer-1][3]);
+			U1_[icube][i][n_buffer-1][n_buffer-1][4] =  0.5*(U1_[icube][i][n_buffer-1][n_buffer][4]+U1_[icube][i][n_buffer][n_buffer-1][4]);
 
-			U1_[icube][i][nyy][1][0] =  0.5*(U1_[icube][i][nyy][2][0]+U1_[icube][i][ny][1][0]);
-			U1_[icube][i][nyy][1][1] =  0.5*(U1_[icube][i][nyy][2][1]+U1_[icube][i][ny][1][1]);
-			U1_[icube][i][nyy][1][2] =  0.5*(U1_[icube][i][nyy][2][2]+U1_[icube][i][ny][1][2]);
-			U1_[icube][i][nyy][1][3] =  0.5*(U1_[icube][i][nyy][2][3]+U1_[icube][i][ny][1][3]);
-			U1_[icube][i][nyy][1][4] =  0.5*(U1_[icube][i][nyy][2][4]+U1_[icube][i][ny][1][4]);
+			U1_[icube][i][nyy][n_buffer-1][0] =  0.5*(U1_[icube][i][nyy][n_buffer][0]+U1_[icube][i][ny][n_buffer-1][0]);
+			U1_[icube][i][nyy][n_buffer-1][1] =  0.5*(U1_[icube][i][nyy][n_buffer][1]+U1_[icube][i][ny][n_buffer-1][1]);
+			U1_[icube][i][nyy][n_buffer-1][2] =  0.5*(U1_[icube][i][nyy][n_buffer][2]+U1_[icube][i][ny][n_buffer-1][2]);
+			U1_[icube][i][nyy][n_buffer-1][3] =  0.5*(U1_[icube][i][nyy][n_buffer][3]+U1_[icube][i][ny][n_buffer-1][3]);
+			U1_[icube][i][nyy][n_buffer-1][4] =  0.5*(U1_[icube][i][nyy][n_buffer][4]+U1_[icube][i][ny][n_buffer-1][4]);
 
-			U1_[icube][i][1][nzz][0] =  0.5*(U1_[icube][i][1][nz][0]+U1_[icube][i][2][nzz][0]);
-			U1_[icube][i][1][nzz][1] =  0.5*(U1_[icube][i][1][nz][1]+U1_[icube][i][2][nzz][1]);
-			U1_[icube][i][1][nzz][2] =  0.5*(U1_[icube][i][1][nz][2]+U1_[icube][i][2][nzz][2]);
-			U1_[icube][i][1][nzz][3] =  0.5*(U1_[icube][i][1][nz][3]+U1_[icube][i][2][nzz][3]);
-			U1_[icube][i][1][nzz][4] =  0.5*(U1_[icube][i][1][nz][4]+U1_[icube][i][2][nzz][4]);
+			U1_[icube][i][n_buffer-1][nzz][0] =  0.5*(U1_[icube][i][n_buffer-1][nz][0]+U1_[icube][i][n_buffer][nzz][0]);
+			U1_[icube][i][n_buffer-1][nzz][1] =  0.5*(U1_[icube][i][n_buffer-1][nz][1]+U1_[icube][i][n_buffer][nzz][1]);
+			U1_[icube][i][n_buffer-1][nzz][2] =  0.5*(U1_[icube][i][n_buffer-1][nz][2]+U1_[icube][i][n_buffer][nzz][2]);
+			U1_[icube][i][n_buffer-1][nzz][3] =  0.5*(U1_[icube][i][n_buffer-1][nz][3]+U1_[icube][i][n_buffer][nzz][3]);
+			U1_[icube][i][n_buffer-1][nzz][4] =  0.5*(U1_[icube][i][n_buffer-1][nz][4]+U1_[icube][i][n_buffer][nzz][4]);
 
 			U1_[icube][i][nyy][nzz][0] =  0.5*(U1_[icube][i][nyy][nz][0]+U1_[icube][i][ny][nzz][0]);
 			U1_[icube][i][nyy][nzz][1] =  0.5*(U1_[icube][i][nyy][nz][1]+U1_[icube][i][ny][nzz][1]);
@@ -5673,23 +5673,23 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 		for (j = n_buffer-1; j <= nyy; j++) {
 
-			U1_[icube][1][j][1][0] =  0.5*(U1_[icube][1][j][2][0]+U1_[icube][2][j][1][0]);
-			U1_[icube][1][j][1][1] =  0.5*(U1_[icube][1][j][2][1]+U1_[icube][2][j][1][1]);
-			U1_[icube][1][j][1][2] =  0.5*(U1_[icube][1][j][2][2]+U1_[icube][2][j][1][2]);
-			U1_[icube][1][j][1][3] =  0.5*(U1_[icube][1][j][2][3]+U1_[icube][2][j][1][3]);
-			U1_[icube][1][j][1][4] =  0.5*(U1_[icube][1][j][2][4]+U1_[icube][2][j][1][4]);
+			U1_[icube][n_buffer-1][j][n_buffer-1][0] =  0.5*(U1_[icube][n_buffer-1][j][n_buffer][0]+U1_[icube][n_buffer][j][n_buffer-1][0]);
+			U1_[icube][n_buffer-1][j][n_buffer-1][1] =  0.5*(U1_[icube][n_buffer-1][j][n_buffer][1]+U1_[icube][n_buffer][j][n_buffer-1][1]);
+			U1_[icube][n_buffer-1][j][n_buffer-1][2] =  0.5*(U1_[icube][n_buffer-1][j][n_buffer][2]+U1_[icube][n_buffer][j][n_buffer-1][2]);
+			U1_[icube][n_buffer-1][j][n_buffer-1][3] =  0.5*(U1_[icube][n_buffer-1][j][n_buffer][3]+U1_[icube][n_buffer][j][n_buffer-1][3]);
+			U1_[icube][n_buffer-1][j][n_buffer-1][4] =  0.5*(U1_[icube][n_buffer-1][j][n_buffer][4]+U1_[icube][n_buffer][j][n_buffer-1][4]);
 
-			U1_[icube][1][j][nzz][0] =  0.5*(U1_[icube][2][j][nzz][0]+U1_[icube][1][j][nz][0]);
-			U1_[icube][1][j][nzz][1] =  0.5*(U1_[icube][2][j][nzz][1]+U1_[icube][1][j][nz][1]);
-			U1_[icube][1][j][nzz][2] =  0.5*(U1_[icube][2][j][nzz][2]+U1_[icube][1][j][nz][2]);
-			U1_[icube][1][j][nzz][3] =  0.5*(U1_[icube][2][j][nzz][3]+U1_[icube][1][j][nz][3]);
-			U1_[icube][1][j][nzz][4] =  0.5*(U1_[icube][2][j][nzz][4]+U1_[icube][1][j][nz][4]);
+			U1_[icube][n_buffer-1][j][nzz][0] =  0.5*(U1_[icube][n_buffer][j][nzz][0]+U1_[icube][n_buffer-1][j][nz][0]);
+			U1_[icube][n_buffer-1][j][nzz][1] =  0.5*(U1_[icube][n_buffer][j][nzz][1]+U1_[icube][n_buffer-1][j][nz][1]);
+			U1_[icube][n_buffer-1][j][nzz][2] =  0.5*(U1_[icube][n_buffer][j][nzz][2]+U1_[icube][n_buffer-1][j][nz][2]);
+			U1_[icube][n_buffer-1][j][nzz][3] =  0.5*(U1_[icube][n_buffer][j][nzz][3]+U1_[icube][n_buffer-1][j][nz][3]);
+			U1_[icube][n_buffer-1][j][nzz][4] =  0.5*(U1_[icube][n_buffer][j][nzz][4]+U1_[icube][n_buffer-1][j][nz][4]);
 
-			U1_[icube][nxx][j][1][0] =  0.5*(U1_[icube][nx][j][1][0]+U1_[icube][nxx][j][2][0]);
-			U1_[icube][nxx][j][1][1] =  0.5*(U1_[icube][nx][j][1][1]+U1_[icube][nxx][j][2][1]);
-			U1_[icube][nxx][j][1][2] =  0.5*(U1_[icube][nx][j][1][2]+U1_[icube][nxx][j][2][2]);
-			U1_[icube][nxx][j][1][3] =  0.5*(U1_[icube][nx][j][1][3]+U1_[icube][nxx][j][2][3]);
-			U1_[icube][nxx][j][1][4] =  0.5*(U1_[icube][nx][j][1][4]+U1_[icube][nxx][j][2][4]);
+			U1_[icube][nxx][j][n_buffer-1][0] =  0.5*(U1_[icube][nx][j][n_buffer-1][0]+U1_[icube][nxx][j][n_buffer][0]);
+			U1_[icube][nxx][j][n_buffer-1][1] =  0.5*(U1_[icube][nx][j][n_buffer-1][1]+U1_[icube][nxx][j][n_buffer][1]);
+			U1_[icube][nxx][j][n_buffer-1][2] =  0.5*(U1_[icube][nx][j][n_buffer-1][2]+U1_[icube][nxx][j][n_buffer][2]);
+			U1_[icube][nxx][j][n_buffer-1][3] =  0.5*(U1_[icube][nx][j][n_buffer-1][3]+U1_[icube][nxx][j][n_buffer][3]);
+			U1_[icube][nxx][j][n_buffer-1][4] =  0.5*(U1_[icube][nx][j][n_buffer-1][4]+U1_[icube][nxx][j][n_buffer][4]);
 
 			U1_[icube][nxx][j][nzz][0] =  0.5*(U1_[icube][nx][j][nzz][0]+U1_[icube][nxx][j][nz][0]);
 			U1_[icube][nxx][j][nzz][1] =  0.5*(U1_[icube][nx][j][nzz][1]+U1_[icube][nxx][j][nz][1]);
@@ -5703,23 +5703,23 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 		for (k = n_buffer-1; k <= nzz; k++) {
 
-			U1_[icube][1][1][k][0] =  0.5*(U1_[icube][1][2][k][0]+U1_[icube][2][1][k][0]);
-			U1_[icube][1][1][k][1] =  0.5*(U1_[icube][1][2][k][1]+U1_[icube][2][1][k][1]);
-			U1_[icube][1][1][k][2] =  0.5*(U1_[icube][1][2][k][2]+U1_[icube][2][1][k][2]);
-			U1_[icube][1][1][k][3] =  0.5*(U1_[icube][1][2][k][3]+U1_[icube][2][1][k][3]);
-			U1_[icube][1][1][k][4] =  0.5*(U1_[icube][1][2][k][4]+U1_[icube][2][1][k][4]);
+			U1_[icube][n_buffer-1][n_buffer-1][k][0] =  0.5*(U1_[icube][n_buffer-1][n_buffer][k][0]+U1_[icube][n_buffer][n_buffer-1][k][0]);
+			U1_[icube][n_buffer-1][n_buffer-1][k][1] =  0.5*(U1_[icube][n_buffer-1][n_buffer][k][1]+U1_[icube][n_buffer][n_buffer-1][k][1]);
+			U1_[icube][n_buffer-1][n_buffer-1][k][2] =  0.5*(U1_[icube][n_buffer-1][n_buffer][k][2]+U1_[icube][n_buffer][n_buffer-1][k][2]);
+			U1_[icube][n_buffer-1][n_buffer-1][k][3] =  0.5*(U1_[icube][n_buffer-1][n_buffer][k][3]+U1_[icube][n_buffer][n_buffer-1][k][3]);
+			U1_[icube][n_buffer-1][n_buffer-1][k][4] =  0.5*(U1_[icube][n_buffer-1][n_buffer][k][4]+U1_[icube][n_buffer][n_buffer-1][k][4]);
 
-			U1_[icube][1][nyy][k][0] =  0.5*(U1_[icube][2][nyy][k][0]+U1_[icube][1][ny][k][0]);
-			U1_[icube][1][nyy][k][1] =  0.5*(U1_[icube][2][nyy][k][1]+U1_[icube][1][ny][k][1]);
-			U1_[icube][1][nyy][k][2] =  0.5*(U1_[icube][2][nyy][k][2]+U1_[icube][1][ny][k][2]);
-			U1_[icube][1][nyy][k][3] =  0.5*(U1_[icube][2][nyy][k][3]+U1_[icube][1][ny][k][3]);
-			U1_[icube][1][nyy][k][4] =  0.5*(U1_[icube][2][nyy][k][4]+U1_[icube][1][ny][k][4]);
+			U1_[icube][n_buffer-1][nyy][k][0] =  0.5*(U1_[icube][n_buffer][nyy][k][0]+U1_[icube][n_buffer-1][ny][k][0]);
+			U1_[icube][n_buffer-1][nyy][k][1] =  0.5*(U1_[icube][n_buffer][nyy][k][1]+U1_[icube][n_buffer-1][ny][k][1]);
+			U1_[icube][n_buffer-1][nyy][k][2] =  0.5*(U1_[icube][n_buffer][nyy][k][2]+U1_[icube][n_buffer-1][ny][k][2]);
+			U1_[icube][n_buffer-1][nyy][k][3] =  0.5*(U1_[icube][n_buffer][nyy][k][3]+U1_[icube][n_buffer-1][ny][k][3]);
+			U1_[icube][n_buffer-1][nyy][k][4] =  0.5*(U1_[icube][n_buffer][nyy][k][4]+U1_[icube][n_buffer-1][ny][k][4]);
 
-			U1_[icube][nxx][1][k][0] =  0.5*(U1_[icube][nx][1][k][0]+U1_[icube][nxx][2][k][0]);
-			U1_[icube][nxx][1][k][1] =  0.5*(U1_[icube][nx][1][k][1]+U1_[icube][nxx][2][k][1]);
-			U1_[icube][nxx][1][k][2] =  0.5*(U1_[icube][nx][1][k][2]+U1_[icube][nxx][2][k][2]);
-			U1_[icube][nxx][1][k][3] =  0.5*(U1_[icube][nx][1][k][3]+U1_[icube][nxx][2][k][3]);
-			U1_[icube][nxx][1][k][4] =  0.5*(U1_[icube][nx][1][k][4]+U1_[icube][nxx][2][k][4]);
+			U1_[icube][nxx][n_buffer-1][k][0] =  0.5*(U1_[icube][nx][n_buffer-1][k][0]+U1_[icube][nxx][n_buffer][k][0]);
+			U1_[icube][nxx][n_buffer-1][k][1] =  0.5*(U1_[icube][nx][n_buffer-1][k][1]+U1_[icube][nxx][n_buffer][k][1]);
+			U1_[icube][nxx][n_buffer-1][k][2] =  0.5*(U1_[icube][nx][n_buffer-1][k][2]+U1_[icube][nxx][n_buffer][k][2]);
+			U1_[icube][nxx][n_buffer-1][k][3] =  0.5*(U1_[icube][nx][n_buffer-1][k][3]+U1_[icube][nxx][n_buffer][k][3]);
+			U1_[icube][nxx][n_buffer-1][k][4] =  0.5*(U1_[icube][nx][n_buffer-1][k][4]+U1_[icube][nxx][n_buffer][k][4]);
 
 			U1_[icube][nxx][nyy][k][0] =  0.5*(U1_[icube][nx][nyy][k][0]+U1_[icube][nxx][ny][k][0]);
 			U1_[icube][nxx][nyy][k][1] =  0.5*(U1_[icube][nx][nyy][k][1]+U1_[icube][nxx][ny][k][1]);
