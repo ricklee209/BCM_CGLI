@@ -699,8 +699,10 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						S = sqrt(C);
 
 						theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
-						
-						beta = theda_p;
+
+						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+
+						beta = max(temp, 1e-8);
 						
 						C_p = beta*S;
 
@@ -892,7 +894,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
 						
-						beta = theda_p;
+						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+
+						beta = max(temp, 1e-8);
 						
 						C_p = beta*S;
 
@@ -1351,7 +1355,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
 						
-						beta = theda_p;
+						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+
+						beta = max(temp, 1e-8);
 						
 						C_p = beta*S;
 
@@ -1538,7 +1544,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
 						
-						beta = theda_p;
+						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+
+						beta = max(temp, 1e-8);
 						
 						C_p = beta*S;
 
@@ -1986,7 +1994,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
 						
-						beta = theda_p;
+						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+
+						beta = max(temp, 1e-8);
 						
 						C_p = beta*S;
 
@@ -2166,7 +2176,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
 						
-						beta = theda_p;
+						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+
+						beta = max(temp, 1e-8);
 						
 						C_p = beta*S;
 
