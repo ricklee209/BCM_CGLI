@@ -87,11 +87,11 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
     double XX, YY, SML;
     
     
-    n_abs_xm = 4.0;
-    n_abs_xp = 4.0;
+    n_abs_xm = 0.8;
+    n_abs_xp = 0.8;
     
-    n_abs_ym = 4.0;
-    n_abs_yp = 4.0;
+    n_abs_ym = 0.8;
+    n_abs_yp = 0.8;
     
     
     
