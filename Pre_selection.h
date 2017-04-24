@@ -28,12 +28,13 @@
 // ---- DT : dual time stepping ---- //
 // ---- NODT : No dual time stepping ---- //
 
-#define NODT 
+#define DT 
 
 // ---- RK3NODT : 3rd Runge-Kutta ---- //
 // ---- RKO5 : Bogey and Bailly 5th Runge-Kutta ---- //
+// ---- DPLUSGS ---- //
 
-#define RK3NODT 
+#define DPLUSGS 
 
 
 // ---- ILES : implicit turbulence model ---- //

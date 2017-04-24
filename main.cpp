@@ -1194,6 +1194,149 @@ int main(int argc, char **argv)
 		for (int iteration = 1; iteration < 50000; iteration++) {               //
 // ============================================================================ //		
 			
+			#ifdef DPLUSGS
+
+
+
+				//BCM_X_boundary_condition(myid, NXbc_l, NXbc_u, Xbc_l, Xbc_u, U1_);
+
+				//BCM_Y_boundary_condition(NYbc_l, NYbc_u, Ybc_l, Ybc_u, U1_);
+				
+				//BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
+
+
+				//BCM_Abs_Y_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NYbc_l, NYbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
+
+				//BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
+				
+				//BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
+
+				BCM_Abs_XY_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, NYbc_l, NYbc_u, 
+											  gXmax,gXmin,gYmax,gYmin,gdXmax,gdYmax,Xcube,Ycube,
+											  Xbc_l, Xbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
+                                              
+                BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
+
+
+				for (int ig = 1; ig <= 10; ig++) {
+
+					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
+
+					BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
+					
+
+					//BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
+
+					//BCM_Ghostcell_plus_Tem(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
+
+
+				}
+				
+
+				BCM_Interface(myid,Ncube, 
+
+					MPI_Nadj,
+
+					Ncpu_bs, Ncpu_eq, Ncpu_sb,
+					Max_nei_bs,Max_nei_eq,Max_nei_bs,
+
+					nadjX_eq, nadjY_eq, nadjZ_eq,
+					nadjX_bs_plus, nadjX_sb_plus, nadjX_bs_minus, nadjX_sb_minus,
+					nadjY_bs_plus, nadjY_sb_plus, nadjY_bs_minus, nadjY_sb_minus,
+					nadjZ_bs_plus, nadjZ_sb_plus, nadjZ_bs_minus, nadjZ_sb_minus,
+
+					rank_map,
+
+					MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+					neighbor_cpu_eq, Ncube_Ncpu_eq, neighbor_cpu_sb, Ncube_Ncpu_sb, neighbor_cpu_bs, Ncube_Ncpu_bs,
+					Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq,  
+					Scube_Ncpu_sb, Rcube_Ncpu_sb, send_data_curr_sb, recv_data_curr_sb, send_data_neig_sb, recv_data_neig_sb, Sdir_sb, Rdir_sb,
+					Scube_Ncpu_bs, Rcube_Ncpu_bs, send_data_curr_bs, recv_data_curr_bs, send_data_neig_bs, recv_data_neig_bs, Sdir_bs, Rdir_bs,
+					ist_eq,ist_sb,ist_bs, adjN_sb, RadjN_bs, SadjN_bs,
+
+					csl, 
+					adj_number, 
+					adjX_eq, adjY_eq, adjZ_eq,
+					adjX_bs_plus, adjX_sb_plus, adjX_bs_minus, adjX_sb_minus,
+					adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
+					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
+					U1_);
+				
+				
+				#ifdef ILES
+
+					if ((step%10 == 0)) BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
+				
+				#endif
+
+				
+				
+				BCM_Flux_XYZ_Viscous_DPLUSGS(myid, Ncube, deltaT, e, MPI_Nadj,
+
+					Ncpu_bs, Ncpu_eq, Ncpu_sb,
+					Max_nei_bs,Max_nei_eq,Max_nei_bs,
+
+					nadjX_eq, nadjY_eq, nadjZ_eq,
+					nadjX_bs_plus, nadjX_sb_plus, nadjX_bs_minus, nadjX_sb_minus,
+					nadjY_bs_plus, nadjY_sb_plus, nadjY_bs_minus, nadjY_sb_minus,
+					nadjZ_bs_plus, nadjZ_sb_plus, nadjZ_bs_minus, nadjZ_sb_minus,
+
+					rank_map,
+
+					MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+					neighbor_cpu_eq, Ncube_Ncpu_eq, neighbor_cpu_sb, Ncube_Ncpu_sb, neighbor_cpu_bs, Ncube_Ncpu_bs,
+					Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq,  
+					Scube_Ncpu_sb, Rcube_Ncpu_sb, send_data_curr_sb, recv_data_curr_sb, send_data_neig_sb, recv_data_neig_sb, Sdir_sb, Rdir_sb,
+					Scube_Ncpu_bs, Rcube_Ncpu_bs, send_data_curr_bs, recv_data_curr_bs, send_data_neig_bs, recv_data_neig_bs, Sdir_bs, Rdir_bs,
+					ist_eq,ist_sb,ist_bs, adjN_sb, RadjN_bs, SadjN_bs,
+
+					adj_number, 
+					adjX_eq, adjY_eq, adjZ_eq,
+					adjX_bs_plus, adjX_sb_plus, adjX_bs_minus, adjX_sb_minus,
+					adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
+					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
+
+					FWS, csl, cube_size,
+					U1_,U1 ,U1q,U1p1,U1p2,Fabs,Roe_dis,
+					Rku1,Residual1,
+					er);
+					
+
+
+				BCM_Interface(myid,Ncube, 
+
+					MPI_Nadj,
+
+					Ncpu_bs, Ncpu_eq, Ncpu_sb,
+					Max_nei_bs,Max_nei_eq,Max_nei_bs,
+
+					nadjX_eq, nadjY_eq, nadjZ_eq,
+					nadjX_bs_plus, nadjX_sb_plus, nadjX_bs_minus, nadjX_sb_minus,
+					nadjY_bs_plus, nadjY_sb_plus, nadjY_bs_minus, nadjY_sb_minus,
+					nadjZ_bs_plus, nadjZ_sb_plus, nadjZ_bs_minus, nadjZ_sb_minus,
+
+					rank_map,
+
+					MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+					neighbor_cpu_eq, Ncube_Ncpu_eq, neighbor_cpu_sb, Ncube_Ncpu_sb, neighbor_cpu_bs, Ncube_Ncpu_bs,
+					Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq,  
+					Scube_Ncpu_sb, Rcube_Ncpu_sb, send_data_curr_sb, recv_data_curr_sb, send_data_neig_sb, recv_data_neig_sb, Sdir_sb, Rdir_sb,
+					Scube_Ncpu_bs, Rcube_Ncpu_bs, send_data_curr_bs, recv_data_curr_bs, send_data_neig_bs, recv_data_neig_bs, Sdir_bs, Rdir_bs,
+					ist_eq,ist_sb,ist_bs, adjN_sb, RadjN_bs, SadjN_bs,
+
+					csl, 
+					adj_number, 
+					adjX_eq, adjY_eq, adjZ_eq,
+					adjX_bs_plus, adjX_sb_plus, adjX_bs_minus, adjX_sb_minus,
+					adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
+					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
+					U1_);
+
+
+
+			# else
+
+
 
 	// ------------------------------------------------------------------------------------------ //
 	// -------------------------------- Runge-Kutta-Modification -------------------------------- //
@@ -1352,6 +1495,10 @@ int main(int argc, char **argv)
 		// ------------------------------------------ //
 			}    //---- Runge-Kutaa end ---- //       //
 		// ------------------------------------------ //
+			
+
+			#endif
+
 
 
 			E1 = max(E1, er[1]);
@@ -1372,7 +1519,6 @@ int main(int argc, char **argv)
 				 //printf("%d\t%f\t%f\t%f\t%f\t%f\n",iteration,er[1],er[2],er[3],er[4],er[5]);
 
 			 //}
-
 
 
 // ==================================================================================================================== //
