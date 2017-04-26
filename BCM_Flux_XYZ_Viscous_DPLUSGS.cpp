@@ -3488,11 +3488,11 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 
  
 
-					U_p = Ux/invXI+Uy/invET+Uz/invZT;
+					U_p = Ux*invXI+Uy*invET+Uz*invZT;
 
 					d11 = 2*deltaT/(3*beta+2*U_p*deltaT);
 
-					d22 = d33 = d44 = d55 = 2*deltaT/(3+2*U_p*deltaT);
+					d22 = d33 = d44 = 2*deltaT/(3+2*U_p*deltaT);
 
 					temp1 = 6*(K-1)*(beta-1)*deltaT;
 					temp2 = K*(3+2*U_p*deltaT)*(3*beta+2*U_p*deltaT)*rho;
@@ -3668,7 +3668,7 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
                         beta = max(VV/C,e);
                         
                         Sz = sqrt(W*W*(beta-1)*(beta-1)+4*beta*C);
-                        Uz = 0.5*((beta+1)*fabs(U)+Sz) + 2*K*mu_L/Pr_L/rho/dz;
+                        Uz = 0.5*((beta+1)*fabs(W)+Sz) + 2*K*mu_L/Pr_L/rho/dz;
                         
                         d11 = fabs(Uz);
                         d22 = d11;
@@ -3677,14 +3677,14 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
                         d55 = d11;
 
                         Cplus11 = 0.5*(beta*W+d11);
-                        Cplus13 = 0.5*P*K*beta;
+                        Cplus14 = 0.5*P*K*beta;
 
                         Cplus22 = 0.5*(W+d22);
 
                         Cplus33 = 0.5*(W+d33);
 
                         Cplus41 = 0.5/rho;
-                        Cplus44 = 0.5*(W+d22);
+                        Cplus44 = 0.5*(W+d44);
 
                         Cplus51 = 0.5*W*(K-1)*(beta-1)/rho/K;
                         Cplus54 = 0.5*beta*T*(K-1);
@@ -3836,7 +3836,7 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
                         d55 = d11;
 
                         Cplus11 = 0.5*(beta*W+d11);
-                        Cplus13 = 0.5*P*K*beta;
+                        Cplus14 = 0.5*P*K*beta;
 
                         Cplus22 = 0.5*(W+d22);
 
@@ -3912,7 +3912,7 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 
      
 
-                        U_p = Ux/invXI+Uy/invET+Uz/invZT;
+                        U_p = Ux*invXI+Uy*invET+Uz*invZT;
 
                         d11 = 2*deltaT/(3*beta+2*U_p*deltaT);
 
