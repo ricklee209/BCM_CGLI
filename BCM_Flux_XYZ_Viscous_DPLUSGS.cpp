@@ -3827,7 +3827,7 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
                         beta = max(VV/C,e);
                         
                         Sz = sqrt(W*W*(beta-1)*(beta-1)+4*beta*C);
-                        Uz = 0.5*((beta+1)*fabs(U)+Sz) + 2*K*mu_L/Pr_L/rho/dz;
+                        Uz = 0.5*((beta+1)*fabs(W)+Sz) + 2*K*mu_L/Pr_L/rho/dz;
                         
                         d11 = fabs(Uz);
                         d22 = d11;
@@ -3959,11 +3959,11 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
             i,j,k\
             )
             for (icube = 1; icube < ncube; icube++) {  
-            
-                for (i = 0; i <= nxxx; i++) {
-                    for (j = 0; j <= nxxx; j++) {
-                        for (k = 0; k <= nxxx; k++) {
-                        
+                    
+                for (i = n_buffer ; i < nxx; i++) {
+                    for (j = n_buffer; j < nyy; j++) {
+                        for (k = n_buffer; k < nzz; k++) {
+
                             U1p1[icube][i][j][k][0] = U1p2[icube][i][j][k][0];
                             U1p1[icube][i][j][k][1] = U1p2[icube][i][j][k][1];
                             U1p1[icube][i][j][k][2] = U1p2[icube][i][j][k][2];
