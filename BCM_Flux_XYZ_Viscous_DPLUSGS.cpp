@@ -409,7 +409,9 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
         
     }
 	
-
+    
+    #pragma omp barrier
+        
 
 #pragma omp parallel for private(\
 	IF,\
@@ -3528,7 +3530,9 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 
 	}
     
-
+    
+     #pragma omp barrier
+        
 
 
     
@@ -3569,7 +3573,42 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 
     
         // ---- data transfer ---- //
-        
+    
+	
+        #pragma omp parallel for private(\
+		dx,dy,dz,invXI,invET,invZT,\
+        i,j,k,\
+        rho,U,V,W,VV,P,C,T,h,H,\
+        Ux,Uy,Uz,\
+        beta,Sx,Sy,Sz,U_p,\
+        temp,temp1,temp2,\
+        d11,d12,d13,d14,d15,\
+        d21,d22,d23,d24,d25,\
+        d31,d32,d33,d34,d35,\
+        d41,d42,d43,d44,d45,\
+        d51,d52,d53,d54,d55,\
+        LL1,LL2,LL3,LL4,LL5,\
+        UU1,UU2,UU3,UU4,UU5,\
+        Aplus11,Aplus12,\
+        Aplus21,Aplus22,\
+        Aplus33,\
+        Aplus44,\
+        Aplus51,Aplus52,Aplus55,\
+        Bplus11,Bplus13,\
+        Bplus22,\
+        Bplus31,Bplus33,\
+        Bplus41,Bplus44,\
+        Bplus51,Bplus53,Bplus55,\
+        Cplus11,Cplus14,\
+        Cplus22,\
+        Cplus33,\
+        Cplus41,Cplus44,\
+        Cplus51,Cplus54,Cplus55,\
+        Amius11,Amius22,Amius33,Amius44,Amius55,\
+        Bmius11,Bmius22,Bmius33,Bmius44,Bmius55,\
+        Cmius11,Cmius22,Cmius33,Cmius44,Cmius55\
+        )
+
         for (icube = 1; icube < ncube; icube++) {  
 
 		dx = dy = dz = cube_size[icube]/NcubeX;
@@ -3954,6 +3993,7 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
             
         }    // ---- for (icube = 1; icube < ncube; icube++) ---- //
 
+        #pragma omp barrier
 
           #pragma omp parallel for private(\
             i,j,k\
@@ -3983,7 +4023,8 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
         
 	}    // ---- for (isweep = 1; isweep < nsweep+1; isweep++) ---- //
 
-    
+
+   // #pragma omp parallel for private(i,j,k,rho,P,U,V,W,T,rhoold,Uold,Vold,Wold,VVold,Pold,Told)reduction(+:e1,e2,e3,e4,e5)
     
     for (icube = 1; icube < ncube; icube++) {  
 
@@ -4028,6 +4069,11 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
     
     
 	}
+    
+    
+   // #pragma omp barrier
+        
+
     
     for (icube = 1; icube < ncube; icube++) {  
 			for (i = n_buffer; i <= nx; i++) {
