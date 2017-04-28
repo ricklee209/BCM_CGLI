@@ -3976,6 +3976,9 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
                 
             }
 
+			
+            #pragma omp barrier
+        
 
         
 	}    // ---- for (isweep = 1; isweep < nsweep+1; isweep++) ---- //
@@ -3997,11 +4000,11 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
                     Pold = (U1_[icube][i][j][k][4]-0.5*rhoold*VVold)*(K-1);
 					Told = Pold/rhoold;
 
-					P = Pold + U1p2[icube][i][j][k][0];
-					U = Uold + U1p2[icube][i][j][k][1];
-					V = Vold + U1p2[icube][i][j][k][2];
-					W = Wold + U1p2[icube][i][j][k][3];
-					T = Told + U1p2[icube][i][j][k][4];
+					P = Pold + U1p1[icube][i][j][k][0];
+					U = Uold + U1p1[icube][i][j][k][1];
+					V = Vold + U1p1[icube][i][j][k][2];
+					W = Wold + U1p1[icube][i][j][k][3];
+					T = Told + U1p1[icube][i][j][k][4];
 					rho = P/T;
 
 
