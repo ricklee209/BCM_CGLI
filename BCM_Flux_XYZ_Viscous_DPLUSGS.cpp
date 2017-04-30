@@ -4059,7 +4059,7 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
                         U1_[icube][i][j][k][1] = rho*U;
                         U1_[icube][i][j][k][2] = rho*V;
                         U1_[icube][i][j][k][3] = rho*W;
-                        U1_[icube][i][j][k][4] = P/(K-1.0)+0.5*(U*U+V*V+W*W);
+                        U1_[icube][i][j][k][4] = P/(K-1.0)+0.5*rho*(U*U+V*V+W*W);
 
 
                         e1 = e1+(P-Pold)*(P-Pold);
