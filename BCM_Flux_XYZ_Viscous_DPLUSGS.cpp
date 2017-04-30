@@ -3576,6 +3576,7 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
     
 	
         #pragma omp parallel for private(\
+		IF,\
 		dx,dy,dz,invXI,invET,invZT,\
         i,j,k,\
         rho,U,V,W,VV,P,C,T,h,H,\
@@ -3617,6 +3618,8 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
             for (i = n_buffer; i <= nx; i++) {
                 for (j = n_buffer; j <= ny; j++) {
                     for (k = n_buffer; k <= nz; k++) {
+
+						IF = FWS[icube][i][j][k];
                     
                         rho = U1_[icube][i-1][j][k][0];
                         U = U1_[icube][i-1][j][k][1]/rho;
