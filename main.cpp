@@ -49,12 +49,12 @@ int main(int argc, char **argv)
 
 	int dp_step = 10000;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 1;
-	int output_step = 2000;
-	int count = 1000000;	
+	int iteration_end_step = 20;
+	int output_step = 1;
+	int count = 1;	
 	int step;
 
-	double deltaT = 1.0e-9;
+	double deltaT = 2.0e-9;
 	double deltaTau = deltaT/200.0;
 	double e = 1.0;
 	double Th = 309.03531204896;
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 
 	int switch_IBM = 1;     // ---- 1 run IBM ---- //
 
-	int switch_output = 1;  // ---- 1 output grid file ---- //
+	int switch_output = 0;  // ---- 1 output grid file ---- //
 
 
 	int NBC,NBC_plus, NBC_minus, Ntemp, gicube, gi, gj, gk, mp_switch;
