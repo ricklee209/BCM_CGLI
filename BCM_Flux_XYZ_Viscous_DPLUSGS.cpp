@@ -4027,7 +4027,7 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 	}    // ---- for (isweep = 1; isweep < nsweep+1; isweep++) ---- //
 
 
-   // #pragma omp parallel for private(i,j,k,rho,P,U,V,W,T,rhoold,Uold,Vold,Wold,VVold,Pold,Told)reduction(+:e1,e2,e3,e4,e5)
+   #pragma omp parallel for private(IF,i,j,k,rho,P,U,V,W,T,rhoold,Uold,Vold,Wold,VVold,Pold,Told)reduction(+:e1,e2,e3,e4,e5)
     
     for (icube = 1; icube < ncube; icube++) {  
 
@@ -4035,6 +4035,8 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 			for (j = n_buffer; j < nyy; j++) {
 				for (k = n_buffer; k < nzz; k++) {
 
+                    IF = FWS[icube][i][j][k];
+                
 					/* flux parameter */
 					rhoold = U1_[icube][i][j][k][0];
                     Uold = U1_[icube][i][j][k][1]/rhoold;
@@ -4051,19 +4053,32 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 					T = Told + U1p1[icube][i][j][k][4];
 					rho = P/T;
 
+                    if (IF == IFLUID) {
 
-					U1_[icube][i][j][k][0] = rho;
-					U1_[icube][i][j][k][1] = rho*U;
-					U1_[icube][i][j][k][2] = rho*V;
-					U1_[icube][i][j][k][3] = rho*W;
-					U1_[icube][i][j][k][4] = P/(K-1.0)+0.5*(U*U+V*V+W*W);
+                        U1_[icube][i][j][k][0] = rho;
+                        U1_[icube][i][j][k][1] = rho*U;
+                        U1_[icube][i][j][k][2] = rho*V;
+                        U1_[icube][i][j][k][3] = rho*W;
+                        U1_[icube][i][j][k][4] = P/(K-1.0)+0.5*(U*U+V*V+W*W);
 
 
-					e1 = e1+(P-Pold)*(P-Pold);
-					e2 = e2+(U-Uold)*(U-Uold);
-					e3 = e3+(V-Vold)*(V-Vold);	
-					e4 = e4+(W-Wold)*(W-Wold);
-					e5 = e5+(T-Told)*(T-Told);
+                        e1 = e1+(P-Pold)*(P-Pold);
+                        e2 = e2+(U-Uold)*(U-Uold);
+                        e3 = e3+(V-Vold)*(V-Vold);	
+                        e4 = e4+(W-Wold)*(W-Wold);
+                        e5 = e5+(T-Told)*(T-Told);
+                    
+                    }
+                        
+                    else {
+                        
+                        e1 = 0.0;
+                        e2 = 0.0;
+                        e3 = 0.0;
+                        e4 = 0.0;
+                        e5 = 0.0;
+                    
+                    }
 
 
                 }
@@ -4074,7 +4089,7 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 	}
     
     
-   // #pragma omp barrier
+   #pragma omp barrier
         
 
     
