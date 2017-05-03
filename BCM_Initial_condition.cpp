@@ -121,32 +121,33 @@ void BCM_Initial_condition
 		MPI_Offset x_gcount[np], x_gdisp[np], q_gcount[np], q_gdisp[np];
 
 		istart = 0;
-		x_gdisp[0] = 0; 
-		q_gdisp[0] = 0; 
 
-		for (i = 0; i < np; i++) { 
+        x_gdisp[np-1] = 0; 
+		q_gdisp[np-1] = 0; 
 
-			icount = 0;
-			for (icube = 0; icube < MPI_Ncube; icube++) {
+		for (i = 0; i < np-1; i++) { 
 
-				if (rank_map[0][icube] == i) {
+              
+            for (icube = 1; icube <= MPI_Ncube; icube++) {
 
-					icount = icount+1;
+                if (rank_map[0][icube] == i) {
 
-				}
-			}
+                    icount = icube;
+                    break;
+                    
+                }
 
+            }
 
-			if (i < (np-1)) {
+            x_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*3;
+            q_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*5+(MPI_Offset)icount*4;
 
-				x_gdisp[i+1] = x_gdisp[i]+(MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*3;
-				q_gdisp[i+1] = q_gdisp[i]+(MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*5+(MPI_Offset)icount*4;
+                                                                                                            
+                                                                                                                                 
+            
+        }
 
-			}
-
-		}
-
-
+   
 
 		char data[100];
 
