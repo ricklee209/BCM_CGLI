@@ -42,4 +42,11 @@
 
 #define DNS 
 
+
+// ---- Wall_model : Wall model ---- //
+// ---- No_Wall_model : Wall model ---- //
+
+#define No_Wall_model
+
+
 #define Char_D 4.5e-5 
