@@ -134,7 +134,8 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
     abs3 = gYmin + lenght_absYm + 0.5*gdYmax + SML;
     abs4 = gYmax - lenght_absYp - 0.5*gdYmax - SML;
     
-	/*#pragma omp parallel for private(\
+	#pragma omp parallel for private(\
+    dx,dy,dz,xmin,ymin,\
 	i,j,k,\
 	rho,U,V,W,VV,E,P,C,\
 	beta,C_plan,\
@@ -145,7 +146,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 	yV_out_1,ySigma_out,\
 	sl1,sl2,sl3,sl4,sl5,\
 	sr1,sr2,sr3,sr4,sr5\
-	)*/
+	)
 
     for (icube = 1; icube < ncube; icube++) {  
 
@@ -294,6 +295,9 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
       }
       
       
+      
+      #pragma omp parallel for private(iicube,j,k,rho,U,V,W,VV,P)
+      
       for (icube = 1; icube <= nXbc_l; icube++) {  
 		
             iicube = Xbc_l[icube];
@@ -332,8 +336,10 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                 }
             }
         }	
+        #pragma omp barrier
         
         
+        #pragma omp parallel for private(iicube,j,k)
         for (icube = 1; icube <= nXbc_u; icube++) {  
 
             iicube = Xbc_u[icube];
@@ -358,13 +364,15 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 
         }
 
+        #pragma omp barrier        
           
+        
+        #pragma omp parallel for private(iicube,i,k)
         
         for (icube = 1; icube <= nYbc_l; icube++) {  
 
             iicube = Ybc_l[icube];
 
-    #pragma omp parallel for private(k)
                 for (i = 0; i <= nxxx; i++) {
                     for (k = 2; k <= nz; k++) {  
 
@@ -383,14 +391,18 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     }
                 }
 
-        }			
+        }		
+
+        #pragma omp barrier        
+        
+    
+    #pragma omp parallel for private(iicube,i,k)
 
         
 	for (icube = 1; icube <= nYbc_u; icube++) {  
 
 		iicube = Ybc_u[icube];
 
-#pragma omp parallel for private(k)
 		for (i = 0; i <= nxxx; i++) {
 			for (k = 2; k <= nz; k++) {  
 
@@ -411,7 +423,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 		
 	}
 
-
+    #pragma omp barrier       
 
 
 }
