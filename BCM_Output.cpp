@@ -70,31 +70,29 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 
 
 	istart = 0;
-	x_gdisp[0] = 0; 
-	q_gdisp[0] = 0; 
+	x_gdisp[np-1] = 0; 
+	q_gdisp[np-1] = 0; 
 	
-	for (i = 0; i < np; i++) { 
+	for (i = 0; i < np-1; i++) { 
 
-		icount = 0;
-		for (icube = 0; icube < MPI_Ncube; icube++) {
+		for (icube = 1; icube <= MPI_Ncube; icube++) {
 
 			if (rank_map[0][icube] == i) {
 
-				icount = icount+1;
+                icount = icube;
+				break;
+                
 			}
 
 		}
 
-		if (i < (np-1)) {
-			
-			x_gdisp[i+1] = x_gdisp[i]+(MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*3;
-			q_gdisp[i+1] = q_gdisp[i]+(MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*5+(MPI_Offset)icount*4;
+        x_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*3;
+		q_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*5+(MPI_Offset)icount*4;
 
-		}
-
-		//printf("q_gdisp == %d\t%d\t%d\t%d\t\%d\n",myid,i,istart,istart,x_gdisp[i]);
-
+        // printf("x_gdisp == %d\t%d\t%d\t\%d\n",myid,i,icube,x_gdisp[i]);
+        
 	}
+    
 	
 	
 	idest = 0;
@@ -134,22 +132,22 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 		icount = -1;
 		for (icube = 1; icube < ncube; icube++) {  
 
-			for (i = n_buffer-1; i <= nx+1; i++) {
+			for (k = n_buffer-1; k <= nz+1; k++) {
 				for (j = n_buffer-1; j <= ny+1; j++) { 
-					for (k = n_buffer-1; k <= nz+1; k++) { 
+					for (i = n_buffer-1; i <= nx+1; i++) { 
 
 						icount = icount+1;
 
-						Grid[icount] = Xcnt[icube][k];
+						Grid[icount] = Xcnt[icube][i];
 
 					}
 				}
 			}
 
 
-			for (i = n_buffer-1; i <= nx+1; i++) {
+			for (k = n_buffer-1; k <= nz+1; k++) {
 				for (j = n_buffer-1; j <= ny+1; j++) { 
-					for (k = n_buffer-1; k <= nz+1; k++) { 
+					for (i = n_buffer-1; i <= nx+1; i++) { 
 
 						icount = icount+1;
 
@@ -160,13 +158,13 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 			}
 
 
-			for (i = n_buffer-1; i <= nx+1; i++) {
+			for (k = n_buffer-1; k <= nz+1; k++) {
 				for (j = n_buffer-1; j <= ny+1; j++) { 
-					for (k = n_buffer-1; k <= nz+1; k++) { 
+					for (i = n_buffer-1; i <= nx+1; i++) { 
 
 						icount = icount+1;
 
-						Grid[icount] = Zcnt[icube][i];
+						Grid[icount] = Zcnt[icube][k];
 
 					}
 				}
@@ -241,56 +239,57 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 		icount = icount + 1;
 		Solution[icount] = 1.0;
 
-		for (i = n_buffer-1; i <= nx+1; i++) {
+		for (k = n_buffer-1; k <= nz+1; k++) {
 			for (j = n_buffer-1; j <= ny+1; j++) { 
-				for (k = n_buffer-1; k <= nz+1; k++) { 
+				for (i = n_buffer-1; i <= nx+1; i++) { 
+
 
 					icount = icount + 1;
-					Solution[icount] = U1[icube][k][j][i][0];
+					Solution[icount] = U1[icube][i][j][k][0];
 
 				}
 			}
 		}
 
-		for (i = n_buffer-1; i <= nx+1; i++) {
+		for (k = n_buffer-1; k <= nz+1; k++) {
 			for (j = n_buffer-1; j <= ny+1; j++) { 
-				for (k = n_buffer-1; k <= nz+1; k++) { 
+				for (i = n_buffer-1; i <= nx+1; i++) { 
 
 					icount = icount + 1;
-					Solution[icount] = U1[icube][k][j][i][1];
+					Solution[icount] = U1[icube][i][j][k][1];
 
 				}
 			}
 		}
 
-		for (i = n_buffer-1; i <= nx+1; i++) {
+		for (k = n_buffer-1; k <= nz+1; k++) {
 			for (j = n_buffer-1; j <= ny+1; j++) { 
-				for (k = n_buffer-1; k <= nz+1; k++) { 
+				for (i = n_buffer-1; i <= nx+1; i++) { 
 
 					icount = icount + 1;
-					Solution[icount] = U1[icube][k][j][i][2];
+					Solution[icount] = U1[icube][i][j][k][2];
 
 				}
 			}
 		}
 
-		for (i = n_buffer-1; i <= nx+1; i++) {
+		for (k = n_buffer-1; k <= nz+1; k++) {
 			for (j = n_buffer-1; j <= ny+1; j++) { 
-				for (k = n_buffer-1; k <= nz+1; k++) { 
+				for (i = n_buffer-1; i <= nx+1; i++) { 
 
 					icount = icount + 1;
-					Solution[icount] = U1[icube][k][j][i][3];
+					Solution[icount] = U1[icube][i][j][k][3];
 
 				}
 			}
 		}
 
-		for (i = n_buffer-1; i <= nx+1; i++) {
+		for (k = n_buffer-1; k <= nz+1; k++) {
 			for (j = n_buffer-1; j <= ny+1; j++) { 
-				for (k = n_buffer-1; k <= nz+1; k++) { 
+				for (i = n_buffer-1; i <= nx+1; i++) { 
 
 					icount = icount + 1;
-					Solution[icount] = U1[icube][k][j][i][4];
+					Solution[icount] = U1[icube][i][j][k][4];
 
 				}
 			}
