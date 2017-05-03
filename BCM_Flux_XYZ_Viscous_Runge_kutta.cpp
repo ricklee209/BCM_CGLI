@@ -177,7 +177,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 	double u1q,u2q,u3q,u4q,u5q;
 
 
-	double _rho,_U,_V,_W,_VV,_P,_T,_C,_H;
+	double UN_rho,UN_U,UN_V,UN_W,UN_VV,UN_P,UN_T,UN_C,UN_H;
 	double rho_,U_,V_,W_,VV_,P_,T_,C_,H_;
 	double dU1,dU2,dU3,dU4,dU5;
 	double Fav1,Fav2,Fav3,Fav4,Fav5;
@@ -305,7 +305,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 	u1_k3,u2_k3,u3_k3,u4_k3,u5_k3,\
 	uu1,uu2,uu3,uu4,uu5,\
 	u1q,u2q,u3q,u4q,u5q,\
-	_rho,_U,_V,_W,_VV,_P,_T,_C,_H,\
+	UN_rho,UN_U,UN_V,UN_W,UN_VV,UN_P,UN_T,UN_C,UN_H,\
 	rho_,U_,V_,W_,VV_,P_,T_,C_,H_,\
 	dU1,dU2,dU3,dU4,dU5,\
 	Fav1,Fav2,Fav3,Fav4,Fav5,\
@@ -771,15 +771,15 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					dU5 = MR5-ML5;
 
 					/* lefr parameter */
-					_rho = ML1;
-					_U = ML2/_rho;
-					_V = ML3/_rho;
-					_W = ML4/_rho;
-					_VV = _U*_U+_V*_V+_W*_W;
-					_P = (ML5-0.5*_rho*_VV)*(K-1);
-					_T = _P/_rho;
-					_C = K*_P/_rho;
-					_H = 0.5*_VV+_C/(K-1);
+					UN_rho = ML1;
+					UN_U = ML2/UN_rho;
+					UN_V = ML3/UN_rho;
+					UN_W = ML4/UN_rho;
+					UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
+					UN_P = (ML5-0.5*UN_rho*UN_VV)*(K-1);
+					UN_T = UN_P/UN_rho;
+					UN_C = K*UN_P/UN_rho;
+					UN_H = 0.5*UN_VV+UN_C/(K-1);
 
 					/* right parameter */
 					rho_ = MR1;
@@ -796,17 +796,17 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					#if ROE != 4
 					
-						temp5 = sqrt(_rho);
+						temp5 = sqrt(UN_rho);
 						temp6 = sqrt(rho_);
 					
 						temp4 = temp5+temp6;
 
-						rho = sqrt(_rho*rho_);
-						U = (temp5*_U+temp6*U_)/temp4;
-						V = (temp5*_V+temp6*V_)/temp4;
-						W = (temp5*_W+temp6*W_)/temp4;
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
 						VV = U*U+V*V+W*W;
-						H = (temp5*_H+temp6*H_)/temp4;
+						H = (temp5*UN_H+temp6*H_)/temp4;
 						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
 						P = rho*C/K;
 
@@ -822,15 +822,15 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						S = 0.5*sqrt(4*beta*C+W*W*(1-beta)*(1-beta));   // ---- C' ---- //
 
-						temp1 = (P_-_P)/rho/beta/C;
+						temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = temp/S*(W_-_W);
+						temp2 = temp/S*(W_-UN_W);
 
 						temp3 = 0.5*(1-beta)*W*temp/S;
 
 						deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
 
-						deltaP = temp/S*(P_-_P)+(S-fabs(W)+temp3)*rho*(W_-_W);
+						deltaP = temp/S*(P_-UN_P)+(S-fabs(W)+temp3)*rho*(W_-UN_W);
 
 					#elif ROE == 2
 					
@@ -845,9 +845,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						U_p = 0.5*(1+theda_p)*W;
 						C_p = 0.5*sqrt(4*C*theda_p+W*W*(1-theda_p)*(1-theda_p));
 
-						temp1 = (P_-_P)/rho/beta/C;
+						temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = U_p/S*(W_-_W);
+						temp2 = U_p/S*(W_-UN_W);
 
 						temp3 = 0.5*(1-beta)*W*temp/S;
 
@@ -855,7 +855,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
 
-						deltaP = U_p/S*(P_-_P)+(C_p-fabs(W)+temp4)*rho*(W_-_W);
+						deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(W)+temp4)*rho*(W_-UN_W);
 
 					#elif ROE == 3
 
@@ -869,54 +869,54 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						
 						C_p = beta*S;
 
-						temp1 = (P_-_P)/rho/C;
+						temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = W/S*beta*(W_-_W);
+						temp2 = W/S*beta*(W_-UN_W);
 
 						deltaU = (S-fabs(W))*temp1+temp2;
 
-						deltaP = W/S*(P_-_P)+(C_p-fabs(W))*rho*(W_-_W);
+						deltaP = W/S*(P_-UN_P)+(C_p-fabs(W))*rho*(W_-UN_W);
 
 					#elif ROE == 4
 
-						beta = sqrt(max(VV_/C_,_VV/_C));    // ---- theda ---- //
+						beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
 
-						temp1 = 0.5*(_U+U_)+0.5*beta*(_U-U_);
-						temp2 = 0.5*(_V+V_)+0.5*beta*(_V-V_);
-						temp3 = 0.5*(_W+W_)+0.5*beta*(_W-W_);
+						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
 
-						U_ = 0.5*(U_+_U)+0.5*beta*(U_-_U);
-						V_ = 0.5*(V_+_V)+0.5*beta*(V_-_V);
-						W_ = 0.5*(W_+_W)+0.5*beta*(W_-_W);
+						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
 
-						_U = temp1;
-						_V = temp2;
-						_W = temp3;
+						UN_U = temp1;
+						UN_V = temp2;
+						UN_W = temp3;
 
-						temp5 = sqrt(_rho);
+						temp5 = sqrt(UN_rho);
 						temp6 = sqrt(rho_);
 					
 						temp4 = temp5+temp6;
 
-						rho = sqrt(_rho*rho_);
-						U = (temp5*_U+temp6*U_)/temp4;
-						V = (temp5*_V+temp6*V_)/temp4;
-						W = (temp5*_W+temp6*W_)/temp4;
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
 						VV = U*U+V*V+W*W;
-						H = (temp5*_H+temp6*H_)/temp4;
+						H = (temp5*UN_H+temp6*H_)/temp4;
 						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
 						P = rho*C/K;
 
 
 						S = sqrt(C);
 
-						temp1 = (P_-_P)/rho/C;
+						temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = W/S*(W_-_W);
+						temp2 = W/S*(W_-UN_W);
 
 						deltaU = (S-fabs(W))*temp1+temp2;
 
-						deltaP = W/S*(P_-_P)+(S-fabs(W))*rho*(W_-_W);
+						deltaP = W/S*(P_-UN_P)+(S-fabs(W))*rho*(W_-UN_W);
 
 					#endif
 
@@ -934,13 +934,13 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					/* inviscid fluxes */
 
-					inFz1 = 0.5*((_rho*_W+rho_*W_-Ep*Fav1));
-					inFz2 = 0.5*((_rho*_U*_W+rho_*U_*W_)-Ep*Fav2);
-					inFz3 = 0.5*((_rho*_V*_W+rho_*V_*W_)-Ep*Fav3);
-					inFz4 = 0.5*((_rho*_W*_W+_P+rho_*W_*W_+P_)-Ep*Fav4);
-					inFz5 = 0.5*((_W*(3.5*_P+0.5*_rho*_VV)+W_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
+					inFz1 = 0.5*((UN_rho*UN_W+rho_*W_-Ep*Fav1));
+					inFz2 = 0.5*((UN_rho*UN_U*UN_W+rho_*U_*W_)-Ep*Fav2);
+					inFz3 = 0.5*((UN_rho*UN_V*UN_W+rho_*V_*W_)-Ep*Fav3);
+					inFz4 = 0.5*((UN_rho*UN_W*UN_W+UN_P+rho_*W_*W_+P_)-Ep*Fav4);
+					inFz5 = 0.5*((UN_W*(3.5*UN_P+0.5*UN_rho*UN_VV)+W_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
-					dPz = 0.5*(_P+P_);
+					dPz = 0.5*(UN_P+P_);
 					/* ----------- Backward ----------- */
 					/* -------------------------------- */
 
@@ -960,15 +960,15 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					dU5 = MR5i-ML5i;
 
 					/* lefr parameter */
-					_rho = ML1i;
-					_U = ML2i/_rho;
-					_V = ML3i/_rho;
-					_W = ML4i/_rho;
-					_VV = _U*_U+_V*_V+_W*_W;
-					_P = (ML5i-0.5*_rho*_VV)*(K-1);
-					_T = _P/_rho;
-					_C = K*_P/_rho;
-					_H = 0.5*_VV+_C/(K-1);
+					UN_rho = ML1i;
+					UN_U = ML2i/UN_rho;
+					UN_V = ML3i/UN_rho;
+					UN_W = ML4i/UN_rho;
+					UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
+					UN_P = (ML5i-0.5*UN_rho*UN_VV)*(K-1);
+					UN_T = UN_P/UN_rho;
+					UN_C = K*UN_P/UN_rho;
+					UN_H = 0.5*UN_VV+UN_C/(K-1);
 
 					/* right parameter */
 					rho_ = MR1i;
@@ -987,16 +987,16 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					#if ROE != 4 
 
 					
-						temp5 = sqrt(_rho);
+						temp5 = sqrt(UN_rho);
 						temp6 = sqrt(rho_);
 						temp4 = temp5+temp6;
 
-						rho = sqrt(_rho*rho_);
-						U = (temp5*_U+temp6*U_)/temp4;
-						V = (temp5*_V+temp6*V_)/temp4;
-						W = (temp5*_W+temp6*W_)/temp4;
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
 						VV = U*U+V*V+W*W;
-						H = (temp5*_H+temp6*H_)/temp4;
+						H = (temp5*UN_H+temp6*H_)/temp4;
 						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
 						P = rho*C/K;
 
@@ -1015,15 +1015,15 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						S = 0.5*sqrt(4*beta*C+W*W*(1-beta)*(1-beta));   // ---- C' ---- //
 
 
-						temp1 = (P_-_P)/rho/beta/C;
+						temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = temp/S*(W_-_W);
+						temp2 = temp/S*(W_-UN_W);
 
 						temp3 = 0.5*(1-beta)*W*temp/S;
 
 						deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
 
-						deltaP = temp/S*(P_-_P)+(S-fabs(W)+temp3)*rho*(W_-_W);
+						deltaP = temp/S*(P_-UN_P)+(S-fabs(W)+temp3)*rho*(W_-UN_W);
 
 					#elif ROE == 2
 
@@ -1039,9 +1039,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						U_p = 0.5*(1+theda_p)*W;
 						C_p = 0.5*sqrt(4*C*theda_p+W*W*(1-theda_p)*(1-theda_p));
 
-						temp1 = (P_-_P)/rho/beta/C;
+						temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = U_p/S*(W_-_W);
+						temp2 = U_p/S*(W_-UN_W);
 
 						temp3 = 0.5*(1-beta)*W*temp/S;
 
@@ -1049,7 +1049,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
 
-						deltaP = U_p/S*(P_-_P)+(C_p-fabs(W)+temp4)*rho*(W_-_W);
+						deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(W)+temp4)*rho*(W_-UN_W);
 					
 					#elif ROE == 3
 
@@ -1063,54 +1063,54 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						
 						C_p = beta*S;
 
-						temp1 = (P_-_P)/rho/C;
+						temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = W/S*beta*(W_-_W);
+						temp2 = W/S*beta*(W_-UN_W);
 
 						deltaU = (S-fabs(W))*temp1+temp2;
 
-						deltaP = W/S*(P_-_P)+(C_p-fabs(W))*rho*(W_-_W);
+						deltaP = W/S*(P_-UN_P)+(C_p-fabs(W))*rho*(W_-UN_W);
 
 					#elif ROE == 4
 
-						beta = sqrt(max(VV_/C_,_VV/_C));    // ---- theda ---- //
+						beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
 
-						temp1 = 0.5*(_U+U_)+0.5*beta*(_U-U_);
-						temp2 = 0.5*(_V+V_)+0.5*beta*(_V-V_);
-						temp3 = 0.5*(_W+W_)+0.5*beta*(_W-W_);
+						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
 
-						U_ = 0.5*(U_+_U)+0.5*beta*(U_-_U);
-						V_ = 0.5*(V_+_V)+0.5*beta*(V_-_V);
-						W_ = 0.5*(W_+_W)+0.5*beta*(W_-_W);
+						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
 
-						_U = temp1;
-						_V = temp2;
-						_W = temp3;
+						UN_U = temp1;
+						UN_V = temp2;
+						UN_W = temp3;
 
-						temp5 = sqrt(_rho);
+						temp5 = sqrt(UN_rho);
 						temp6 = sqrt(rho_);
 					
 						temp4 = temp5+temp6;
 
-						rho = sqrt(_rho*rho_);
-						U = (temp5*_U+temp6*U_)/temp4;
-						V = (temp5*_V+temp6*V_)/temp4;
-						W = (temp5*_W+temp6*W_)/temp4;
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
 						VV = U*U+V*V+W*W;
-						H = (temp5*_H+temp6*H_)/temp4;
+						H = (temp5*UN_H+temp6*H_)/temp4;
 						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
 						P = rho*C/K;
 
 
 						S = sqrt(C);
 
-						temp1 = (P_-_P)/rho/C;
+						temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = W/S*(W_-_W);
+						temp2 = W/S*(W_-UN_W);
 
 						deltaU = (S-fabs(W))*temp1+temp2;
 
-						deltaP = W/S*(P_-_P)+(S-fabs(W))*rho*(W_-_W);
+						deltaP = W/S*(P_-UN_P)+(S-fabs(W))*rho*(W_-UN_W);
 
 
 					#endif
@@ -1126,14 +1126,14 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					/* inviscid fluxes */
 
-					inFz1i = 0.5*((_rho*_W+rho_*W_-Ep*Fav1));
-					inFz2i = 0.5*((_rho*_U*_W+rho_*U_*W_)-Ep*Fav2);
-					inFz3i = 0.5*((_rho*_V*_W+rho_*V_*W_)-Ep*Fav3);
-					inFz4i = 0.5*((_rho*_W*_W+_P+rho_*W_*W_+P_)-Ep*Fav4);
-					inFz5i = 0.5*((_W*(3.5*_P+0.5*_rho*_VV)+W_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
+					inFz1i = 0.5*((UN_rho*UN_W+rho_*W_-Ep*Fav1));
+					inFz2i = 0.5*((UN_rho*UN_U*UN_W+rho_*U_*W_)-Ep*Fav2);
+					inFz3i = 0.5*((UN_rho*UN_V*UN_W+rho_*V_*W_)-Ep*Fav3);
+					inFz4i = 0.5*((UN_rho*UN_W*UN_W+UN_P+rho_*W_*W_+P_)-Ep*Fav4);
+					inFz5i = 0.5*((UN_W*(3.5*UN_P+0.5*UN_rho*UN_VV)+W_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
 
-					dPzi = 0.5*(_P+P_);
+					dPzi = 0.5*(UN_P+P_);
 					/* ------------ Forward ------------ */
 					/* --------------------------------- */
 
@@ -1522,15 +1522,15 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					dU5 = MR5-ML5;
 
 					/* lefr parameter */
-					_rho = ML1;
-					_U = ML2/_rho;
-					_V = ML3/_rho;
-					_W = ML4/_rho;
-					_VV = _U*_U+_V*_V+_W*_W;
-					_P = (ML5-0.5*_rho*_VV)*(K-1);
-					_T = _P/_rho;
-					_C = K*_P/_rho;
-					_H = 0.5*_VV+_C/(K-1);
+					UN_rho = ML1;
+					UN_U = ML2/UN_rho;
+					UN_V = ML3/UN_rho;
+					UN_W = ML4/UN_rho;
+					UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
+					UN_P = (ML5-0.5*UN_rho*UN_VV)*(K-1);
+					UN_T = UN_P/UN_rho;
+					UN_C = K*UN_P/UN_rho;
+					UN_H = 0.5*UN_VV+UN_C/(K-1);
 
 					/* right parameter */
 					rho_ = MR1;
@@ -1547,17 +1547,17 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					#if ROE != 4 
 
-						temp5 = sqrt(_rho);
+						temp5 = sqrt(UN_rho);
 						temp6 = sqrt(rho_);
 					
 						temp4 = temp5+temp6;
 
-						rho = sqrt(_rho*rho_);
-						U = (temp5*_U+temp6*U_)/temp4;
-						V = (temp5*_V+temp6*V_)/temp4;
-						W = (temp5*_W+temp6*W_)/temp4;
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
 						VV = U*U+V*V+W*W;
-						H = (temp5*_H+temp6*H_)/temp4;
+						H = (temp5*UN_H+temp6*H_)/temp4;
 						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
 						P = rho*C/K;
 
@@ -1574,9 +1574,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
 
-						temp1 = (P_-_P)/rho/beta/C;
+						temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = temp/S*(U_-_U);
+						temp2 = temp/S*(U_-UN_U);
 
 						temp3 = 0.5*(1-beta)*U*temp/S;
 
@@ -1584,7 +1584,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
 
-						deltaP = temp/S*(P_-_P)+(S-fabs(U)+temp3)*rho*(U_-_U);
+						deltaP = temp/S*(P_-UN_P)+(S-fabs(U)+temp3)*rho*(U_-UN_U);
 
 					
 					#elif ROE == 2
@@ -1600,9 +1600,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						U_p = 0.5*(1+theda_p)*U;
 						C_p = 0.5*sqrt(4*C*theda_p+U*U*(1-theda_p)*(1-theda_p));
 
-						temp1 = (P_-_P)/rho/beta/C;
+						temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = U_p/S*(U_-_U);
+						temp2 = U_p/S*(U_-UN_U);
 
 						temp3 = 0.5*(1-beta)*U*temp/S;
 
@@ -1612,7 +1612,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
 
-						deltaP = U_p/S*(P_-_P)+(C_p-fabs(U)+temp4)*rho*(U_-_U);
+						deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(U)+temp4)*rho*(U_-UN_U);
 
 				
 					#elif ROE == 3
@@ -1627,55 +1627,55 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						
 						C_p = beta*S;
 
-						temp1 = (P_-_P)/rho/C;
+						temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = U/S*beta*(U_-_U);
+						temp2 = U/S*beta*(U_-UN_U);
 
 						deltaU = (S-fabs(U))*temp1+temp2;
 
-						deltaP = U/S*(P_-_P)+(C_p-fabs(U))*rho*(U_-_U);
+						deltaP = U/S*(P_-UN_P)+(C_p-fabs(U))*rho*(U_-UN_U);
 
 					#elif ROE == 4
 
 						
-						beta = sqrt(max(VV_/C_,_VV/_C));    // ---- theda ---- //
+						beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
 
-						temp1 = 0.5*(_U+U_)+0.5*beta*(_U-U_);
-						temp2 = 0.5*(_V+V_)+0.5*beta*(_V-V_);
-						temp3 = 0.5*(_W+W_)+0.5*beta*(_W-W_);
+						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
 
-						U_ = 0.5*(U_+_U)+0.5*beta*(U_-_U);
-						V_ = 0.5*(V_+_V)+0.5*beta*(V_-_V);
-						W_ = 0.5*(W_+_W)+0.5*beta*(W_-_W);
+						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
 
-						_U = temp1;
-						_V = temp2;
-						_W = temp3;
+						UN_U = temp1;
+						UN_V = temp2;
+						UN_W = temp3;
 
-						temp5 = sqrt(_rho);
+						temp5 = sqrt(UN_rho);
 						temp6 = sqrt(rho_);
 					
 						temp4 = temp5+temp6;
 
-						rho = sqrt(_rho*rho_);
-						U = (temp5*_U+temp6*U_)/temp4;
-						V = (temp5*_V+temp6*V_)/temp4;
-						W = (temp5*_W+temp6*W_)/temp4;
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
 						VV = U*U+V*V+W*W;
-						H = (temp5*_H+temp6*H_)/temp4;
+						H = (temp5*UN_H+temp6*H_)/temp4;
 						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
 						P = rho*C/K;
 
 
 						S = sqrt(C);
 
-						temp1 = (P_-_P)/rho/C;
+						temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = U/S*(U_-_U);
+						temp2 = U/S*(U_-UN_U);
 
 						deltaU = (S-fabs(U))*temp1+temp2;
 
-						deltaP = U/S*(P_-_P)+(S-fabs(U))*rho*(U_-_U);
+						deltaP = U/S*(P_-UN_P)+(S-fabs(U))*rho*(U_-UN_U);
 
 					#endif
 
@@ -1687,14 +1687,14 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
 					
 					/* inviscid fluxes */
-					inFx1 = 0.5*((_rho*_U+rho_*U_)-Ep*Fav1);
-					inFx2 = 0.5*((_rho*_U*_U+_P+rho_*U_*U_+P_)-Ep*Fav2);
-					inFx3 = 0.5*((_rho*_V*_U+rho_*V_*U_)-Ep*Fav3);
-					inFx4 = 0.5*((_rho*_W*_U+rho_*W_*U_)-Ep*Fav4);
-					inFx5 = 0.5*((_U*(3.5*_P+0.5*_rho*_VV)+U_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
+					inFx1 = 0.5*((UN_rho*UN_U+rho_*U_)-Ep*Fav1);
+					inFx2 = 0.5*((UN_rho*UN_U*UN_U+UN_P+rho_*U_*U_+P_)-Ep*Fav2);
+					inFx3 = 0.5*((UN_rho*UN_V*UN_U+rho_*V_*U_)-Ep*Fav3);
+					inFx4 = 0.5*((UN_rho*UN_W*UN_U+rho_*W_*U_)-Ep*Fav4);
+					inFx5 = 0.5*((UN_U*(3.5*UN_P+0.5*UN_rho*UN_VV)+U_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
 					
-					dPx = 0.5*(_P+P_);
+					dPx = 0.5*(UN_P+P_);
 					/* ----------- Backward ----------- */
 					/* -------------------------------- */
 
@@ -1714,15 +1714,15 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					dU5 = MR5i-ML5i;
 
 					/* lefr parameter */
-					_rho = ML1i;
-					_U = ML2i/_rho;
-					_V = ML3i/_rho;
-					_W = ML4i/_rho;
-					_VV = _U*_U+_V*_V+_W*_W;
-					_P = (ML5i-0.5*_rho*_VV)*(K-1);
-					_T = _P/_rho;
-					_C = K*_P/_rho;
-					_H = 0.5*_VV+_C/(K-1);
+					UN_rho = ML1i;
+					UN_U = ML2i/UN_rho;
+					UN_V = ML3i/UN_rho;
+					UN_W = ML4i/UN_rho;
+					UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
+					UN_P = (ML5i-0.5*UN_rho*UN_VV)*(K-1);
+					UN_T = UN_P/UN_rho;
+					UN_C = K*UN_P/UN_rho;
+					UN_H = 0.5*UN_VV+UN_C/(K-1);
 
 					/* right parameter */
 					rho_ = MR1i;
@@ -1739,17 +1739,17 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					
 					#if ROE != 4
 
-						temp5 = sqrt(_rho);
+						temp5 = sqrt(UN_rho);
 						temp6 = sqrt(rho_);
 					
 						temp4 = temp5+temp6;
 
-						rho = sqrt(_rho*rho_);
-						U = (temp5*_U+temp6*U_)/temp4;
-						V = (temp5*_V+temp6*V_)/temp4;
-						W = (temp5*_W+temp6*W_)/temp4;
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
 						VV = U*U+V*V+W*W;
-						H = (temp5*_H+temp6*H_)/temp4;
+						H = (temp5*UN_H+temp6*H_)/temp4;
 						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
 						P = rho*C/K;
 
@@ -1764,15 +1764,15 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						temp = 0.5*(1+beta)*U;    // ---- U' ---- //
 						S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
 
-						temp1 = (P_-_P)/rho/beta/C;
+						temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = temp/S*(U_-_U);
+						temp2 = temp/S*(U_-UN_U);
 
 						temp3 = 0.5*(1-beta)*U*temp/S;
 
 						deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
 
-						deltaP = temp/S*(P_-_P)+(S-fabs(U)+temp3)*rho*(U_-_U);
+						deltaP = temp/S*(P_-UN_P)+(S-fabs(U)+temp3)*rho*(U_-UN_U);
 
 					#elif ROE == 2
 						
@@ -1790,9 +1790,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						U_p = 0.5*(1+theda_p)*U;
 						C_p = 0.5*sqrt(4*C*theda_p+U*U*(1-theda_p)*(1-theda_p));
 
-						temp1 = (P_-_P)/rho/beta/C;
+						temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = U_p/S*(U_-_U);
+						temp2 = U_p/S*(U_-UN_U);
 
 						temp3 = 0.5*(1-beta)*U*temp/S;
 
@@ -1802,7 +1802,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
 
-						deltaP = U_p/S*(P_-_P)+(C_p-fabs(U)+temp4)*rho*(U_-_U);
+						deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(U)+temp4)*rho*(U_-UN_U);
 
 					#elif ROE == 3
 
@@ -1816,54 +1816,54 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						
 						C_p = beta*S;
 
-						temp1 = (P_-_P)/rho/C;
+						temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = U/S*beta*(U_-_U);
+						temp2 = U/S*beta*(U_-UN_U);
 
 						deltaU = (S-fabs(U))*temp1+temp2;
 
-						deltaP = U/S*(P_-_P)+(C_p-fabs(U))*rho*(U_-_U);
+						deltaP = U/S*(P_-UN_P)+(C_p-fabs(U))*rho*(U_-UN_U);
 						
 					#elif ROE == 4
 
 						
-						beta = sqrt(max(VV_/C_,_VV/_C));    // ---- theda ---- //
+						beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
 
-						temp1 = 0.5*(_U+U_)+0.5*beta*(_U-U_);
-						temp2 = 0.5*(_V+V_)+0.5*beta*(_V-V_);
-						temp3 = 0.5*(_W+W_)+0.5*beta*(_W-W_);
+						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
 
-						U_ = 0.5*(U_+_U)+0.5*beta*(U_-_U);
-						V_ = 0.5*(V_+_V)+0.5*beta*(V_-_V);
-						W_ = 0.5*(W_+_W)+0.5*beta*(W_-_W);
+						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
 
-						_U = temp1;
-						_V = temp2;
-						_W = temp3;
+						UN_U = temp1;
+						UN_V = temp2;
+						UN_W = temp3;
 
-						temp5 = sqrt(_rho);
+						temp5 = sqrt(UN_rho);
 						temp6 = sqrt(rho_);
 					
 						temp4 = temp5+temp6;
 
-						rho = sqrt(_rho*rho_);
-						U = (temp5*_U+temp6*U_)/temp4;
-						V = (temp5*_V+temp6*V_)/temp4;
-						W = (temp5*_W+temp6*W_)/temp4;
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
 						VV = U*U+V*V+W*W;
-						H = (temp5*_H+temp6*H_)/temp4;
+						H = (temp5*UN_H+temp6*H_)/temp4;
 						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
 						P = rho*C/K;
 
 						S = sqrt(C);
 
-						temp1 = (P_-_P)/rho/C;
+						temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = U/S*(U_-_U);
+						temp2 = U/S*(U_-UN_U);
 
 						deltaU = (S-fabs(U))*temp1+temp2;
 
-						deltaP = U/S*(P_-_P)+(S-fabs(U))*rho*(U_-_U);
+						deltaP = U/S*(P_-UN_P)+(S-fabs(U))*rho*(U_-UN_U);
 
 					#endif
 
@@ -1877,14 +1877,14 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 					/* inviscid fluxes */
-					inFx1i = 0.5*((_rho*_U+rho_*U_)-Ep*Fav1);
-					inFx2i = 0.5*((_rho*_U*_U+_P+rho_*U_*U_+P_)-Ep*Fav2);
-					inFx3i = 0.5*((_rho*_V*_U+rho_*V_*U_)-Ep*Fav3);
-					inFx4i = 0.5*((_rho*_W*_U+rho_*W_*U_)-Ep*Fav4);
-					inFx5i = 0.5*((_U*(3.5*_P+0.5*_rho*_VV)+U_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
+					inFx1i = 0.5*((UN_rho*UN_U+rho_*U_)-Ep*Fav1);
+					inFx2i = 0.5*((UN_rho*UN_U*UN_U+UN_P+rho_*U_*U_+P_)-Ep*Fav2);
+					inFx3i = 0.5*((UN_rho*UN_V*UN_U+rho_*V_*U_)-Ep*Fav3);
+					inFx4i = 0.5*((UN_rho*UN_W*UN_U+rho_*W_*U_)-Ep*Fav4);
+					inFx5i = 0.5*((UN_U*(3.5*UN_P+0.5*UN_rho*UN_VV)+U_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
 					
-					dPxi = 0.5*(_P+P_);
+					dPxi = 0.5*(UN_P+P_);
 					/* ------------ Forward ------------ */
 					/* --------------------------------- */
 
@@ -2272,15 +2272,15 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					dU5 = MR5-ML5;
 
 					/* lefr parameter */
-					_rho = ML1;
-					_U = ML2/_rho;
-					_V = ML3/_rho;
-					_W = ML4/_rho;
-					_VV = _U*_U+_V*_V+_W*_W;
-					_P = (ML5-0.5*_rho*_VV)*(K-1);
-					_T = _P/_rho;
-					_C = K*_P/_rho;
-					_H = 0.5*_VV+_C/(K-1);
+					UN_rho = ML1;
+					UN_U = ML2/UN_rho;
+					UN_V = ML3/UN_rho;
+					UN_W = ML4/UN_rho;
+					UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
+					UN_P = (ML5-0.5*UN_rho*UN_VV)*(K-1);
+					UN_T = UN_P/UN_rho;
+					UN_C = K*UN_P/UN_rho;
+					UN_H = 0.5*UN_VV+UN_C/(K-1);
 
 					/* right parameter */
 					rho_ = MR1;
@@ -2297,17 +2297,17 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					#if ROE != 4
 
-						temp5 = sqrt(_rho);
+						temp5 = sqrt(UN_rho);
 						temp6 = sqrt(rho_);
 					
 						temp4 = temp5+temp6;
 
-						rho = sqrt(_rho*rho_);
-						U = (temp5*_U+temp6*U_)/temp4;
-						V = (temp5*_V+temp6*V_)/temp4;
-						W = (temp5*_W+temp6*W_)/temp4;
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
 						VV = U*U+V*V+W*W;
-						H = (temp5*_H+temp6*H_)/temp4;
+						H = (temp5*UN_H+temp6*H_)/temp4;
 						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
 						P = rho*C/K;
 
@@ -2321,15 +2321,15 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						temp = 0.5*(1+beta)*V;    // ---- U' ---- //
 						S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
 
-						temp1 = (P_-_P)/rho/beta/C;
+						temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = temp/S*(V_-_V);
+						temp2 = temp/S*(V_-UN_V);
 
 						temp3 = 0.5*(1-beta)*V*temp/S;
 
 						deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
 
-						deltaP = temp/S*(P_-_P)+(S-fabs(V)+temp3)*rho*(V_-_V);
+						deltaP = temp/S*(P_-UN_P)+(S-fabs(V)+temp3)*rho*(V_-UN_V);
 
 					#elif ROE == 2
 						
@@ -2342,9 +2342,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						U_p = 0.5*(1+theda_p)*V;
 						C_p = 0.5*sqrt(4*C*theda_p+V*V*(1-theda_p)*(1-theda_p));
 
-						temp1 = (P_-_P)/rho/beta/C;
+						temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = U_p/S*(V_-_V);
+						temp2 = U_p/S*(V_-UN_V);
 
 						temp3 = 0.5*(1-beta)*V*temp/S;
 
@@ -2355,7 +2355,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
 
 
-						deltaP = U_p/S*(P_-_P)+(C_p-fabs(V)+temp4)*rho*(V_-_V);
+						deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(V)+temp4)*rho*(V_-UN_V);
 
 					#elif ROE == 3
 
@@ -2369,54 +2369,54 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						
 						C_p = beta*S;
 
-						temp1 = (P_-_P)/rho/C;
+						temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = V/S*beta*(V_-_V);
+						temp2 = V/S*beta*(V_-UN_V);
 
 						deltaU = (S-fabs(V))*temp1+temp2;
 
-						deltaP = V/S*(P_-_P)+(C_p-fabs(V))*rho*(V_-_V);
+						deltaP = V/S*(P_-UN_P)+(C_p-fabs(V))*rho*(V_-UN_V);
 
 					#elif ROE == 4
 					
 						
-						beta = sqrt(max(VV_/C_,_VV/_C));    // ---- theda ---- //
+						beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
 
-						temp1 = 0.5*(_U+U_)+0.5*beta*(_U-U_);
-						temp2 = 0.5*(_V+V_)+0.5*beta*(_V-V_);
-						temp3 = 0.5*(_W+W_)+0.5*beta*(_W-W_);
+						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
 
-						U_ = 0.5*(U_+_U)+0.5*beta*(U_-_U);
-						V_ = 0.5*(V_+_V)+0.5*beta*(V_-_V);
-						W_ = 0.5*(W_+_W)+0.5*beta*(W_-_W);
+						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
 
-						_U = temp1;
-						_V = temp2;
-						_W = temp3;
+						UN_U = temp1;
+						UN_V = temp2;
+						UN_W = temp3;
 
-						temp5 = sqrt(_rho);
+						temp5 = sqrt(UN_rho);
 						temp6 = sqrt(rho_);
 					
 						temp4 = temp5+temp6;
 
-						rho = sqrt(_rho*rho_);
-						U = (temp5*_U+temp6*U_)/temp4;
-						V = (temp5*_V+temp6*V_)/temp4;
-						W = (temp5*_W+temp6*W_)/temp4;
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
 						VV = U*U+V*V+W*W;
-						H = (temp5*_H+temp6*H_)/temp4;
+						H = (temp5*UN_H+temp6*H_)/temp4;
 						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
 						P = rho*C/K;
 
 						S = sqrt(C);
 
-						temp1 = (P_-_P)/rho/C;
+						temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = V/S*(V_-_V);
+						temp2 = V/S*(V_-UN_V);
 
 						deltaU = (S-fabs(V))*temp1+temp2;
 
-						deltaP = V/S*(P_-_P)+(S-fabs(V))*rho*(V_-_V);
+						deltaP = V/S*(P_-UN_P)+(S-fabs(V))*rho*(V_-UN_V);
 
 					#endif
 
@@ -2428,13 +2428,13 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
 					
 					/* inviscid fluxes */
-					inFy1 = 0.5*((_rho*_V+rho_*V_-Ep*Fav1));
-					inFy2 = 0.5*((_rho*_U*_V+rho_*U_*V_)-Ep*Fav2);
-					inFy3 = 0.5*((_rho*_V*_V+_P+rho_*V_*V_+P_)-Ep*Fav3);
-					inFy4 = 0.5*((_rho*_W*_V+rho_*W_*V_)-Ep*Fav4);
-					inFy5 = 0.5*((_V*(3.5*_P+0.5*_rho*_VV)+V_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
+					inFy1 = 0.5*((UN_rho*UN_V+rho_*V_-Ep*Fav1));
+					inFy2 = 0.5*((UN_rho*UN_U*UN_V+rho_*U_*V_)-Ep*Fav2);
+					inFy3 = 0.5*((UN_rho*UN_V*UN_V+UN_P+rho_*V_*V_+P_)-Ep*Fav3);
+					inFy4 = 0.5*((UN_rho*UN_W*UN_V+rho_*W_*V_)-Ep*Fav4);
+					inFy5 = 0.5*((UN_V*(3.5*UN_P+0.5*UN_rho*UN_VV)+V_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
-					dPy = 0.5*(_P+P_);
+					dPy = 0.5*(UN_P+P_);
 
 
 					/* ----------- Backward ----------- */
@@ -2452,15 +2452,15 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					dU5 = MR5i-ML5i;
 
 					/* lefr parameter */
-					_rho = ML1i;
-					_U = ML2i/_rho;
-					_V = ML3i/_rho;
-					_W = ML4i/_rho;
-					_VV = _U*_U+_V*_V+_W*_W;
-					_P = (ML5i-0.5*_rho*_VV)*(K-1);
-					_T = _P/_rho;
-					_C = K*_P/_rho;
-					_H = 0.5*_VV+_C/(K-1);
+					UN_rho = ML1i;
+					UN_U = ML2i/UN_rho;
+					UN_V = ML3i/UN_rho;
+					UN_W = ML4i/UN_rho;
+					UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
+					UN_P = (ML5i-0.5*UN_rho*UN_VV)*(K-1);
+					UN_T = UN_P/UN_rho;
+					UN_C = K*UN_P/UN_rho;
+					UN_H = 0.5*UN_VV+UN_C/(K-1);
 
 					/* right parameter */
 					rho_ = MR1i;
@@ -2477,17 +2477,17 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 					#if ROE != 4
 
-						temp5 = sqrt(_rho);
+						temp5 = sqrt(UN_rho);
 						temp6 = sqrt(rho_);
 					
 						temp4 = temp5+temp6;
 
-						rho = sqrt(_rho*rho_);
-						U = (temp5*_U+temp6*U_)/temp4;
-						V = (temp5*_V+temp6*V_)/temp4;
-						W = (temp5*_W+temp6*W_)/temp4;
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
 						VV = U*U+V*V+W*W;
-						H = (temp5*_H+temp6*H_)/temp4;
+						H = (temp5*UN_H+temp6*H_)/temp4;
 						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
 						P = rho*C/K;
 
@@ -2502,9 +2502,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						temp = 0.5*(1+beta)*V;    // ---- U' ---- //
 						S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
 
-						temp1 = (P_-_P)/rho/beta/C;
+						temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = temp/S*(V_-_V);
+						temp2 = temp/S*(V_-UN_V);
 
 						temp3 = 0.5*(1-beta)*V*temp/S;
 
@@ -2512,7 +2512,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
 
-						deltaP = temp/S*(P_-_P)+(S-fabs(V)+temp3)*rho*(V_-_V);
+						deltaP = temp/S*(P_-UN_P)+(S-fabs(V)+temp3)*rho*(V_-UN_V);
 
 					#elif ROE == 2
 					
@@ -2524,9 +2524,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						U_p = 0.5*(1+theda_p)*V;
 						C_p = 0.5*sqrt(4*C*theda_p+V*V*(1-theda_p)*(1-theda_p));
 
-						temp1 = (P_-_P)/rho/beta/C;
+						temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = U_p/S*(V_-_V);
+						temp2 = U_p/S*(V_-UN_V);
 
 						temp3 = 0.5*(1-beta)*V*temp/S;
 
@@ -2537,7 +2537,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
 
 
-						deltaP = U_p/S*(P_-_P)+(C_p-fabs(V)+temp4)*rho*(V_-_V);
+						deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(V)+temp4)*rho*(V_-UN_V);
 
 					#elif ROE == 3
 
@@ -2551,53 +2551,53 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						
 						C_p = beta*S;
 
-						temp1 = (P_-_P)/rho/C;
+						temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = V/S*beta*(V_-_V);
+						temp2 = V/S*beta*(V_-UN_V);
 
 						deltaU = (S-fabs(V))*temp1+temp2;
 
-						deltaP = V/S*(P_-_P)+(C_p-fabs(V))*rho*(V_-_V);
+						deltaP = V/S*(P_-UN_P)+(C_p-fabs(V))*rho*(V_-UN_V);
 
 					#elif ROE == 4
 					
-						beta = sqrt(max(VV_/C_,_VV/_C));    // ---- theda ---- //
+						beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
 
-						temp1 = 0.5*(_U+U_)+0.5*beta*(_U-U_);
-						temp2 = 0.5*(_V+V_)+0.5*beta*(_V-V_);
-						temp3 = 0.5*(_W+W_)+0.5*beta*(_W-W_);
+						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
 
-						U_ = 0.5*(U_+_U)+0.5*beta*(U_-_U);
-						V_ = 0.5*(V_+_V)+0.5*beta*(V_-_V);
-						W_ = 0.5*(W_+_W)+0.5*beta*(W_-_W);
+						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
 
-						_U = temp1;
-						_V = temp2;
-						_W = temp3;
+						UN_U = temp1;
+						UN_V = temp2;
+						UN_W = temp3;
 
-						temp5 = sqrt(_rho);
+						temp5 = sqrt(UN_rho);
 						temp6 = sqrt(rho_);
 					
 						temp4 = temp5+temp6;
 
-						rho = sqrt(_rho*rho_);
-						U = (temp5*_U+temp6*U_)/temp4;
-						V = (temp5*_V+temp6*V_)/temp4;
-						W = (temp5*_W+temp6*W_)/temp4;
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
 						VV = U*U+V*V+W*W;
-						H = (temp5*_H+temp6*H_)/temp4;
+						H = (temp5*UN_H+temp6*H_)/temp4;
 						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
 						P = rho*C/K;
 
 						S = sqrt(C);
 
-						temp1 = (P_-_P)/rho/C;
+						temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = V/S*(V_-_V);
+						temp2 = V/S*(V_-UN_V);
 
 						deltaU = (S-fabs(V))*temp1+temp2;
 
-						deltaP = V/S*(P_-_P)+(S-fabs(V))*rho*(V_-_V);
+						deltaP = V/S*(P_-UN_P)+(S-fabs(V))*rho*(V_-UN_V);
 
 					#endif
 
@@ -2609,14 +2609,14 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
 					
 					/* inviscid fluxes */
-					inFy1i = 0.5*((_rho*_V+rho_*V_-Ep*Fav1));
-					inFy2i = 0.5*((_rho*_U*_V+rho_*U_*V_)-Ep*Fav2);
-					inFy3i = 0.5*((_rho*_V*_V+_P+rho_*V_*V_+P_)-Ep*Fav3);
-					inFy4i = 0.5*((_rho*_W*_V+rho_*W_*V_)-Ep*Fav4);
-					inFy5i = 0.5*((_V*(3.5*_P+0.5*_rho*_VV)+V_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
+					inFy1i = 0.5*((UN_rho*UN_V+rho_*V_-Ep*Fav1));
+					inFy2i = 0.5*((UN_rho*UN_U*UN_V+rho_*U_*V_)-Ep*Fav2);
+					inFy3i = 0.5*((UN_rho*UN_V*UN_V+UN_P+rho_*V_*V_+P_)-Ep*Fav3);
+					inFy4i = 0.5*((UN_rho*UN_W*UN_V+rho_*W_*V_)-Ep*Fav4);
+					inFy5i = 0.5*((UN_V*(3.5*UN_P+0.5*UN_rho*UN_VV)+V_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
 
-					dPyi = 0.5*(_P+P_);
+					dPyi = 0.5*(UN_P+P_);
 					/* ------------ Forward ------------ */
 					/* --------------------------------- */
 
