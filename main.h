@@ -537,7 +537,56 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 // ================================================================================================================//
 // ========================================= Absorbing boundary conidtion =========================================//
+void BCM_Abs_XYZ_boundary_condition
+(
+// ================================================================================ //
+int myid,
 
+int ncube,
+
+double deltaT,
+
+double deltaTau,
+
+double e,
+
+int nXbc_l,
+int nXbc_u,
+int nYbc_l,
+int nYbc_u,
+int nZbc_l,
+int nZbc_u,
+
+double gXmax,
+double gXmin,
+double gYmax,
+double gYmin,
+double gZmax,
+double gZmin,
+
+
+double gdXmax,
+double gdYmax,
+double gdZmax,
+
+double (*Xcube) = new double[Ncube],
+double (*Ycube) = new double[Ncube],
+double (*Zcube) = new double[Ncube],
+
+int (*Xbc_l) = new int[NXbc_l+1],
+int (*Xbc_u) = new int[NXbc_u+1],
+int (*Ybc_l) = new int[NYbc_l+1],
+int (*Ybc_u) = new int[NYbc_u+1],
+int (*Zbc_l) = new int[NYbc_l+1],
+int (*Zbc_u) = new int[NYbc_u+1],
+
+double (*cube_size) = new double[Ncube],
+
+double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+// ================================================================================ //
+);
 
 void BCM_Abs_XY_boundary_condition
 (
