@@ -327,6 +327,9 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     
                     // if( i == 10 && j == 10) printf("%d\t%f\t%f\n",k,zV_in_1,zV_out_1);
                     
+                    sr1 = sr2 = sr3 = sr4 = sr5 = 0.0;
+                    sl1 = sl2 = sl3 = sl4 = sl5 = 0.0;
+    
                     
                     // sl1 = xV_in_1*( rho  - U1_[icube][i-1][j][k][0])/dx + xSigma_in*(rho   - rho0); 
                     // sl2 = xV_in_1*( rho*U- U1_[icube][i-1][j][k][1])/dx + xSigma_in*(rho*U - rho0*U0);
