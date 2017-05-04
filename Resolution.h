@@ -2,7 +2,7 @@
 
 
 
-#define np 6             // ---- CPU number ---- //
+#define np 12             // ---- CPU number ---- //
 
 #define MPI_Ncube 708    // ---- How many cubes for total calculation ---- //
 
