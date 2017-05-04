@@ -185,6 +185,9 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         
                         xV_in_1 = xV_in_1*xV_in_0*C_plan;
                         
+                        xV_out_1 = 0.0;
+                        xSigma_out = 0.0;
+                        
 
 						//if( k == 10 && j == 10) {
 
@@ -201,6 +204,9 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         
                         xV_out_1 = xV_out_1*xV_out_0*C_plan;
 
+                        xV_in_1 = 0.0;
+                        xSigma_in = 0.0;
+                        
 
 						//if( k == 10 && j == 10) {
 
@@ -230,6 +236,9 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         
                         yV_in_1 = yV_in_1*yV_in_0*C_plan;
                         
+                        yV_out_1 = 0.0;
+                        ySigma_out = 0.0;
+                        
 					    
 						} 
 					else if( YY > abs4  ) {
@@ -239,6 +248,9 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         
                         yV_out_1 = yV_out_1*yV_out_0*C_plan;
                         
+                        yV_in_1 = 0.0;
+                        ySigma_in = 0.0;
+                    
                     
                     } else {
                         
