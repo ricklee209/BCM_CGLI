@@ -100,14 +100,14 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
     double XX, YY, ZZ, SML;
     
     
-    n_abs_xm = 1.0;
-    n_abs_xp = 1.0;
+    n_abs_xm = 2.0;
+    n_abs_xp = 2.0;
     
-    n_abs_ym = 1.0;
-    n_abs_yp = 1.0;
+    n_abs_ym = 2.0;
+    n_abs_yp = 2.0;
     
-    n_abs_zm = 1.0;
-    n_abs_zp = 1.0;
+    n_abs_zm = 0.2;
+    n_abs_zp = 0.2;
     
     
     xV_in_1 = 0.0;
@@ -150,9 +150,9 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
     lenght_absYm = gdYmax * (n_abs_ym*NcubeY-1.0);
     lenght_absZm = gdZmax * (n_abs_zm*NcubeZ-1.0);
     
-    lenght_absXp = gdXmax * (n_abs_xm*NcubeX-1.0);
-    lenght_absYp = gdYmax * (n_abs_ym*NcubeY-1.0);
-    lenght_absZp = gdZmax * (n_abs_zm*NcubeZ-1.0);
+    lenght_absXp = gdXmax * (n_abs_xp*NcubeX-1.0);
+    lenght_absYp = gdYmax * (n_abs_yp*NcubeY-1.0);
+    lenght_absZp = gdZmax * (n_abs_zp*NcubeZ-1.0);
     
     SML = 1.0e-8;
     
@@ -216,11 +216,12 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         
                         xV_in_1 = xV_in_1*xV_in_0*C_plan;
                         
+                        xV_out_1 = 0.0;
+                        xSigma_out = 0.0;
+                        
 
 						//if( k == 10 && j == 10) {
-
 							//printf("%d\t%f\t%f\t%f\n",i,(abs1-XX)/lenght_absXm, (abs1-XX)/dx,lenght_absXm/gdXmax);
-
 						//}
 
 
@@ -232,11 +233,12 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         
                         xV_out_1 = xV_out_1*xV_out_0*C_plan;
 
+                        xV_in_1 = 0.0;
+                        xSigma_in = 0.0;
+                        
 
 						//if( k == 10 && j == 10) {
-
 							//printf("%d\t%f\t%f\t%f\n",i,(XX-abs2)/lenght_absXp, (XX-abs2)/dx,lenght_absXp/gdXmax);
-
 						//}
 
                         
@@ -261,6 +263,9 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         
                         yV_in_1 = yV_in_1*yV_in_0*C_plan;
                         
+                        yV_out_1 = 0.0;
+                        ySigma_out = 0.0;
+                        
 					    
 						} 
 					else if( YY > abs4  ) {
@@ -270,6 +275,9 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         
                         yV_out_1 = yV_out_1*yV_out_0*C_plan;
                         
+                        yV_in_1 = 0.0;
+                        ySigma_in = 0.0;
+                    
                     
                     } else {
                         
@@ -287,20 +295,25 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     
                     if( ZZ < abs5 ) {
                         
-                        zV_in_1 = ((abs5-ZZ)/lenght_absZm)*((abs5-ZZ)/lenght_absZm)*((abs5-ZZ)/lenght_absZm);
+                        zV_in_1 = ((abs5-ZZ)/lenght_absZm);
                         zSigma_in = zV_in_1*zSigma_in_0/Char_D*20.0;
                         
                         zV_in_1 = zV_in_1*zV_in_0*C_plan;
+                        
+                        zV_out_1 = 0.0;
+                        zSigma_out = 0.0;
                         
 					    
 						} 
 					else if( ZZ > abs6  ) {
                     
-                        zV_out_1 = ((ZZ-abs4)/lenght_absZp)*((ZZ-abs6)/lenght_absZp)*((ZZ-abs6)/lenght_absZp);
+                        zV_out_1 = ((ZZ-abs6)/lenght_absZp);
                         zSigma_out = zV_out_1*zSigma_out_0/Char_D*20.0;
                         
                         zV_out_1 = zV_out_1*zV_out_0*C_plan;
                         
+                        zV_in_1 = 0.0;
+                        zSigma_in = 0.0;
                     
                     } else {
                         
@@ -312,12 +325,14 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         
                     }
                     
+                    // if( i == 10 && j == 10) printf("%d\t%f\t%f\n",k,zV_in_1,zV_out_1);
                     
-                    // sl1 = xV_in_1*( rho  - U1_[icube][i-1][j][k][0])/dx + xSigma_in*(rho   - rho0); 
-                    // sl2 = xV_in_1*( rho*U- U1_[icube][i-1][j][k][1])/dx + xSigma_in*(rho*U - rho0*U0);
-                    // sl3 = xV_in_1*( rho*V- U1_[icube][i-1][j][k][2])/dx + xSigma_in*(rho*V - rho0*V0);
-                    // sl4 = xV_in_1*( rho*W- U1_[icube][i-1][j][k][3])/dx + xSigma_in*(rho*W - rho0*W0);
-                    // sl5 = xV_in_1*( E    - U1_[icube][i-1][j][k][4])/dx + xSigma_in*(E     - E0);
+                    
+                    sl1 = xV_in_1*( rho  - U1_[icube][i-1][j][k][0])/dx + xSigma_in*(rho   - rho0); 
+                    sl2 = xV_in_1*( rho*U- U1_[icube][i-1][j][k][1])/dx + xSigma_in*(rho*U - rho0*U0);
+                    sl3 = xV_in_1*( rho*V- U1_[icube][i-1][j][k][2])/dx + xSigma_in*(rho*V - rho0*V0);
+                    sl4 = xV_in_1*( rho*W- U1_[icube][i-1][j][k][3])/dx + xSigma_in*(rho*W - rho0*W0);
+                    sl5 = xV_in_1*( E    - U1_[icube][i-1][j][k][4])/dx + xSigma_in*(E     - E0);
                     
                     
                     sl1 = sl1 + yV_in_1*( rho  - U1_[icube][i][j+1][k][0])/dy + ySigma_in*(rho   - rho0); 
