@@ -54,17 +54,17 @@ int main(int argc, char **argv)
 	int count = 1;	
 	int step;
 
-	double deltaT = 2.0e-9;
+	double deltaT = 1.0e-4;
 	double deltaTau = deltaT/200.0;
-	double e = 1.0;
+	double e = 0.02;
 	double Th = 309.03531204896;
 
 
 	int switch_initial = 0; // ---- 1 reading initial coniditon ---- //
 
-	int switch_IBM = 1;     // ---- 1 run IBM ---- //
+	int switch_IBM = 0;     // ---- 1 run IBM ---- //
 
-	int switch_output = 0;  // ---- 1 output grid file ---- //
+	int switch_output = 1;  // ---- 1 output grid file ---- //
 
 
 	int NBC,NBC_plus, NBC_minus, Ntemp, gicube, gi, gj, gk, mp_switch;
@@ -1182,18 +1182,18 @@ int main(int argc, char **argv)
     
     
     // ---- No geometry inside  ---- //
-    // for (icube = 1; icube < Ncube; icube++) {    
-// #pragma omp parallel for private(j,k)
-        // for (i = 0; i <= nxxx; i++) {
-            // for (j = 0; j <= nyyy; j++) {
-                // for (k = 0; k <= nzzz; k++) {  
+    for (icube = 1; icube < Ncube; icube++) {    
+#pragma omp parallel for private(j,k)
+        for (i = 0; i <= nxxx; i++) {
+            for (j = 0; j <= nyyy; j++) {
+                for (k = 0; k <= nzzz; k++) {  
 
-                    // FWS[icube][i][j][k] = IFLUID;
+                    FWS[icube][i][j][k] = IFLUID;
 
-                // }
-            // }
-        // }
-    // }
+                }
+            }
+        }
+    }
     // ---- No geometry inside  ---- //
 
     
@@ -1217,13 +1217,13 @@ int main(int argc, char **argv)
 											  gXmax,gXmin,gYmax,gYmin,gZmax,gZmin,gdXmax,gdYmax,gdZmax,Xcube,Ycube,Zcube,
 											  Xbc_l, Xbc_u, Ybc_l, Ybc_u,Zbc_l, Zbc_u, cube_size, U1_, Fabs);
 				
-				for (int ig = 1; ig <= 10; ig++) {
+				// for (int ig = 1; ig <= 10; ig++) {
 
-					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
+					// BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
 
-					BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
+					// BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
 					
-				}
+				// }
 
 
 				BCM_Interface(myid,Ncube, 

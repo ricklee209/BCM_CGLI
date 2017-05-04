@@ -328,11 +328,11 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     // if( i == 10 && j == 10) printf("%d\t%f\t%f\n",k,zV_in_1,zV_out_1);
                     
                     
-                    sl1 = xV_in_1*( rho  - U1_[icube][i-1][j][k][0])/dx + xSigma_in*(rho   - rho0); 
-                    sl2 = xV_in_1*( rho*U- U1_[icube][i-1][j][k][1])/dx + xSigma_in*(rho*U - rho0*U0);
-                    sl3 = xV_in_1*( rho*V- U1_[icube][i-1][j][k][2])/dx + xSigma_in*(rho*V - rho0*V0);
-                    sl4 = xV_in_1*( rho*W- U1_[icube][i-1][j][k][3])/dx + xSigma_in*(rho*W - rho0*W0);
-                    sl5 = xV_in_1*( E    - U1_[icube][i-1][j][k][4])/dx + xSigma_in*(E     - E0);
+                    // sl1 = xV_in_1*( rho  - U1_[icube][i-1][j][k][0])/dx + xSigma_in*(rho   - rho0); 
+                    // sl2 = xV_in_1*( rho*U- U1_[icube][i-1][j][k][1])/dx + xSigma_in*(rho*U - rho0*U0);
+                    // sl3 = xV_in_1*( rho*V- U1_[icube][i-1][j][k][2])/dx + xSigma_in*(rho*V - rho0*V0);
+                    // sl4 = xV_in_1*( rho*W- U1_[icube][i-1][j][k][3])/dx + xSigma_in*(rho*W - rho0*W0);
+                    // sl5 = xV_in_1*( E    - U1_[icube][i-1][j][k][4])/dx + xSigma_in*(E     - E0);
                     
                     
                     sl1 = sl1 + yV_in_1*( rho  - U1_[icube][i][j+1][k][0])/dy + ySigma_in*(rho   - rho0); 
@@ -384,48 +384,60 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
       }
       
       
+      double Th = 673.0;
+      double RR;
+      double b2 = 0.25*25.0;
       
-      #pragma omp parallel for private(iicube,j,k,rho,U,V,W,VV,P)
+      
       
       for (icube = 1; icube <= nXbc_l; icube++) {  
 		
             iicube = Xbc_l[icube];
+            
+            dx = dy = dz = cube_size[iicube]/NcubeX;
+            
+            ymin = Ycube[iicube]+0.5*dy;
+            zmin = Zcube[iicube]+0.5*dz;
 
             for (j = 2; j <= ny; j++) {
                 for (k = 2; k <= nz; k++) {  
+                
+                    YY = ymin + (j - n_buffer)*dy;
+                    ZZ = zmin + (k - n_buffer)*dz;
+                
+                    RR = sqrt(YY*YY+ZZ*ZZ);
 
                     rho = U1_[iicube][2][j][k][0];
                     U = U1_[iicube][2][j][k][1]/rho;
                     V = U1_[iicube][2][j][k][2]/rho;
                     W = U1_[iicube][2][j][k][3]/rho;
                     VV = U*U+V*V+W*W;
-                    //P = (U1_[iicube][2][j][k][4]-0.5*rho*VV)*(K-1);
+                    P = (U1_[iicube][2][j][k][4]-0.5*rho*VV)*(K-1);
 
-                    rho = rho0;
-
-                    U = Uin;
-                    V = V0;
-                    W = W0;
+                    T = 0.5*(Th-T0)*( 1-tanh( b2*(2*RR/Char_D-Char_D/(2*RR)) ) )+T0;
+                    
+                    rho = P/T/R;
                     VV = U*U+V*V+W*W;
-                    P = P0;
+                    
+                    // if(j == 9) printf("%d\t%f\n",k,T);
 
 
                     U1_[iicube][1][j][k][0] = rho;
-                    U1_[iicube][1][j][k][1] = rho*U;
-                    U1_[iicube][1][j][k][2] = rho*V;
-                    U1_[iicube][1][j][k][3] = rho*W;
+                    U1_[iicube][1][j][k][1] = -rho*U;
+                    U1_[iicube][1][j][k][2] = -rho*V;
+                    U1_[iicube][1][j][k][3] = -rho*W;
                     U1_[iicube][1][j][k][4] = P/(K-1)+0.5*rho*VV;
 
                     U1_[iicube][0][j][k][0] = rho;
-                    U1_[iicube][0][j][k][1] = rho*U;
-                    U1_[iicube][0][j][k][2] = rho*V;
-                    U1_[iicube][0][j][k][3] = rho*W;
+                    U1_[iicube][0][j][k][1] = -rho*U;
+                    U1_[iicube][0][j][k][2] = -rho*V;
+                    U1_[iicube][0][j][k][3] = -rho*W;
                     U1_[iicube][0][j][k][4] = P/(K-1)+0.5*rho*VV;
 
                 }
             }
         }	
-        #pragma omp barrier
+        
         
         
         #pragma omp parallel for private(iicube,j,k)

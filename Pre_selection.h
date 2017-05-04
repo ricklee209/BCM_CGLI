@@ -7,7 +7,7 @@
 
 // ---- TDROE=4 : Roe modified by B. Thornber ---- //
 
-#define ROE 3
+#define ROE 2
 
 
 // ---- limiter : limiter function ---- //
@@ -49,4 +49,4 @@
 #define No_Wall_model
 
 
-#define Char_D 4.5e-5 
+#define Char_D 0.1 
