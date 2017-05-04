@@ -54,9 +54,9 @@ int main(int argc, char **argv)
 	int count = 1;	
 	int step;
 
-	double deltaT = 1.0e-4;
+	double deltaT = 0.01;
 	double deltaTau = deltaT/200.0;
-	double e = 0.02;
+	double e = 0.000001;
 	double Th = 309.03531204896;
 
 
@@ -1212,11 +1212,14 @@ int main(int argc, char **argv)
 			#ifdef DPLUSGS
 
 
-
 				BCM_Abs_XYZ_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, NYbc_l, NYbc_u, NZbc_l, NZbc_u,
 											  gXmax,gXmin,gYmax,gYmin,gZmax,gZmin,gdXmax,gdYmax,gdZmax,Xcube,Ycube,Zcube,
 											  Xbc_l, Xbc_u, Ybc_l, Ybc_u,Zbc_l, Zbc_u, cube_size, U1_, Fabs);
 				
+                // BCM_Y_boundary_condition(NYbc_l, NYbc_u, Ybc_l, Ybc_u, U1_);
+				
+				BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
+
 				// for (int ig = 1; ig <= 10; ig++) {
 
 					// BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
@@ -1507,11 +1510,11 @@ int main(int argc, char **argv)
 			er[5] = er[5]/E5;
 
 
-			 //if (myid == 0) {
+			 if (myid == 0) {
 
-				 //printf("%d\t%f\t%f\t%f\t%f\t%f\n",iteration,er[1],er[2],er[3],er[4],er[5]);
+				 printf("%d\t%f\t%f\t%f\t%f\t%f\n",iteration,er[1],er[2],er[3],er[4],er[5]);
 
-			 //}
+			 }
 
 
 // ==================================================================================================================== //
@@ -1530,7 +1533,7 @@ int main(int argc, char **argv)
 					#ifdef NODT
 						printf("%d\t%4.8f\t%4.8f\t%4.8f\t%4.8f\t%4.8f\n",step,-er[6],-er[7],-er[8],er[9],er[1]);
 					#else
-						printf("%d\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\n",iteration,-er[8],-er[6],-er[7],er[1],er[2],er[3],er[4],er[5]);
+						printf("%d\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\n",step,-er[8],-er[6],-er[7],er[1],er[2],er[3],er[4],er[5]);
 					#endif
 
 				}
