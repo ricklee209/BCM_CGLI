@@ -372,6 +372,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     sr4 = sr4 + zV_out_1*( rho*W- U1_[icube][i][j][k-1][3])/dz + zSigma_out*(rho*W - rho0*W0);
                     sr5 = sr5 + zV_out_1*( E    - U1_[icube][i][j][k-1][4])/dz + zSigma_out*(E     - E0);
                     
+                    sr1 = sr2 = sr3 = sr4 = sr5 = 0.0;
                                                
                     Fabs[icube][i][j][k][0] = -sr1-sl1;
                     Fabs[icube][i][j][k][1] = -sr2-sl2;
