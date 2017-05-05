@@ -143,32 +143,27 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 		int x_gcount[np], x_gdisp[np], q_gcount[np], q_gdisp[np];
 
 		istart = 0;
-		x_gdisp[0] = 0; 
-		q_gdisp[0] = 0; 
+		x_gdisp[np-1] = 0; 
+		q_gdisp[np-1] = 0; 
+	
+		for (i = 0; i < np-1; i++) { 
 
-		for (i = 0; i < np; i++) { 
-
-			icount = 0;
-			for (icube = 0; icube < MPI_Ncube; icube++) {
+			for (icube = 1; icube <= MPI_Ncube; icube++) {
 
 				if (rank_map[0][icube] == i) {
 
-					icount = icount+1;
-					istart = rank_map[1][icube];
-
+					icount = icube;
+					break;
+                
 				}
-			}
-
-			x_gcount[i] = icount*X_size;
-			q_gcount[i] = icount*X_size*Y_size*Z_size;
-
-			if (i < (np-1)) {
-
-				q_gdisp[i+1] = q_gdisp[i]+(MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*num_variable_output;
-
 
 			}
 
+			x_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*3;
+			q_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*5+(MPI_Offset)icount*4;
+
+			// printf("x_gdisp == %d\t%d\t%d\t\%d\n",myid,i,icube,x_gdisp[i]);
+        
 		}
 
 
