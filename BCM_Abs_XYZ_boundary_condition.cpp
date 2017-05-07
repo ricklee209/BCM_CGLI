@@ -295,7 +295,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     
                     if( ZZ < abs5 ) {
                         
-                        zV_in_1 = ((abs5-ZZ)/lenght_absZm);
+                        zV_in_1 = ((abs5-ZZ)/lenght_absZm)*((abs5-ZZ)/lenght_absZm)*((abs5-ZZ)/lenght_absZm);
                         zSigma_in = zV_in_1*zSigma_in_0/Char_D*20.0;
                         
                         zV_in_1 = zV_in_1*zV_in_0*C_plan;
@@ -307,7 +307,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 						} 
 					else if( ZZ > abs6  ) {
                     
-                        zV_out_1 = ((ZZ-abs6)/lenght_absZp);
+                        zV_out_1 = ((ZZ-abs6)/lenght_absZp)*((ZZ-abs6)/lenght_absZp)*((ZZ-abs6)/lenght_absZp);
                         zSigma_out = zV_out_1*zSigma_out_0/Char_D*20.0;
                         
                         zV_out_1 = zV_out_1*zV_out_0*C_plan;
@@ -330,6 +330,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     sr1 = sr2 = sr3 = sr4 = sr5 = 0.0;
                     sl1 = sl2 = sl3 = sl4 = sl5 = 0.0;
     
+                    xSigma_in = ySigma_in = zSigma_in = 0.0;
                     
                     // sl1 = xV_in_1*( rho  - U1_[icube][i-1][j][k][0])/dx + xSigma_in*(rho   - rho0); 
                     // sl2 = xV_in_1*( rho*U- U1_[icube][i-1][j][k][1])/dx + xSigma_in*(rho*U - rho0*U0);
@@ -351,7 +352,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     sl5 = sl5 + zV_in_1*( E    - U1_[icube][i][j][k+1][4])/dz + zSigma_in*(E     - E0);
                     
                     
-                    
+                    xSigma_out = ySigma_out = zSigma_out = 0.0;
                     
                     sr1 = xV_out_1*( rho  - U1_[icube][i-1][j][k][0])/dx + xSigma_out*(rho   - rho0); 
                     sr2 = xV_out_1*( rho*U- U1_[icube][i-1][j][k][1])/dx + xSigma_out*(rho*U - rho0*U0);
@@ -372,8 +373,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     sr4 = sr4 + zV_out_1*( rho*W- U1_[icube][i][j][k-1][3])/dz + zSigma_out*(rho*W - rho0*W0);
                     sr5 = sr5 + zV_out_1*( E    - U1_[icube][i][j][k-1][4])/dz + zSigma_out*(E     - E0);
                     
-                    sr1 = sr2 = sr3 = sr4 = sr5 = 0.0;
-                                               
+                    
                     Fabs[icube][i][j][k][0] = -sr1-sl1;
                     Fabs[icube][i][j][k][1] = -sr2-sl2;
                     Fabs[icube][i][j][k][2] = -sr3-sl3;

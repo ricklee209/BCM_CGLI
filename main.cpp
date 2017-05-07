@@ -50,13 +50,13 @@ int main(int argc, char **argv)
 	int dp_step = 10000;    // ---- how many steps for periodically outputing the dp ---- //
 
 	int iteration_end_step = 20;
-	int output_step = 20;
-	int count = 1000000;	
+	int output_step = 10;
+	int count = 2000;	
 	int step;
 
-	double deltaT = 0.01;
+	double deltaT = 0.02;
 	double deltaTau = deltaT/200.0;
-	double e = 0.001;
+	double e = 0.000001;
 	double Th = 309.03531204896;
 
 
