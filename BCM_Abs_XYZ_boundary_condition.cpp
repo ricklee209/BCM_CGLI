@@ -99,6 +99,8 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
     double abs1, abs2 , abs3, abs4, abs5, abs6;
     double XX, YY, ZZ, SML;
     
+    double U1,U2,U3,U4,U5;
+    
     
     n_abs_xm = 1.0;
     n_abs_xp = 1.0;
@@ -176,7 +178,8 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 	yV_out_1,ySigma_out,\
     zV_out_1,zSigma_out,\
 	sl1,sl2,sl3,sl4,sl5,\
-	sr1,sr2,sr3,sr4,sr5\
+	sr1,sr2,sr3,sr4,sr5,\
+    U1,U2,U3,U4,U5\
 	)
 
     for (icube = 1; icube < ncube; icube++) {  
@@ -212,7 +215,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     if( XX < abs1 ) {
                     
                         xV_in_1 = ((abs1-XX)/lenght_absXm)*((abs1-XX)/lenght_absXm)*((abs1-XX)/lenght_absXm);
-                        xSigma_in = xV_in_1*xSigma_in_0/Char_D*20.0;
+                        xSigma_in = xV_in_1*xSigma_in_0/Char_D;
                         
                         xV_in_1 = xV_in_1*xV_in_0*C_plan;
                         
@@ -229,7 +232,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 					else if ( XX > abs2 ) {
 
                         xV_out_1 = ((XX-abs2)/lenght_absXp)*((XX-abs2)/lenght_absXp)*((XX-abs2)/lenght_absXp);
-                        xSigma_out = xV_out_1*xSigma_out_0/Char_D*20.0;
+                        xSigma_out = xV_out_1*xSigma_out_0/Char_D;
                         
                         xV_out_1 = xV_out_1*xV_out_0*C_plan;
 
@@ -259,7 +262,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     if( YY < abs3 ) {
                         
                         yV_in_1 = ((abs3-YY)/lenght_absYm)*((abs3-YY)/lenght_absYm)*((abs3-YY)/lenght_absYm);
-                        ySigma_in = yV_in_1*ySigma_in_0/Char_D*20.0;
+                        ySigma_in = yV_in_1*ySigma_in_0/Char_D;
                         
                         yV_in_1 = yV_in_1*yV_in_0*C_plan;
                         
@@ -271,7 +274,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 					else if( YY > abs4  ) {
                     
                         yV_out_1 = ((YY-abs4)/lenght_absYp)*((YY-abs4)/lenght_absYp)*((YY-abs4)/lenght_absYp);
-                        ySigma_out = yV_out_1*ySigma_out_0/Char_D*20.0;
+                        ySigma_out = yV_out_1*ySigma_out_0/Char_D;
                         
                         yV_out_1 = yV_out_1*yV_out_0*C_plan;
                         
@@ -296,7 +299,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     if( ZZ < abs5 ) {
                         
                         zV_in_1 = ((abs5-ZZ)/lenght_absZm)*((abs5-ZZ)/lenght_absZm)*((abs5-ZZ)/lenght_absZm);
-                        zSigma_in = zV_in_1*zSigma_in_0/Char_D*20.0;
+                        zSigma_in = zV_in_1*zSigma_in_0/Char_D;
                         
                         zV_in_1 = zV_in_1*zV_in_0*C_plan;
                         
@@ -308,7 +311,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
 					else if( ZZ > abs6  ) {
                     
                         zV_out_1 = ((ZZ-abs6)/lenght_absZp)*((ZZ-abs6)/lenght_absZp)*((ZZ-abs6)/lenght_absZp);
-                        zSigma_out = zV_out_1*zSigma_out_0/Char_D*20.0;
+                        zSigma_out = zV_out_1*zSigma_out_0/Char_D;
                         
                         zV_out_1 = zV_out_1*zV_out_0*C_plan;
                         
@@ -329,49 +332,53 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     
                     sr1 = sr2 = sr3 = sr4 = sr5 = 0.0;
                     sl1 = sl2 = sl3 = sl4 = sl5 = 0.0;
-    
-                    xSigma_in = ySigma_in = zSigma_in = 0.0;
                     
-                    // sl1 = xV_in_1*( rho  - U1_[icube][i-1][j][k][0])/dx + xSigma_in*(rho   - rho0); 
-                    // sl2 = xV_in_1*( rho*U- U1_[icube][i-1][j][k][1])/dx + xSigma_in*(rho*U - rho0*U0);
-                    // sl3 = xV_in_1*( rho*V- U1_[icube][i-1][j][k][2])/dx + xSigma_in*(rho*V - rho0*V0);
-                    // sl4 = xV_in_1*( rho*W- U1_[icube][i-1][j][k][3])/dx + xSigma_in*(rho*W - rho0*W0);
-                    // sl5 = xV_in_1*( E    - U1_[icube][i-1][j][k][4])/dx + xSigma_in*(E     - E0);
+                    U1 = rho-rho0;
+                    U2 = rho*U-rho0*U0;
+                    U3 = rho*V-rho0*V0;
+                    U4 = rho*W-rho0*W0;
+                    U5 = E-E0;
                     
                     
-                    sl1 = sl1 + yV_in_1*( rho  - U1_[icube][i][j+1][k][0])/dy + ySigma_in*(rho   - rho0); 
-                    sl2 = sl2 + yV_in_1*( rho*U- U1_[icube][i][j+1][k][1])/dy + ySigma_in*(rho*U - rho0*U0);
-                    sl3 = sl3 + yV_in_1*( rho*V- U1_[icube][i][j+1][k][2])/dy + ySigma_in*(rho*V - rho0*V0);
-                    sl4 = sl4 + yV_in_1*( rho*W- U1_[icube][i][j+1][k][3])/dy + ySigma_in*(rho*W - rho0*W0);
-                    sl5 = sl5 + yV_in_1*( E    - U1_[icube][i][j+1][k][4])/dy + ySigma_in*(E     - E0);
-                    
-                    sl1 = sl1 + zV_in_1*( rho  - U1_[icube][i][j][k+1][0])/dz + zSigma_in*(rho   - rho0); 
-                    sl2 = sl2 + zV_in_1*( rho*U- U1_[icube][i][j][k+1][1])/dz + zSigma_in*(rho*U - rho0*U0);
-                    sl3 = sl3 + zV_in_1*( rho*V- U1_[icube][i][j][k+1][2])/dz + zSigma_in*(rho*V - rho0*V0);
-                    sl4 = sl4 + zV_in_1*( rho*W- U1_[icube][i][j][k+1][3])/dz + zSigma_in*(rho*W - rho0*W0);
-                    sl5 = sl5 + zV_in_1*( E    - U1_[icube][i][j][k+1][4])/dz + zSigma_in*(E     - E0);
+                    // sl1 = xV_in_1*( rho  - U1_[icube][i-1][j][k][0])/dx + xSigma_in*U1; 
+                    // sl2 = xV_in_1*( rho*U- U1_[icube][i-1][j][k][1])/dx + xSigma_in*U2;
+                    // sl3 = xV_in_1*( rho*V- U1_[icube][i-1][j][k][2])/dx + xSigma_in*U3;
+                    // sl4 = xV_in_1*( rho*W- U1_[icube][i-1][j][k][3])/dx + xSigma_in*U4;
+                    // sl5 = xV_in_1*( E    - U1_[icube][i-1][j][k][4])/dx + xSigma_in*U5;
                     
                     
-                    xSigma_out = ySigma_out = zSigma_out = 0.0;
+                    sl1 = sl1 + yV_in_1*( rho  - U1_[icube][i][j+1][k][0])/dy + ySigma_in*U1; 
+                    sl2 = sl2 + yV_in_1*( rho*U- U1_[icube][i][j+1][k][1])/dy + ySigma_in*U2;
+                    sl3 = sl3 + yV_in_1*( rho*V- U1_[icube][i][j+1][k][2])/dy + ySigma_in*U3;
+                    sl4 = sl4 + yV_in_1*( rho*W- U1_[icube][i][j+1][k][3])/dy + ySigma_in*U4;
+                    sl5 = sl5 + yV_in_1*( E    - U1_[icube][i][j+1][k][4])/dy + ySigma_in*U5;
                     
-                    sr1 = xV_out_1*( rho  - U1_[icube][i-1][j][k][0])/dx + xSigma_out*(rho   - rho0); 
-                    sr2 = xV_out_1*( rho*U- U1_[icube][i-1][j][k][1])/dx + xSigma_out*(rho*U - rho0*U0);
-                    sr3 = xV_out_1*( rho*V- U1_[icube][i-1][j][k][2])/dx + xSigma_out*(rho*V - rho0*V0);
-                    sr4 = xV_out_1*( rho*W- U1_[icube][i-1][j][k][3])/dx + xSigma_out*(rho*W - rho0*W0);
-                    sr5 = xV_out_1*( E    - U1_[icube][i-1][j][k][4])/dx + xSigma_out*(E     - E0);
+                    sl1 = sl1 + zV_in_1*( rho  - U1_[icube][i][j][k+1][0])/dz + zSigma_in*U1; 
+                    sl2 = sl2 + zV_in_1*( rho*U- U1_[icube][i][j][k+1][1])/dz + zSigma_in*U2;
+                    sl3 = sl3 + zV_in_1*( rho*V- U1_[icube][i][j][k+1][2])/dz + zSigma_in*U3;
+                    sl4 = sl4 + zV_in_1*( rho*W- U1_[icube][i][j][k+1][3])/dz + zSigma_in*U4;
+                    sl5 = sl5 + zV_in_1*( E    - U1_[icube][i][j][k+1][4])/dz + zSigma_in*U5;
                     
                     
-                    sr1 = sr1 + yV_out_1*( rho  - U1_[icube][i][j-1][k][0])/dy + ySigma_out*(rho   - rho0); 
-                    sr2 = sr2 + yV_out_1*( rho*U- U1_[icube][i][j-1][k][1])/dy + ySigma_out*(rho*U - rho0*U0);
-                    sr3 = sr3 + yV_out_1*( rho*V- U1_[icube][i][j-1][k][2])/dy + ySigma_out*(rho*V - rho0*V0);
-                    sr4 = sr4 + yV_out_1*( rho*W- U1_[icube][i][j-1][k][3])/dy + ySigma_out*(rho*W - rho0*W0);
-                    sr5 = sr5 + yV_out_1*( E    - U1_[icube][i][j-1][k][4])/dy + ySigma_out*(E     - E0);
                     
-                    sr1 = sr1 + zV_out_1*( rho  - U1_[icube][i][j][k-1][0])/dz + zSigma_out*(rho   - rho0); 
-                    sr2 = sr2 + zV_out_1*( rho*U- U1_[icube][i][j][k-1][1])/dz + zSigma_out*(rho*U - rho0*U0);
-                    sr3 = sr3 + zV_out_1*( rho*V- U1_[icube][i][j][k-1][2])/dz + zSigma_out*(rho*V - rho0*V0);
-                    sr4 = sr4 + zV_out_1*( rho*W- U1_[icube][i][j][k-1][3])/dz + zSigma_out*(rho*W - rho0*W0);
-                    sr5 = sr5 + zV_out_1*( E    - U1_[icube][i][j][k-1][4])/dz + zSigma_out*(E     - E0);
+                    sr1 = xV_out_1*( rho  - U1_[icube][i-1][j][k][0])/dx + xSigma_out*U1; 
+                    sr2 = xV_out_1*( rho*U- U1_[icube][i-1][j][k][1])/dx + xSigma_out*U2;
+                    sr3 = xV_out_1*( rho*V- U1_[icube][i-1][j][k][2])/dx + xSigma_out*U3;
+                    sr4 = xV_out_1*( rho*W- U1_[icube][i-1][j][k][3])/dx + xSigma_out*U4;
+                    sr5 = xV_out_1*( E    - U1_[icube][i-1][j][k][4])/dx + xSigma_out*U5;
+                    
+                    
+                    sr1 = sr1 + yV_out_1*( rho  - U1_[icube][i][j-1][k][0])/dy + ySigma_out*U1; 
+                    sr2 = sr2 + yV_out_1*( rho*U- U1_[icube][i][j-1][k][1])/dy + ySigma_out*U2;
+                    sr3 = sr3 + yV_out_1*( rho*V- U1_[icube][i][j-1][k][2])/dy + ySigma_out*U3;
+                    sr4 = sr4 + yV_out_1*( rho*W- U1_[icube][i][j-1][k][3])/dy + ySigma_out*U4;
+                    sr5 = sr5 + yV_out_1*( E    - U1_[icube][i][j-1][k][4])/dy + ySigma_out*U5;
+                    
+                    sr1 = sr1 + zV_out_1*( rho  - U1_[icube][i][j][k-1][0])/dz + zSigma_out*U1; 
+                    sr2 = sr2 + zV_out_1*( rho*U- U1_[icube][i][j][k-1][1])/dz + zSigma_out*U2;
+                    sr3 = sr3 + zV_out_1*( rho*V- U1_[icube][i][j][k-1][2])/dz + zSigma_out*U3;
+                    sr4 = sr4 + zV_out_1*( rho*W- U1_[icube][i][j][k-1][3])/dz + zSigma_out*U4;
+                    sr5 = sr5 + zV_out_1*( E    - U1_[icube][i][j][k-1][4])/dz + zSigma_out*U5;
                     
                     
                     Fabs[icube][i][j][k][0] = -sr1-sl1;
