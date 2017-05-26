@@ -131,19 +131,19 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
     sl1 = sl2 = sl3 = sl4 = sl5 = 0.0;
      
 	xV_in_0 = 1.15;
-	xSigma_in_0 = 0.05;
+	xSigma_in_0 = 0.0;
 	xV_out_0 = 1.25;
-	xSigma_out_0 = 1.25;
+	xSigma_out_0 = 0.0;
 	
 	yV_in_0 = 1.25;
-	ySigma_in_0 = 1.25;
+	ySigma_in_0 = 0.0;
 	yV_out_0 = 1.25;
-	ySigma_out_0 = 1.25;
+	ySigma_out_0 = 0.0;
     
     zV_in_0 = 1.25;
-	zSigma_in_0 = 1.25;
+	zSigma_in_0 = 0.0;
 	zV_out_0 = 1.25;
-	zSigma_out_0 = 1.25;
+	zSigma_out_0 = 0.0;
 
     E0 = P0/(K-1.0)+0.5*rho0*U0*U0;
     
@@ -430,9 +430,6 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     rho = P/T/R;
                     VV = U*U+V*V+W*W;
                     
-                    // if(j == 9) printf("%d\t%f\n",k,T);
-
-
                     U1_[iicube][1][j][k][0] = rho;
                     U1_[iicube][1][j][k][1] = -rho*U;
                     U1_[iicube][1][j][k][2] = -rho*V;
