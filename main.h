@@ -974,9 +974,10 @@ int (*rank_map)[MPI_Ncube] = new int[2][MPI_Ncube],
 
 double (*U1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
-double (*Pall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
-double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size]
-
+double (*U1_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
+double (*U2_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
+double (*U3_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
+double (*U4_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size]
 // =================================================== //
 );
 

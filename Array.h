@@ -78,10 +78,10 @@ double (*recv_data_adj) = new double[2*X_size*X_size*5];
 
 
 /**** Statistical data ****/
-double (*Pall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size];
-
-double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size];
-
+double (*Value1_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size];
+double (*Value2_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size];
+double (*Value3_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size];
+double (*Value4_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size];
 
 /**** Absorbing force term ****/
 double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim];

@@ -31,9 +31,10 @@ int (*rank_map)[MPI_Ncube] = new int[2][MPI_Ncube],
 
 double (*U1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
-double (*Pall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
-double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size]
-
+double (*U1_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
+double (*U2_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
+double (*U3_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
+double (*U4_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size]
 // =================================================== //
 )
 
@@ -47,22 +48,65 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 #include "prm.h"
 #include "MPI_prm.h"
 
-	double (*Pm)[X_size][Y_size][Z_size] = new double[ncube][X_size][Y_size][Z_size];
+	double (*U_mean)[X_size][Y_size][Z_size] = new double[ncube][X_size][Y_size][Z_size];
 
-	double (*VVm)[X_size][Y_size][Z_size] = new double[ncube][X_size][Y_size][Z_size];
+	double (*T_mean)[X_size][Y_size][Z_size] = new double[ncube][X_size][Y_size][Z_size];
 
-	double (*Pp)[X_size][Y_size][Z_size] = new double[ncube][X_size][Y_size][Z_size];
+	double (*U_int)[X_size][Y_size][Z_size] = new double[ncube][X_size][Y_size][Z_size];
+
+	double (*T_int)[X_size][Y_size][Z_size] = new double[ncube][X_size][Y_size][Z_size];
 
 
 	double rho,U,V,W,VV,P,C,T,H;
 
 	int Average_step = statistic_step;
 
-	int num_variable_output = 2; // output dp and Vmean two values //
+	int num_variable_output = 4; // output four values //
+    
+    // U_mean, T_mean, U_intensity, T_intensity //
 
-	int itemp = 1;
+	int itemp = 0;
+    
+    itemp = step-start_step+1.0;    // ==== averaged steps ==== //
 
-	#pragma omp parallel for private(i,j,k,rho,U,V,W,VV,P)	
+    
+	#pragma omp parallel for private(i,j,k,rho,U,V,W,VV,P,T)	
+	for (icube = 1; icube < ncube; icube++) { 
+		for (i = n_buffer-1; i <= nxx; i++) {
+			for (j = n_buffer-1; j <= nyy; j++) {
+				for (k = n_buffer-1; k <= nzz; k++) {  
+
+					/* flux parameter */
+					rho = U1[icube][i][j][k][0];
+					U = U1[icube][i][j][k][1]/rho;
+					
+					U1_sum[icube][i][j][k] = U1_sum[icube][i][j][k]+U;
+                    U2_sum[icube][i][j][k] = U2_sum[icube][i][j][k]+U*U;
+                    
+                    
+
+				}
+			}
+		}
+	}
+
+#pragma omp parallel for private(i,j,k)	
+	for (icube = 1; icube < ncube; icube++) { 
+		for (i = n_buffer-1; i <= nxx; i++) {
+			for (j = n_buffer-1; j <= nyy; j++) {
+				for (k = n_buffer-1; k <= nzz; k++) {  
+
+					U_mean[icube][i][j][k] = U1_sum[icube][i][j][k]/itemp;
+                    
+					U_int[icube][i][j][k] = sqrt(fabs(U2_sum[icube][i][j][k]/itemp - U_mean[icube][i][j][k]*U_mean[icube][i][j][k]));
+
+				}
+			}
+		}
+	}
+    
+    
+    #pragma omp parallel for private(i,j,k,rho,U,V,W,VV,P,T)	
 	for (icube = 1; icube < ncube; icube++) { 
 		for (i = n_buffer-1; i <= nxx; i++) {
 			for (j = n_buffer-1; j <= nyy; j++) {
@@ -75,16 +119,15 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 					W = U1[icube][i][j][k][3]/rho;     
 					VV = U*U+V*V+W*W;
 					P = (U1[icube][i][j][k][4]-0.5*rho*VV)*(K-1);
+                    T = P/rho/R;
 					
-					Pall[icube][i][j][k] = Pall[icube][i][j][k]+P;
-
-					VVall[icube][i][j][k] = VVall[icube][i][j][k]+sqrt(VV);
+					U3_sum[icube][i][j][k] = U3_sum[icube][i][j][k]+T;
+                    U4_sum[icube][i][j][k] = U4_sum[icube][i][j][k]+T*T;
 
 				}
 			}
 		}
 	}
-
 
 #pragma omp parallel for private(i,j,k)	
 	for (icube = 1; icube < ncube; icube++) { 
@@ -92,10 +135,15 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 			for (j = n_buffer-1; j <= nyy; j++) {
 				for (k = n_buffer-1; k <= nzz; k++) {  
 
-					Pm[icube][i][j][k] = Pall[icube][i][j][k]/(step*1.0-start_step*1.0+1.0);
+					T_mean[icube][i][j][k] = U3_sum[icube][i][j][k]/itemp;
+                    
+					T_int[icube][i][j][k] = sqrt(fabs(U4_sum[icube][i][j][k]/itemp - T_mean[icube][i][j][k]*T_mean[icube][i][j][k]));
 
-					VVm[icube][i][j][k] = VVall[icube][i][j][k]/(step*1.0-start_step*1.0+1.0);
-
+                    // H = (U4_sum[icube][i][j][k]/itemp - T_mean[icube][i][j][k]*T_mean[icube][i][j][k]);
+                    
+                    // if(T_mean[icube][i][j][k] < 298.0591)
+                    // printf("%f\t%f\t%f\n",T_mean[icube][i][j][k],U3_sum[icube][i][j][k],itemp*1.0);
+                    
 				}
 			}
 		}
@@ -108,27 +156,6 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 
 	if ( step%dp_step == 0 ) {
 
-
-#pragma omp parallel for private(i,j,k,rho,U,V,W,VV,P)	
-		for (icube = 1; icube < ncube; icube++) { 
-			for (i = n_buffer-1; i <= nxx; i++) {
-				for (j = n_buffer-1; j <= nyy; j++) {
-					for (k = n_buffer-1; k <= nzz; k++) {  
-
-						rho = U1[icube][i][j][k][0];
-						U = U1[icube][i][j][k][1]/rho;
-						V = U1[icube][i][j][k][2]/rho;
-						W = U1[icube][i][j][k][3]/rho;     
-						VV = U*U+V*V+W*W;
-						P = (U1[icube][i][j][k][4]-0.5*rho*VV)*(K-1);
-
-						Pp[icube][i][j][k] = P-Pm[icube][i][j][k];
-
-					}
-				}
-			}
-		}
-
 		MPI_Comm comm;
 		comm=MPI_COMM_WORLD;
 		MPI_Status istat[8];
@@ -140,10 +167,9 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 
 		int ncube_out = MPI_Ncube;
 
-		int x_gcount[np], x_gdisp[np], q_gcount[np], q_gdisp[np];
+		int q_gdisp[np];
 
 		istart = 0;
-		x_gdisp[np-1] = 0; 
 		q_gdisp[np-1] = 0; 
 	
 		for (i = 0; i < np-1; i++) { 
@@ -159,11 +185,8 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 
 			}
 
-			x_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*3;
-			q_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*5+(MPI_Offset)icount*4;
+			q_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*num_variable_output;
 
-			// printf("x_gdisp == %d\t%d\t%d\t\%d\n",myid,i,icube,x_gdisp[i]);
-        
 		}
 
 
@@ -206,24 +229,47 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 		icount = -1;
 		for (icube = 1; icube < ncube; icube++) {  
 
-			for (i = n_buffer-1; i <= nx+1; i++) {
-				for (j = n_buffer-1; j <= ny+1; j++) { 
-					for (k = n_buffer-1; k <= nz+1; k++) { 
+            for (k = n_buffer-1; k <= nz+1; k++) {
+                for (j = n_buffer-1; j <= ny+1; j++) { 
+                    for (i = n_buffer-1; i <= nx+1; i++) { 
 
 						icount = icount + 1;
-						Solution[icount] = Pp[icube][k][j][i];
+						Solution[icount] = U_mean[icube][i][j][k];
 
 					}
 				}
 			}
 
 
-			for (i = n_buffer-1; i <= nx+1; i++) {
-				for (j = n_buffer-1; j <= ny+1; j++) { 
-					for (k = n_buffer-1; k <= nz+1; k++) { 
+            for (k = n_buffer-1; k <= nz+1; k++) {
+                for (j = n_buffer-1; j <= ny+1; j++) { 
+                    for (i = n_buffer-1; i <= nx+1; i++) { 
 
 						icount = icount + 1;
-						Solution[icount] = VVm[icube][k][j][i];
+						Solution[icount] = T_mean[icube][i][j][k];
+
+					}
+				}
+			}
+                
+            for (k = n_buffer-1; k <= nz+1; k++) {
+                for (j = n_buffer-1; j <= ny+1; j++) { 
+                    for (i = n_buffer-1; i <= nx+1; i++) { 
+
+						icount = icount + 1;
+						Solution[icount] = U_int[icube][i][j][k];
+
+					}
+				}
+			}
+
+
+            for (k = n_buffer-1; k <= nz+1; k++) {
+                for (j = n_buffer-1; j <= ny+1; j++) { 
+                    for (i = n_buffer-1; i <= nx+1; i++) { 
+
+						icount = icount + 1;
+						Solution[icount] = T_int[icube][i][j][k];
 
 					}
 				}
@@ -246,9 +292,10 @@ double (*VVall)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_si
 
 // =========================== Output averaged result =========================== //
 	
-	delete [] Pm;
-	delete [] VVm;
-	delete [] Pp;
+	delete [] U_mean;
+	delete [] T_mean;
+	delete [] U_int;
+	delete [] T_int;
 	
 
 }

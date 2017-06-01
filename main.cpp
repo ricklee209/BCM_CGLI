@@ -43,15 +43,15 @@ int main(int argc, char **argv)
 #include "Pre_selection.h"
 
 
-	int statistic_step = 10000;    // ---- periodic step ---- //
+	int statistic_step = 5;    // ---- periodic step ---- //
 
-	int start_step = 10000;    // ---- how many steps to reach the quasi steady ---- //
+	int start_step = 1;    // ---- how many steps to reach the quasi steady ---- //
 
-	int dp_step = 10000;    // ---- how many steps for periodically outputing the dp ---- //
+	int dp_step = 5;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 20;
+	int iteration_end_step = 1;
 	int output_step = 10;
-	int count = 2000;	
+	int count = 11;	
 	int step;
 
 	double deltaT = 0.02;
@@ -1523,7 +1523,7 @@ int main(int argc, char **argv)
 
 
 				 if (step >= start_step) 
-				 BCM_Statistic(myid, Ncube, step, start_step, statistic_step, dp_step, rank_map, U1_, Pall, VVall);
+				 BCM_Statistic(myid, Ncube, step, start_step, statistic_step, dp_step, rank_map, U1_, Value1_sum, Value2_sum, Value3_sum, Value4_sum);
 
 
 

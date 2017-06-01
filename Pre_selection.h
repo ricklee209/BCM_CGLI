@@ -49,4 +49,10 @@
 #define No_Wall_model
 
 
+// ---- K_endian_transfer ---- //
+// ---- No_endian_transfer ---- //
+
+#define K_endian_transfer
+
+
 #define Char_D 0.1 
