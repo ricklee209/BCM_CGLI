@@ -1522,9 +1522,16 @@ int main(int argc, char **argv)
 // ==================================================================================================================== //
 
 
-				 if (step >= start_step) 
-				 BCM_Statistic(myid, Ncube, step, start_step, statistic_step, dp_step, rank_map, U1_, Value1_sum, Value2_sum, Value3_sum, Value4_sum);
+				 if (step >= start_step) {
+                    
+                    BCM_Statistic(myid, Ncube, step, start_step, statistic_step, dp_step, rank_map, U1_, Value1_sum, Value2_sum, Value3_sum, Value4_sum);
+                    BCM_Point_probe(myid, Ncube, N_wallcube, 6.0, 0.0, 0.0, "point1", U1, cube_size, \
+                                    csl, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt, FWS, adj_number, wallcube);
+                    BCM_Point_probe(myid, Ncube, N_wallcube, 6.0, 0.0, 0.5, "point2", U1, cube_size, \
+                                    csl, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt, FWS, adj_number, wallcube);
 
+                    
+                 }
 
 
 				//// ============================================================================== ////

@@ -1050,6 +1050,39 @@ void BCM_ADM_filter
 
 
 
+void BCM_Point_probe
+(
+// =================================================== //
+int myid,
+int ncube,
+int n_wallcube,
+
+double Xp,
+double Yp,
+double Zp,
+
+char probe_name[100],
+
+double (*U1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+double (*cube_size) = new double[Ncube],
+int (*csl) = new int[Ncube],
+
+double (*Xcube) = new double[Ncube],
+double (*Ycube) = new double[Ncube],
+double (*Zcube) = new double[Ncube],
+
+double (*Xcnt)[X_size] = new double[Ncube][X_size],
+double (*Ycnt)[Y_size] = new double[Ncube][Y_size],
+double (*Zcnt)[Z_size] = new double[Ncube][Z_size],
+
+int (*FWS)[X_size][Y_size][Z_size] = new int[Ncube][X_size][Y_size][Z_size],
+
+int (*adj_number)[5][7] = new int[Ncube][5][7],
+
+int (*wallcube) = new int[Ncube]
+// ================================================== //
+);
 
 
 
