@@ -67,7 +67,7 @@ int (*wallcube) = new int[Ncube]
     jo = -1;
     ko = -1;
 
-#pragma omp parallel for private(i,j,k,dx,dy,dz,xmin,ymin,zmin,XX,YY,ZZ,io,jo,ko,i_switch,\
+#pragma omp parallel for private(i,j,k,dx,dy,dz,xmin,ymin,zmin,XX,YY,ZZ,io,jo,ko,\
 rho,U,V,W,VV,E,P,T,u1,u2,u3,u4,u5) reduction(+:i_switch)
     for (icube = 1; icube < ncube; icube++) {  
 
