@@ -55,4 +55,4 @@
 #define K_endian_transfer
 
 
-#define Char_D 0.1 
+#define Char_D 1.0
