@@ -131,19 +131,19 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
     sl1 = sl2 = sl3 = sl4 = sl5 = 0.0;
      
 	xV_in_0 = 1.15;
-	xSigma_in_0 = 0.0;
+	xSigma_in_0 = 0.4;
 	xV_out_0 = 1.25;
-	xSigma_out_0 = 0.0;
+	xSigma_out_0 = 0.4;
 	
 	yV_in_0 = 1.25;
-	ySigma_in_0 = 0.0;
+	ySigma_in_0 = 0.4;
 	yV_out_0 = 1.25;
-	ySigma_out_0 = 0.0;
+	ySigma_out_0 = 0.4;
     
     zV_in_0 = 1.25;
-	zSigma_in_0 = 0.0;
+	zSigma_in_0 = 0.4;
 	zV_out_0 = 1.25;
-	zSigma_out_0 = 0.0;
+	zSigma_out_0 = 0.4;
 
     E0 = P0/(K-1.0)+0.5*rho0*U0*U0;
     
@@ -426,7 +426,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     P = (U1_[iicube][2][j][k][4]-0.5*rho*VV)*(K-1);
 
                     T = 0.5*(Th-T0)*( 1-tanh( b2*(2*RR/Char_D-Char_D/(2*RR)) ) )+T0;
-                    T = 2*T - P/rho/R;
+                    // T = 2*T - P/rho/R;
                     
                     
                     rho = P/T/R;
@@ -441,19 +441,19 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                     
                     
                     
-                    rho = U1_[iicube][3][j][k][0];
-                    U = U1_[iicube][3][j][k][1]/rho;
-                    V = U1_[iicube][3][j][k][2]/rho;
-                    W = U1_[iicube][3][j][k][3]/rho;
-                    VV = U*U+V*V+W*W;
-                    P = (U1_[iicube][3][j][k][4]-0.5*rho*VV)*(K-1);
+                    // rho = U1_[iicube][3][j][k][0];
+                    // U = U1_[iicube][3][j][k][1]/rho;
+                    // V = U1_[iicube][3][j][k][2]/rho;
+                    // W = U1_[iicube][3][j][k][3]/rho;
+                    // VV = U*U+V*V+W*W;
+                    // P = (U1_[iicube][3][j][k][4]-0.5*rho*VV)*(K-1);
 
-                    T = 0.5*(Th-T0)*( 1-tanh( b2*(2*RR/Char_D-Char_D/(2*RR)) ) )+T0;
-                    T = 2*T - P/rho/R;
+                    // T = 0.5*(Th-T0)*( 1-tanh( b2*(2*RR/Char_D-Char_D/(2*RR)) ) )+T0;
+                    // T = 2*T - P/rho/R;
                     
                     
-                    rho = P/T/R;
-                    VV = U*U+V*V+W*W;
+                    // rho = P/T/R;
+                    // VV = U*U+V*V+W*W;
 
                     U1_[iicube][0][j][k][0] = rho;
                     U1_[iicube][0][j][k][1] = -rho*U;
