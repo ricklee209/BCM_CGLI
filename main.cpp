@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	int count = 1;	
 	int step;
 
-	double deltaT = 0.02;
+	double deltaT = 0.002;
 	double deltaTau = deltaT/200.0;
 	double e = 0.000001;
 	double Th = 309.03531204896;
