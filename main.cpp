@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 
 	double deltaT = 0.002;
 	double deltaTau = deltaT/200.0;
-	double e = 0.000001;
+	double e = 0.000005;
 	double Th = 309.03531204896;
 
 
@@ -1261,8 +1261,13 @@ int main(int argc, char **argv)
 				
 				#ifdef ILES
 
-					if ((step%10 == 0)) BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
-				
+					if ( (step%10 == 0)  && (iteration == 1) ) {
+                        
+                        BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
+                        if(myid == 0) printf("\n Automatic Dissipation Adjustment model \n");
+                
+                    }
+                    
 				#endif
 
 				
@@ -1444,7 +1449,13 @@ int main(int argc, char **argv)
 				
 				#ifdef ILES
 
-					if ((step%10 == 0)) BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
+					if ( step%10 == 0 ) {
+                        
+                        BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
+                        printf("/n Automatic Dissipation Adjustment model /n");
+                
+                    }
+                    
 				
 				#endif
 
@@ -1525,10 +1536,10 @@ int main(int argc, char **argv)
 				 if (step >= start_step) {
                     
                     BCM_Statistic(myid, Ncube, step, start_step, statistic_step, dp_step, rank_map, U1_, Value1_sum, Value2_sum, Value3_sum, Value4_sum);
-                    BCM_Point_probe(myid, Ncube, N_wallcube, 6.0, 0.0, 0.0, "point1", U1, cube_size, \
-                                    csl, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt, FWS, adj_number, wallcube);
-                    BCM_Point_probe(myid, Ncube, N_wallcube, 6.0, 0.0, 0.5, "point2", U1, cube_size, \
-                                    csl, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt, FWS, adj_number, wallcube);
+                    // BCM_Point_probe(myid, Ncube, N_wallcube, 6.0, 0.0, 0.0, "point1", U1, cube_size, \
+                                    // csl, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt, FWS, adj_number, wallcube);
+                    // BCM_Point_probe(myid, Ncube, N_wallcube, 6.0, 0.0, 0.5, "point2", U1, cube_size, \
+                                    // csl, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt, FWS, adj_number, wallcube);
 
                     
                  }
