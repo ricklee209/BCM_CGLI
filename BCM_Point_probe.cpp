@@ -48,6 +48,11 @@ int (*wallcube) = new int[Ncube]
 
 {
 
+    
+    MPI_Comm comm;
+	comm=MPI_COMM_WORLD;
+
+
     #include "BCM.h"
     #include "prm.h"
     #include "MPI_prm.h"
@@ -67,8 +72,8 @@ int (*wallcube) = new int[Ncube]
     jo = -1;
     ko = -1;
 
-#pragma omp parallel for private(i,j,k,dx,dy,dz,xmin,ymin,zmin,XX,YY,ZZ,io,jo,ko,\
-rho,U,V,W,VV,E,P,T,u1,u2,u3,u4,u5)
+// #pragma omp parallel for private(i,j,k,dx,dy,dz,xmin,ymin,zmin,XX,YY,ZZ,io,jo,ko,\
+// rho,U,V,W,VV,E,P,T,u1,u2,u3,u4,u5)
     for (icube = 1; icube < ncube; icube++) {  
 
             dx = dy = dz = cube_size[icube]/NcubeX;
@@ -85,9 +90,9 @@ rho,U,V,W,VV,E,P,T,u1,u2,u3,u4,u5)
                         YY = ymin + (j - n_buffer)*dy;
                         ZZ = zmin + (k - n_buffer)*dz;
                         
-                        if( Xp >= XX && Xp <= XX+dx && \
-                            Yp >= YY && Yp <= YY+dy && \
-                            Zp >= ZZ && Zp <= ZZ+dz ) {
+                        if( Xp >= XX && Xp < XX+dx && \
+                            Yp >= YY && Yp < YY+dy && \
+                            Zp >= ZZ && Zp < ZZ+dz ) {
                             
                             io = i;
                             jo = j;
@@ -110,6 +115,8 @@ rho,U,V,W,VV,E,P,T,u1,u2,u3,u4,u5)
                             u4 = W;
                             u5 = T;
                             
+                            goto WRITING_FILE;
+                            
                           }
                         
                         
@@ -120,38 +127,16 @@ rho,U,V,W,VV,E,P,T,u1,u2,u3,u4,u5)
          
     }
 
+    WRITING_FILE:
+    if(i_switch > 0) {
+
+        FILE *fptr;
+        fptr = fopen(probe_name,"a"); 
+        fprintf(fptr,"%.10f\t%.10f\t%.10f\t%.10f\t%.10f\n",u1,u2,u3,u4,u5);
+        fclose(fptr);
     
-    MPI_Comm comm;
-	comm=MPI_COMM_WORLD;
-
-    MPI_Allreduce ((void*)&i_switch, (void*)&g_switch, 1, MPI_INT, MPI_SUM, comm );
-
-    if( g_switch > 0 ) {
-
-        MPI_Allreduce ((void*)&u1,(void*)&gu1,1,MPI_DOUBLE,MPI_SUM,comm );
-        MPI_Allreduce ((void*)&u2,(void*)&gu2,1,MPI_DOUBLE,MPI_SUM,comm );
-        MPI_Allreduce ((void*)&u3,(void*)&gu3,1,MPI_DOUBLE,MPI_SUM,comm );
-        MPI_Allreduce ((void*)&u4,(void*)&gu4,1,MPI_DOUBLE,MPI_SUM,comm );
-        MPI_Allreduce ((void*)&u5,(void*)&gu5,1,MPI_DOUBLE,MPI_SUM,comm );
-        
-        gu1 = gu1/g_switch;
-        gu2 = gu2/g_switch;
-        gu3 = gu3/g_switch;
-        gu4 = gu4/g_switch;
-        gu5 = gu5/g_switch;
-        
-        
-        if( myid == 0) {
-        
-            FILE *fptr;
-            fptr = fopen(probe_name,"a"); 
-            fprintf(fptr,"%.10f\t%.10f\t%.10f\t%.10f\t%.10f\n",gu1,gu2,gu3,gu4,gu5);
-            fclose(fptr);
-        
-        }
-     
     }
-
+    
 
 }
  
