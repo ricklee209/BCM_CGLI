@@ -49,9 +49,9 @@ int main(int argc, char **argv)
 
 	int dp_step = 5;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 5;
-	int output_step = 1;
-	int count = 1;	
+	int iteration_end_step = 2;
+	int output_step = 1000;
+	int count = 5;	
 	int step;
 
 	double deltaT = 0.002;
@@ -60,11 +60,11 @@ int main(int argc, char **argv)
 	double Th = 309.03531204896;
 
 
-	int switch_initial = 0; // ---- 1 reading initial coniditon ---- //
+	int switch_initial = 1; // ---- 1 reading initial coniditon ---- //
 
 	int switch_IBM = 0;     // ---- 1 run IBM ---- //
 
-	int switch_output = 1;  // ---- 1 output grid file ---- //
+	int switch_output = 0;  // ---- 1 output grid file ---- //
 
 
 	int NBC,NBC_plus, NBC_minus, Ntemp, gicube, gi, gj, gk, mp_switch;
@@ -1536,10 +1536,10 @@ int main(int argc, char **argv)
 				 if (step >= start_step) {
                     
                     BCM_Statistic(myid, Ncube, step, start_step, statistic_step, dp_step, rank_map, U1_, Value1_sum, Value2_sum, Value3_sum, Value4_sum);
-                    // BCM_Point_probe(myid, Ncube, N_wallcube, 6.0, 0.0, 0.0, "point1", U1, cube_size, \
-                                    // csl, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt, FWS, adj_number, wallcube);
-                    // BCM_Point_probe(myid, Ncube, N_wallcube, 6.0, 0.0, 0.5, "point2", U1, cube_size, \
-                                    // csl, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt, FWS, adj_number, wallcube);
+                    BCM_Point_probe(myid, Ncube, N_wallcube, 0.6, 0.0, 0.0, "point1", U1, cube_size, \
+                                    csl, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt, FWS, adj_number, wallcube);
+                    BCM_Point_probe(myid, Ncube, N_wallcube, 0.6, 0.0, 0.05, "point2", U1, cube_size, \
+                                    csl, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt, FWS, adj_number, wallcube);
 
                     
                  }
