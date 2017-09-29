@@ -6,7 +6,7 @@
 #define R 287 
 
 #define Cv 717.5                      /**** specific constant volume heat capacity J/(kg.k) ****/
-#define mu_L 0.00001708
+#define mu_L 0.001
 #define Pr_L 0.72
 #define R 287
 
@@ -29,9 +29,9 @@ double psi = 0.0001;
 
 double rho0 = 1.1842;
 
-double U0 = 0.0;
+double U0 = 10.0;
 
-double Uin = 0.0;
+double Uin = 10.0;
 
 double V0 = 0.;
 

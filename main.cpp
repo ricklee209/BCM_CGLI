@@ -43,28 +43,28 @@ int main(int argc, char **argv)
 #include "Pre_selection.h"
 
 
-	int statistic_step = 5;    // ---- periodic step ---- //
+	int statistic_step = 50000;    // ---- periodic step ---- //
 
-	int start_step = 1;    // ---- how many steps to reach the quasi steady ---- //
+	int start_step = 100000000;    // ---- how many steps to reach the quasi steady ---- //
 
-	int dp_step = 5;    // ---- how many steps for periodically outputing the dp ---- //
+	int dp_step = 50000;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 2;
-	int output_step = 1000;
-	int count = 5;	
+	int iteration_end_step = 50;
+	int output_step = 1;
+	int count = 10;	
 	int step;
 
 	double deltaT = 0.002;
 	double deltaTau = deltaT/200.0;
-	double e = 0.000005;
+	double e = 0.01;
 	double Th = 309.03531204896;
 
 
-	int switch_initial = 1; // ---- 1 reading initial coniditon ---- //
+	int switch_initial = 0; // ---- 1 reading initial coniditon ---- //
 
-	int switch_IBM = 0;     // ---- 1 run IBM ---- //
+	int switch_IBM = 1;     // ---- 1 run IBM ---- //
 
-	int switch_output = 0;  // ---- 1 output grid file ---- //
+	int switch_output = 1;  // ---- 1 output grid file ---- //
 
 
 	int NBC,NBC_plus, NBC_minus, Ntemp, gicube, gi, gj, gk, mp_switch;
@@ -1212,21 +1212,29 @@ int main(int argc, char **argv)
 			#ifdef DPLUSGS
 
 
-				BCM_Abs_XYZ_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, NYbc_l, NYbc_u, NZbc_l, NZbc_u,
-											  gXmax,gXmin,gYmax,gYmin,gZmax,gZmin,gdXmax,gdYmax,gdZmax,Xcube,Ycube,Zcube,
-											  Xbc_l, Xbc_u, Ybc_l, Ybc_u,Zbc_l, Zbc_u, cube_size, U1_, Fabs);
+				// BCM_Abs_XYZ_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, NYbc_l, NYbc_u, NZbc_l, NZbc_u,
+											  // gXmax,gXmin,gYmax,gYmin,gZmax,gZmin,gdXmax,gdYmax,gdZmax,Xcube,Ycube,Zcube,
+											  // Xbc_l, Xbc_u, Ybc_l, Ybc_u,Zbc_l, Zbc_u, cube_size, U1_, Fabs);
 				
                 // BCM_Y_boundary_condition(NYbc_l, NYbc_u, Ybc_l, Ybc_u, U1_);
 				
-				BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
+				// BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
+                
+                
+				BCM_Abs_Y_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NYbc_l, NYbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
 
-				// for (int ig = 1; ig <= 10; ig++) {
+				BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
+				
+				BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
 
-					// BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
 
-					// BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
+				for (int ig = 1; ig <= 10; ig++) {
+
+					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
+
+					BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
 					
-				// }
+				}
 
 
 				BCM_Interface(myid,Ncube, 
@@ -1389,32 +1397,32 @@ int main(int argc, char **argv)
 				//BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
 
 
-				//BCM_Abs_Y_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NYbc_l, NYbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
+				BCM_Abs_Y_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NYbc_l, NYbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
 
-				//BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
+				BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
 				
-				//BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
+				BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
 
-				BCM_Abs_XY_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, NYbc_l, NYbc_u, 
-											  gXmax,gXmin,gYmax,gYmin,gdXmax,gdYmax,Xcube,Ycube,
-											  Xbc_l, Xbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
+				// BCM_Abs_XY_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, NYbc_l, NYbc_u, 
+											  // gXmax,gXmin,gYmax,gYmin,gdXmax,gdYmax,Xcube,Ycube,
+											  // Xbc_l, Xbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
                                               
-                BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
+                // BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
 
 
-				// for (int ig = 1; ig <= 10; ig++) {
+				for (int ig = 1; ig <= 10; ig++) {
 
-					// BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
+					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
 
-					// BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
+					BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
 					
 
-					// //BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
+					//BCM_Ghostcell_minus_Tem(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
 
-					// //BCM_Ghostcell_plus_Tem(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
+					//BCM_Ghostcell_plus_Tem(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
 
 
-				// }
+				}
 				
 
 				BCM_Interface(myid,Ncube, 

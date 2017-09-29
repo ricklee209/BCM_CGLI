@@ -7,7 +7,7 @@
 
 // ---- TDROE=4 : Roe modified by B. Thornber ---- //
 
-#define ROE 2
+#define ROE 3
 
 
 // ---- limiter : limiter function ---- //
@@ -40,7 +40,7 @@
 // ---- ILES : implicit turbulence model ---- //
 // ---- DNS : implicit turbulence model ---- //
 
-#define ILES 
+#define DNS 
 
 
 // ---- Wall_model : Wall model ---- //
@@ -52,7 +52,7 @@
 // ---- K_endian_transfer ---- //
 // ---- No_endian_transfer ---- //
 
-#define K_endian_transfer
+#define No_endian_transfer
 
 
 #define Char_D 0.1

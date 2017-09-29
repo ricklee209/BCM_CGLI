@@ -2,9 +2,9 @@
 
 
 
-#define np 12             // ---- CPU number ---- //
+#define np 8             // ---- CPU number ---- //
 
-#define MPI_Ncube 1024    // ---- How many cubes for total calculation ---- //
+#define MPI_Ncube 240    // ---- How many cubes for total calculation ---- //
 
 #define n_buffer 2         // ---- buffer region for BCM data communication (EVEN number) ---- //
 
