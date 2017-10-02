@@ -1191,7 +1191,7 @@ int main(int argc, char **argv)
 		for (int iteration = 1; iteration < 50000; iteration++) {               //
 // ============================================================================ //		
 			
-			#ifdef DPLUSGS
+			#if defined(LUSGS) || defined(DPLUSGS)
 
 
 				// BCM_Abs_XYZ_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, NYbc_l, NYbc_u, NZbc_l, NZbc_u,
