@@ -1180,24 +1180,6 @@ int main(int argc, char **argv)
     // ------- Computational information ------ //
     // ---------------------------------------- //
     
-    
-    // ---- No geometry inside  ---- //
-    for (icube = 1; icube < Ncube; icube++) {    
-#pragma omp parallel for private(j,k)
-        for (i = 0; i <= nxxx; i++) {
-            for (j = 0; j <= nyyy; j++) {
-                for (k = 0; k <= nzzz; k++) {  
-
-                    FWS[icube][i][j][k] = IFLUID;
-
-                }
-            }
-        }
-    }
-    // ---- No geometry inside  ---- //
-
-    
-
 
 // =============================================== //
 	for (step = 1 ; step <= count; step++) {       //
