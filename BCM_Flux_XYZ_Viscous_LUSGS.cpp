@@ -38,6 +38,8 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 	int ncube,
 
 	double deltaT,
+    
+    double deltaTau,
 
 	double e,
 
@@ -3592,7 +3594,6 @@ void BCM_Flux_XYZ_Viscous_LUSGS
     
     for (isweep = 1; isweep < nsweep+1; isweep++) {
     
-    
         #pragma omp parallel for private(\
 		IF,\
 		dx,dy,dz,invXI,invET,invZT,\
@@ -3808,16 +3809,50 @@ void BCM_Flux_XYZ_Viscous_LUSGS
      
 
                         U_p = Ux*invXI+Uy*invET+Uz*invZT;
+                        
+                        #if defined(DTau)
+                        
+                            deltaTau = 0.3*U_p;
+                        
+                            temp = 1.0/deltaTau + U_p;
+                        
+                            d11 = 1.0 / (3.0*beta/(2.0*deltaT) + temp);
 
-                        d11 = 2*deltaT/(3*beta+2*U_p*deltaT);
+                            d22 = d33 = d44 = d55 = 1.0 / ( 3.0/(2.0*deltaT) +temp);
 
-                        d22 = d33 = d44 = d55 = 2*deltaT/(3+2*U_p*deltaT);
+                            temp1 = 6*(K-1)*(beta-1)*deltaT*deltaTau*deltaTau;
+                            temp2 = K*( 3*deltaTau+2*(1.0+U_p*deltaTau)*deltaT )*(3*beta*deltaTau+2*(1.0+U_p*deltaTau)*deltaT)*rho;
+                            temp = -temp1/temp2;
 
-                        temp1 = 6*(K-1)*(beta-1)*deltaT;
-                        temp2 = K*(3+2*U_p*deltaT)*(3*beta+2*U_p*deltaT)*rho;
-                        temp = -temp1/temp2;
+                            d51 = temp;
+                            
+                        #elif defined(DTau_fix)
+                        
+                            temp = 1.0/deltaTau + U_p;
+                        
+                            d11 = 1.0 / (3.0*beta/(2.0*deltaT) + temp);
 
-                        d51 = temp;
+                            d22 = d33 = d44 = d55 = 1.0 / ( 3.0/(2.0*deltaT) +temp);
+
+                            temp1 = 6*(K-1)*(beta-1)*deltaT*deltaTau*deltaTau;
+                            temp2 = K*( 3*deltaTau+2*(1.0+U_p*deltaTau)*deltaT )*(3*beta*deltaTau+2*(1.0+U_p*deltaTau)*deltaT)*rho;
+                            temp = -temp1/temp2;
+
+                            d51 = temp;
+                        
+                        #elif defined(NODTau)
+                        
+                            d11 = 2*deltaT/(3*beta+2*U_p*deltaT);
+
+                            d22 = d33 = d44 = d55 = 2*deltaT/(3+2*U_p*deltaT);
+
+                            temp1 = 6*(K-1)*(beta-1)*deltaT;
+                            temp2 = K*(3+2*U_p*deltaT)*(3*beta+2*U_p*deltaT)*rho;
+                            temp = -temp1/temp2;
+
+                            d51 = temp;
+                            
+                        #endif
                               
                               
                         if (IF == IFLUID) {
@@ -3893,10 +3928,10 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 		dx = dy = dz = cube_size[icube]/NcubeX;
 		invXI = invET = invZT = 1./dx;
 
-            for (i = nx; i <= n_buffer; i--) {
-                for (j = ny; j <= n_buffer; j--) {
-                    for (k = nz; k <= n_buffer; k--) {
-
+            for (i = nx; i >= n_buffer; i--) {
+                for (j = ny; j >= n_buffer; j--) {
+                    for (k = nz; k >= n_buffer; k--) {
+                        
 						IF = FWS[icube][i][j][k];
                     
                         rho = U1_[icube][i+1][j][k][0];
@@ -4086,15 +4121,49 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 
                         U_p = Ux*invXI+Uy*invET+Uz*invZT;
 
-                        d11 = 2*deltaT/(3*beta+2*U_p*deltaT);
+                        #if defined(DTau)
+                        
+                            deltaTau = 0.3*U_p;
+                        
+                            temp = 1.0/deltaTau + U_p;
+                        
+                            d11 = 1.0 / (3.0*beta/(2.0*deltaT) + temp);
 
-                        d22 = d33 = d44 = d55 = 2*deltaT/(3+2*U_p*deltaT);
+                            d22 = d33 = d44 = d55 = 1.0 / ( 3.0/(2.0*deltaT) +temp);
 
-                        temp1 = 6*(K-1)*(beta-1)*deltaT;
-                        temp2 = K*(3+2*U_p*deltaT)*(3*beta+2*U_p*deltaT)*rho;
-                        temp = -temp1/temp2;
+                            temp1 = 6*(K-1)*(beta-1)*deltaT*deltaTau*deltaTau;
+                            temp2 = K*( 3*deltaTau+2*(1.0+U_p*deltaTau)*deltaT )*(3*beta*deltaTau+2*(1.0+U_p*deltaTau)*deltaT)*rho;
+                            temp = -temp1/temp2;
 
-                        d51 = temp;
+                            d51 = temp;
+                            
+                        #elif defined(DTau_fix)
+                        
+                            temp = 1.0/deltaTau + U_p;
+                        
+                            d11 = 1.0 / (3.0*beta/(2.0*deltaT) + temp);
+
+                            d22 = d33 = d44 = d55 = 1.0 / ( 3.0/(2.0*deltaT) +temp);
+
+                            temp1 = 6*(K-1)*(beta-1)*deltaT*deltaTau*deltaTau;
+                            temp2 = K*( 3*deltaTau+2*(1.0+U_p*deltaTau)*deltaT )*(3*beta*deltaTau+2*(1.0+U_p*deltaTau)*deltaT)*rho;
+                            temp = -temp1/temp2;
+
+                            d51 = temp;
+                        
+                        #elif defined(NODTau)
+                        
+                            d11 = 2*deltaT/(3*beta+2*U_p*deltaT);
+
+                            d22 = d33 = d44 = d55 = 2*deltaT/(3+2*U_p*deltaT);
+
+                            temp1 = 6*(K-1)*(beta-1)*deltaT;
+                            temp2 = K*(3+2*U_p*deltaT)*(3*beta+2*U_p*deltaT)*rho;
+                            temp = -temp1/temp2;
+
+                            d51 = temp;
+                            
+                        #endif
 
                             
                         
@@ -4157,7 +4226,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 					adjX_bs_plus, adjX_sb_plus, adjX_bs_minus, adjX_sb_minus,
 					adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
-					U1p1);
+					U1p2);
                     
                     
           #pragma omp parallel for private(i,j,k)

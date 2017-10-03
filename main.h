@@ -780,6 +780,8 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 	int ncube,
 
 	double deltaT,
+    
+    double deltaTau,
 
 	double e,
 
@@ -942,6 +944,8 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 	int ncube,
 
 	double deltaT,
+    
+    double deltaTau,
 
 	double e,
 

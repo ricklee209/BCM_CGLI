@@ -38,6 +38,8 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 	int ncube,
 
 	double deltaT,
+    
+    double deltaTau,
 
 	double e,
 
@@ -3956,18 +3958,49 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 
      
 
-                        U_p = Ux*invXI+Uy*invET+Uz*invZT;
+                        #if defined(DTau)
+                        
+                            deltaTau = 0.3*U_p;
+                        
+                            temp = 1.0/deltaTau + U_p;
+                        
+                            d11 = 1.0 / (3.0*beta/(2.0*deltaT) + temp);
 
-                        d11 = 2*deltaT/(3*beta+2*U_p*deltaT);
+                            d22 = d33 = d44 = d55 = 1.0 / ( 3.0/(2.0*deltaT) +temp);
 
-                        d22 = d33 = d44 = d55 = 2*deltaT/(3+2*U_p*deltaT);
+                            temp1 = 6*(K-1)*(beta-1)*deltaT*deltaTau*deltaTau;
+                            temp2 = K*( 3*deltaTau+2*(1.0+U_p*deltaTau)*deltaT )*(3*beta*deltaTau+2*(1.0+U_p*deltaTau)*deltaT)*rho;
+                            temp = -temp1/temp2;
 
-                        temp1 = 6*(K-1)*(beta-1)*deltaT;
-                        temp2 = K*(3+2*U_p*deltaT)*(3*beta+2*U_p*deltaT)*rho;
-                        temp = -temp1/temp2;
+                            d51 = temp;
+                            
+                        #elif defined(DTau_fix)
+                        
+                            temp = 1.0/deltaTau + U_p;
+                        
+                            d11 = 1.0 / (3.0*beta/(2.0*deltaT) + temp);
 
-                        d51 = temp;
-                        d55 = 2.0*deltaT/(3.0+2.0*U_p*deltaT);
+                            d22 = d33 = d44 = d55 = 1.0 / ( 3.0/(2.0*deltaT) +temp);
+
+                            temp1 = 6*(K-1)*(beta-1)*deltaT*deltaTau*deltaTau;
+                            temp2 = K*( 3*deltaTau+2*(1.0+U_p*deltaTau)*deltaT )*(3*beta*deltaTau+2*(1.0+U_p*deltaTau)*deltaT)*rho;
+                            temp = -temp1/temp2;
+
+                            d51 = temp;
+                        
+                        #elif defined(NODTau)
+                        
+                            d11 = 2*deltaT/(3*beta+2*U_p*deltaT);
+
+                            d22 = d33 = d44 = d55 = 2*deltaT/(3+2*U_p*deltaT);
+
+                            temp1 = 6*(K-1)*(beta-1)*deltaT;
+                            temp2 = K*(3+2*U_p*deltaT)*(3*beta+2*U_p*deltaT)*rho;
+                            temp = -temp1/temp2;
+
+                            d51 = temp;
+                            
+                        #endif
 
                             
                         

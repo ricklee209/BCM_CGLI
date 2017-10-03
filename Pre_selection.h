@@ -38,6 +38,13 @@
 #define LUSGS 
 
 
+// ---- DTau : DT includes deltaTau ---- //
+// ---- DTau_fix : DT includes deltaTau and deltaTau is fixed---- //
+// ---- NODTau : DT includes deltaTau ---- //
+
+#define DTau
+
+
 // ---- ILES : implicit turbulence model ---- //
 // ---- DNS : implicit turbulence model ---- //
 

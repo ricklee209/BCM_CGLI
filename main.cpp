@@ -1180,7 +1180,7 @@ int main(int argc, char **argv)
     // ------- Computational information ------ //
     // ---------------------------------------- //
     
-
+    
 // =============================================== //
 	for (step = 1 ; step <= count; step++) {       //
 // =============================================== //
@@ -1263,7 +1263,7 @@ int main(int argc, char **argv)
 				
                 #if defined(LUSGS)
 				
-                    BCM_Flux_XYZ_Viscous_LUSGS(myid, Ncube, deltaT, e, MPI_Nadj,
+                    BCM_Flux_XYZ_Viscous_LUSGS(myid, Ncube, deltaT, deltaTau, e, MPI_Nadj,
 
                         Ncpu_bs, Ncpu_eq, Ncpu_sb,
                         Max_nei_bs,Max_nei_eq,Max_nei_bs,
@@ -1292,13 +1292,13 @@ int main(int argc, char **argv)
                         U1_,U1 ,U1q,U1p1,U1p2,Fabs,Roe_dis,
                         Rku1,Residual1,
                         er);
-                
+                        
                 #endif
                 
                 
                 #if defined(DPLUSGS)
 				
-                    BCM_Flux_XYZ_Viscous_DPLUSGS(myid, Ncube, deltaT, e, MPI_Nadj,
+                    BCM_Flux_XYZ_Viscous_DPLUSGS(myid, Ncube, deltaT, deltaTau, e, MPI_Nadj,
 
                         Ncpu_bs, Ncpu_eq, Ncpu_sb,
                         Max_nei_bs,Max_nei_eq,Max_nei_bs,
