@@ -35,7 +35,7 @@
 // ---- DPLUSGS ---- //
 // ---- LUSGS ---- //
 
-#define DPLUSGS 
+#define LUSGS 
 
 
 // ---- ILES : implicit turbulence model ---- //

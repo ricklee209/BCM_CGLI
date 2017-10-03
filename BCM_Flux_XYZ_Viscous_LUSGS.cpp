@@ -354,7 +354,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 
 	double Cdiss;
     
-    int nsweep = 4;
+    int nsweep = 2;
 	int isweep;
     
     double Aplus11,Aplus12,Aplus13,Aplus14,
@@ -3534,16 +3534,10 @@ void BCM_Flux_XYZ_Viscous_LUSGS
     
     
      #pragma omp barrier
-        
-
-
-    
-    for (isweep = 1; isweep < nsweep+1; isweep++) {
-    
-    
-    
-    
-    BCM_Interface(myid,ncube,
+     
+     
+     
+     BCM_Interface(myid,ncube,
 
 					mPI_Nadj,
 
@@ -3571,12 +3565,34 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 					adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1p1);
+                    
+                    
+     #pragma omp parallel for private(i,j,k)
+    for (icube = 1; icube < ncube; icube++) {  
+    
+		for (i = n_buffer-1; i <= nxx; i++) {
+            for (j = n_buffer-1; j <= nyy; j++) {
+                for (k = n_buffer-1; k <= nzz; k++) {  
+                        
+                    U1p2[icube][i][j][k][0] = U1p1[icube][i][j][k][0];
+					U1p2[icube][i][j][k][1] = U1p1[icube][i][j][k][1];
+					U1p2[icube][i][j][k][2] = U1p1[icube][i][j][k][2];
+					U1p2[icube][i][j][k][3] = U1p1[icube][i][j][k][3];
+					U1p2[icube][i][j][k][4] = U1p1[icube][i][j][k][4];
+
+                }
+            }
+        }
+        
+    }               
+     
+        
 
 
     
-        // ---- data transfer ---- //
+    for (isweep = 1; isweep < nsweep+1; isweep++) {
     
-	
+    
         #pragma omp parallel for private(\
 		IF,\
 		dx,dy,dz,invXI,invET,invZT,\
@@ -3766,11 +3782,123 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                               (-Cplus51*U1p1[icube][i][j][k-1][0]       \
                                -Cplus54*U1p1[icube][i][j][k-1][3]       \
                                -Cplus55*U1p1[icube][i][j][k-1][4])/dz;
+                               
+                               
+                        rho = U1_[icube][i][j][k][0];
+                        U = U1_[icube][i][j][k][1]/rho;
+                        V = U1_[icube][i][j][k][2]/rho;
+                        W = U1_[icube][i][j][k][3]/rho;
+                        VV = U*U+V*V+W*W;
+                        P = (U1_[icube][i][j][k][4]-0.5*rho*VV)*(K-1);
+                        T = P/rho;
+                        C = K*P/rho;
+
+                        /* preconditioning */
+
+                        beta = max(VV/C,e);
+            
+                        Sx = sqrt(U*U*(beta-1)*(beta-1)+4*beta*C);
+                        Sy = sqrt(V*V*(beta-1)*(beta-1)+4*beta*C);
+                        Sz = sqrt(W*W*(beta-1)*(beta-1)+4*beta*C);
+
+                        Ux = ((beta+1)*fabs(U)+Sx)/2;
+                        Uy = ((beta+1)*fabs(V)+Sy)/2;
+                        Uz = ((beta+1)*fabs(W)+Sz)/2;
+
+     
+
+                        U_p = Ux*invXI+Uy*invET+Uz*invZT;
+
+                        d11 = 2*deltaT/(3*beta+2*U_p*deltaT);
+
+                        d22 = d33 = d44 = d55 = 2*deltaT/(3+2*U_p*deltaT);
+
+                        temp1 = 6*(K-1)*(beta-1)*deltaT;
+                        temp2 = K*(3+2*U_p*deltaT)*(3*beta+2*U_p*deltaT)*rho;
+                        temp = -temp1/temp2;
+
+                        d51 = temp;
+                              
+                              
+                        if (IF == IFLUID) {
+
+                            U1p1[icube][i][j][k][0] = d11*(Rku1[icube][i][j][k][0] - LL1);
+                            U1p1[icube][i][j][k][1] = d22*(Rku1[icube][i][j][k][1] - LL2);
+                            U1p1[icube][i][j][k][2] = d33*(Rku1[icube][i][j][k][2] - LL3);
+                            U1p1[icube][i][j][k][3] = d44*(Rku1[icube][i][j][k][3] - LL4);
+                            U1p1[icube][i][j][k][4] = d51*(Rku1[icube][i][j][k][0] - LL1) + \
+                                                      d55*(Rku1[icube][i][j][k][4] - LL5);
+                            
+                        }
+                        else {
+
+                            U1p1[icube][i][j][k][0] = 0;
+                            U1p1[icube][i][j][k][1] = 0;
+                            U1p1[icube][i][j][k][2] = 0;
+                            U1p1[icube][i][j][k][3] = 0;
+                            U1p1[icube][i][j][k][4] = 0;
+
+                        }       
+                               
+                               
+                    
+                    }
+                }
+            }
+            
+        }    // ---- for (icube = 1; icube < ncube; icube++) ---- //
+
+        #pragma omp barrier
             
 // =================================  Lower part end  ================================= //
 
 
+        #pragma omp parallel for private(\
+		IF,\
+		dx,dy,dz,invXI,invET,invZT,\
+        i,j,k,\
+        rho,U,V,W,VV,P,C,T,h,H,\
+        Ux,Uy,Uz,\
+        beta,Sx,Sy,Sz,U_p,\
+        temp,temp1,temp2,\
+        d11,d12,d13,d14,d15,\
+        d21,d22,d23,d24,d25,\
+        d31,d32,d33,d34,d35,\
+        d41,d42,d43,d44,d45,\
+        d51,d52,d53,d54,d55,\
+        LL1,LL2,LL3,LL4,LL5,\
+        UU1,UU2,UU3,UU4,UU5,\
+        Aplus11,Aplus12,\
+        Aplus21,Aplus22,\
+        Aplus33,\
+        Aplus44,\
+        Aplus51,Aplus52,Aplus55,\
+        Bplus11,Bplus13,\
+        Bplus22,\
+        Bplus31,Bplus33,\
+        Bplus41,Bplus44,\
+        Bplus51,Bplus53,Bplus55,\
+        Cplus11,Cplus14,\
+        Cplus22,\
+        Cplus33,\
+        Cplus41,Cplus44,\
+        Cplus51,Cplus54,Cplus55,\
+        Amius11,Amius22,Amius33,Amius44,Amius55,\
+        Bmius11,Bmius22,Bmius33,Bmius44,Bmius55,\
+        Cmius11,Cmius22,Cmius33,Cmius44,Cmius55\
+        )
 
+        for (icube = 1; icube < ncube; icube++) {  
+
+		dx = dy = dz = cube_size[icube]/NcubeX;
+		invXI = invET = invZT = 1./dx;
+
+            for (i = nx; i <= n_buffer; i--) {
+                for (j = ny; j <= n_buffer; j--) {
+                    for (k = nz; k <= n_buffer; k--) {
+
+						IF = FWS[icube][i][j][k];
+                    
                         rho = U1_[icube][i+1][j][k][0];
                         U = U1_[icube][i+1][j][k][1]/rho;
                         V = U1_[icube][i+1][j][k][2]/rho;
@@ -3900,37 +4028,37 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                         Cmius55 = 0.5*(W-d55);
             
             
-                        UU1 = (+Amius11*U1p1[icube][i+1][j][k][0]       \
-                               +Aplus12*U1p1[icube][i+1][j][k][1])/dx + \
-                              (+Bmius11*U1p1[icube][i][j+1][k][0]       \
-                               +Bplus13*U1p1[icube][i][j+1][k][2])/dy + \
-                              (+Cmius11*U1p1[icube][i][j][k+1][0]       \
-                               +Cplus14*U1p1[icube][i][j][k+1][3])/dz;
+                        UU1 = (+Amius11*U1p2[icube][i+1][j][k][0]       \
+                               +Aplus12*U1p2[icube][i+1][j][k][1])/dx + \
+                              (+Bmius11*U1p2[icube][i][j+1][k][0]       \
+                               +Bplus13*U1p2[icube][i][j+1][k][2])/dy + \
+                              (+Cmius11*U1p2[icube][i][j][k+1][0]       \
+                               +Cplus14*U1p2[icube][i][j][k+1][3])/dz;
                                
-                        UU2 = (+Aplus21*U1p1[icube][i+1][j][k][0]       \
-                               +Amius22*U1p1[icube][i+1][j][k][1])/dx + \
-                              (+Bmius22*U1p1[icube][i][j+1][k][1])/dy + \
-                              (+Cmius22*U1p1[icube][i][j][k+1][1])/dz;
+                        UU2 = (+Aplus21*U1p2[icube][i+1][j][k][0]       \
+                               +Amius22*U1p2[icube][i+1][j][k][1])/dx + \
+                              (+Bmius22*U1p2[icube][i][j+1][k][1])/dy + \
+                              (+Cmius22*U1p2[icube][i][j][k+1][1])/dz;
                         
-                        UU3 = (+Amius33*U1p1[icube][i+1][j][k][2])/dx + \
-                              (+Bplus31*U1p1[icube][i][j+1][k][0]       \
-                               +Bmius33*U1p1[icube][i][j+1][k][2])/dy + \
-                              (+Cmius33*U1p1[icube][i][j][k+1][2])/dz;
+                        UU3 = (+Amius33*U1p2[icube][i+1][j][k][2])/dx + \
+                              (+Bplus31*U1p2[icube][i][j+1][k][0]       \
+                               +Bmius33*U1p2[icube][i][j+1][k][2])/dy + \
+                              (+Cmius33*U1p2[icube][i][j][k+1][2])/dz;
                                
-                        UU4 = (+Amius44*U1p1[icube][i+1][j][k][3])/dx + \
-                              (+Bmius44*U1p1[icube][i][j+1][k][3])/dy + \
-                              (+Cplus41*U1p1[icube][i][j][k+1][0]       \
-                               +Cmius44*U1p1[icube][i][j][k+1][3])/dz;     
+                        UU4 = (+Amius44*U1p2[icube][i+1][j][k][3])/dx + \
+                              (+Bmius44*U1p2[icube][i][j+1][k][3])/dy + \
+                              (+Cplus41*U1p2[icube][i][j][k+1][0]       \
+                               +Cmius44*U1p2[icube][i][j][k+1][3])/dz;     
                         
-                        UU5 = (+Aplus51*U1p1[icube][i+1][j][k][0]       \
-                               +Aplus52*U1p1[icube][i+1][j][k][1]       \
-                               +Amius55*U1p1[icube][i+1][j][k][4])/dx + \
-                              (+Bplus51*U1p1[icube][i][j+1][k][0]       \
-                               +Bplus53*U1p1[icube][i][j+1][k][2]       \
-                               +Bmius55*U1p1[icube][i][j+1][k][4])/dy + \
-                              (+Cplus51*U1p1[icube][i][j][k+1][0]       \
-                               +Cplus54*U1p1[icube][i][j][k+1][3]       \
-                               +Cmius55*U1p1[icube][i][j][k+1][4])/dz;
+                        UU5 = (+Aplus51*U1p2[icube][i+1][j][k][0]       \
+                               +Aplus52*U1p2[icube][i+1][j][k][1]       \
+                               +Amius55*U1p2[icube][i+1][j][k][4])/dx + \
+                              (+Bplus51*U1p2[icube][i][j+1][k][0]       \
+                               +Bplus53*U1p2[icube][i][j+1][k][2]       \
+                               +Bmius55*U1p2[icube][i][j+1][k][4])/dy + \
+                              (+Cplus51*U1p2[icube][i][j][k+1][0]       \
+                               +Cplus54*U1p2[icube][i][j][k+1][3]       \
+                               +Cmius55*U1p2[icube][i][j][k+1][4])/dz;
             
             
                         rho = U1_[icube][i][j][k][0];
@@ -3967,18 +4095,16 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                         temp = -temp1/temp2;
 
                         d51 = temp;
-                        d55 = 2.0*deltaT/(3.0+2.0*U_p*deltaT);
 
                             
                         
                         if (IF == IFLUID) {
 
-                            U1p2[icube][i][j][k][0] = d11*(Rku1[icube][i][j][k][0] - LL1 - UU1);
-                            U1p2[icube][i][j][k][1] = d22*(Rku1[icube][i][j][k][1] - LL2 - UU2);
-                            U1p2[icube][i][j][k][2] = d33*(Rku1[icube][i][j][k][2] - LL3 - UU3);
-                            U1p2[icube][i][j][k][3] = d44*(Rku1[icube][i][j][k][3] - LL4 - UU4);
-                            U1p2[icube][i][j][k][4] = d51*(Rku1[icube][i][j][k][0] - LL1 - UU1) + \
-                                                      d55*(Rku1[icube][i][j][k][4] - LL5 - UU5);
+                            U1p2[icube][i][j][k][0] = U1p1[icube][i][j][k][0] - d11*UU1;
+                            U1p2[icube][i][j][k][1] = U1p1[icube][i][j][k][1] - d22*UU2;
+                            U1p2[icube][i][j][k][2] = U1p1[icube][i][j][k][2] - d33*UU3;
+                            U1p2[icube][i][j][k][3] = U1p1[icube][i][j][k][3] - d44*UU4;
+                            U1p2[icube][i][j][k][4] = U1p1[icube][i][j][k][4] - d51*UU1- d55*UU5;
                             
                         }
                         else {
@@ -3999,15 +4125,47 @@ void BCM_Flux_XYZ_Viscous_LUSGS
         }    // ---- for (icube = 1; icube < ncube; icube++) ---- //
 
         #pragma omp barrier
+        
+        
+        if (isweep < nsweep) {
+            
+            
+            BCM_Interface(myid,ncube,
 
-          #pragma omp parallel for private(\
-            i,j,k\
-            )
+					mPI_Nadj,
+
+					ncpu_bs, ncpu_eq, ncpu_sb,
+					max_nei_bs,max_nei_eq,max_nei_bs,
+
+					nadjX_eq, nadjY_eq, nadjZ_eq,
+					nadjX_bs_plus, nadjX_sb_plus, nadjX_bs_minus, nadjX_sb_minus,
+					nadjY_bs_plus, nadjY_sb_plus, nadjY_bs_minus, nadjY_sb_minus,
+					nadjZ_bs_plus, nadjZ_sb_plus, nadjZ_bs_minus, nadjZ_sb_minus,
+
+					rank_map,
+
+					MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+					neighbor_cpu_eq, Ncube_Ncpu_eq, neighbor_cpu_sb, Ncube_Ncpu_sb, neighbor_cpu_bs, Ncube_Ncpu_bs,
+					Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq,  
+					Scube_Ncpu_sb, Rcube_Ncpu_sb, send_data_curr_sb, recv_data_curr_sb, send_data_neig_sb, recv_data_neig_sb, Sdir_sb, Rdir_sb,
+					Scube_Ncpu_bs, Rcube_Ncpu_bs, send_data_curr_bs, recv_data_curr_bs, send_data_neig_bs, recv_data_neig_bs, Sdir_bs, Rdir_bs,
+					ist_eq,ist_sb,ist_bs, adjN_sb, RadjN_bs, SadjN_bs,
+
+					csl, 
+					adj_number, 
+					adjX_eq, adjY_eq, adjZ_eq,
+					adjX_bs_plus, adjX_sb_plus, adjX_bs_minus, adjX_sb_minus,
+					adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
+					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
+					U1p1);
+                    
+                    
+          #pragma omp parallel for private(i,j,k)
             for (icube = 1; icube < ncube; icube++) {  
                     
-                for (i = n_buffer ; i < nxx; i++) {
-                    for (j = n_buffer; j < nyy; j++) {
-                        for (k = n_buffer; k < nzz; k++) {
+                for (i = n_buffer-1 ; i <= nxx; i++) {
+                    for (j = n_buffer-1; j <= nyy; j++) {
+                        for (k = n_buffer-1; k <= nzz; k++) {
 
                             U1p1[icube][i][j][k][0] = U1p2[icube][i][j][k][0];
                             U1p1[icube][i][j][k][1] = U1p2[icube][i][j][k][1];
@@ -4020,15 +4178,16 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                 }
                 
             }
-
-			
             #pragma omp barrier
         
+        }
 
-        
 	}    // ---- for (isweep = 1; isweep < nsweep+1; isweep++) ---- //
 
 
+    
+    
+    
    #pragma omp parallel for private(IF,i,j,k,rho,P,U,V,W,T,rhoold,Uold,Vold,Wold,VVold,Pold,Told)reduction(+:e1,e2,e3,e4,e5)
     
     for (icube = 1; icube < ncube; icube++) {  
@@ -4048,11 +4207,11 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                     Pold = (U1_[icube][i][j][k][4]-0.5*rhoold*VVold)*(K-1);
 					Told = Pold/rhoold;
 
-					P = Pold + U1p1[icube][i][j][k][0];
-					U = Uold + U1p1[icube][i][j][k][1];
-					V = Vold + U1p1[icube][i][j][k][2];
-					W = Wold + U1p1[icube][i][j][k][3];
-					T = Told + U1p1[icube][i][j][k][4];
+					P = Pold + U1p2[icube][i][j][k][0];
+					U = Uold + U1p2[icube][i][j][k][1];
+					V = Vold + U1p2[icube][i][j][k][2];
+					W = Wold + U1p2[icube][i][j][k][3];
+					T = Told + U1p2[icube][i][j][k][4];
 					rho = P/T;
 
                     if (IF == IFLUID) {
