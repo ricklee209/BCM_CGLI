@@ -924,6 +924,8 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 
 	double (*Roe_dis)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
 
+    double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
+    
 	double (*Rku1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
 	double (*Residual1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
@@ -1087,6 +1089,8 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 	double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
 	double (*Roe_dis)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
+
+    double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
 
 	double (*Rku1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 

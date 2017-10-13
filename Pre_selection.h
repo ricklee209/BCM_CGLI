@@ -39,10 +39,12 @@
 
 
 // ---- DTau : DT includes deltaTau ---- //
+// ---- DTau_CFL : CFL_number for deltaTau ---- //
 // ---- DTau_fix : DT includes deltaTau and deltaTau is fixed---- //
 // ---- NODTau : DT includes deltaTau ---- //
 
 #define DTau
+#define DTau_CFL 1000
 
 
 // ---- ILES : implicit turbulence model ---- //

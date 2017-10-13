@@ -28,6 +28,7 @@ double (*Roe_dis)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
 
 double (*filter)[11][X_size][Y_size][Z_size][Ndim] = new double[Ncube][11][X_size][Y_size][Z_size][Ndim];
 
+double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size];
 
 double (*cube_size) = new double[Ncube];
 int (*csl) = new int[Ncube];

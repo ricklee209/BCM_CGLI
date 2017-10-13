@@ -49,12 +49,12 @@ int main(int argc, char **argv)
 
 	int dp_step = 50000;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 50;
+	int iteration_end_step = 100;
 	int output_step = 1;
 	int count = 10;	
 	int step;
 
-	double deltaT = 0.002;
+	double deltaT = 1.0;
 	double deltaTau = deltaT/200.0;
 	double e = 0.01;
 	double Th = 309.03531204896;
@@ -1289,7 +1289,7 @@ int main(int argc, char **argv)
                         adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 
                         FWS, csl, cube_size,
-                        U1_,U1 ,U1q,U1p1,U1p2,Fabs,Roe_dis,
+                        U1_,U1 ,U1q,U1p1,U1p2,Fabs,Roe_dis,CFL_tau,
                         Rku1,Residual1,
                         er);
                         
@@ -1324,7 +1324,7 @@ int main(int argc, char **argv)
                         adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 
                         FWS, csl, cube_size,
-                        U1_,U1 ,U1q,U1p1,U1p2,Fabs,Roe_dis,
+                        U1_,U1 ,U1q,U1p1,U1p2,Fabs,Roe_dis,CFL_tau,
                         Rku1,Residual1,
                         er);
                 
