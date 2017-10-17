@@ -646,9 +646,6 @@ void BCM_Immersed_boundary
 
 
 
-
-
-
 	// ================  calculate the ghost cells ================ //
 
 
@@ -709,7 +706,7 @@ void BCM_Immersed_boundary
 
 	double vert0_iflag_total0_x,vert0_iflag_total0_y,vert0_iflag_total0_z;
 
-
+    
 	for (igc = 1; igc <= Ngc; igc++) {
 
 		if(Ntri == 0) continue;    // ---- cube contains ghost cells but no triangles ---- //
@@ -740,7 +737,7 @@ void BCM_Immersed_boundary
 		ilarge = 0;
 
 
-		for (itri =cube_trinum[icube-1]+1; itri <= cube_trinum[icube]; itri++) {
+		for (itri = 1; itri <= cube_trinum[icube]; itri++) {
 
 			Ntemp = (tri_table[itri]-1)*N_line;
 
@@ -797,7 +794,7 @@ void BCM_Immersed_boundary
 
 			Ndis_min = MAX;
 
-			for (itri =cube_trinum[icube-1]+1; itri <= cube_trinum[icube]; itri++) {
+			for (itri =1; itri <= cube_trinum[icube]; itri++) {
 
 				Ntemp = (tri_table[itri]-1)*N_line;
 
