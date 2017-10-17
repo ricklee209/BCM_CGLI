@@ -8,7 +8,7 @@
 #include <time.h>
 #include <omp.h>
 #include <mpi.h>
-#include <string>
+#include <string.h>
 
 #define min(a,b) (((a)<(b))?(a):(b)) 
 #define max(a,b) (((a)>(b))?(a):(b)) 
@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
 	int dp_step = 50000;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 5;
+	int iteration_end_step = 100;
 	int output_step = 2;
 	int count = 6;	
 	int step;

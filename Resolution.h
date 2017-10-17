@@ -4,7 +4,7 @@
 
 #define np 8704             // ---- CPU number ---- //
 
-#define MPI_Ncube 407346    // ---- How many cubes for total calculation ---- //
+#define MPI_Ncube 407345    // ---- How many cubes for total calculation ---- //
 
 #define n_buffer 2         // ---- buffer region for BCM data communication (EVEN number) ---- //
 
