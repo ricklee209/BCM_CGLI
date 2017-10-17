@@ -41,7 +41,7 @@
 // ---- DTau : DT includes deltaTau ---- //
 // ---- DTau_CFL : CFL_number for deltaTau ---- //
 // ---- DTau_fix : DT includes deltaTau and deltaTau is fixed---- //
-// ---- NODTau : DT includes deltaTau ---- //
+// ---- NODTau : DT doesn't include deltaTau (Aeroacoustic) ---- //
 
 #define DTau
 #define DTau_CFL 1000

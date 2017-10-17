@@ -3514,7 +3514,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                         UU2 = 2.0*max(2.0*sqrt(VV),1.0e-8);
                         UU3 = 2.0*max(2.0*sqrt(VV),1.0e-8);
                         UU4 = 2.0*max(2.0*sqrt(VV),1.0e-8);
-                        UU5 = 0.1*(T,1.0e-9*P0/rho0);
+                        UU5 = 0.1*T;
                         
                         LL1 = DTau_CFL;
                         LL2 = DTau_CFL;
@@ -3525,10 +3525,10 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                         if( fabs(Rk1) > UU1 | fabs(Rk2) > UU2 | fabs(Rk3) > UU3 | fabs(Rk4) > UU4 | fabs(Rk5) > UU5 ) {
                         
                             LL1 = DTau_CFL*UU1/fabs(Rk1);
-                            LL2 = DTau_CFL*UU1/fabs(Rk2);
-                            LL3 = DTau_CFL*UU1/fabs(Rk3);
-                            LL4 = DTau_CFL*UU1/fabs(Rk4);
-                            LL5 = DTau_CFL*UU1/fabs(Rk5);
+                            LL2 = DTau_CFL*UU2/fabs(Rk2);
+                            LL3 = DTau_CFL*UU3/fabs(Rk3);
+                            LL4 = DTau_CFL*UU4/fabs(Rk4);
+                            LL5 = DTau_CFL*UU5/fabs(Rk5);
                                 
                             CFL_tau[icube][i][j][k] = min(LL5,min(LL4,min(LL3,min(LL2,LL1))));
                             
@@ -3538,12 +3538,6 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                             CFL_tau[icube][i][j][k] = DTau_CFL;
                             
                         }
-                    
-                        deltaTau = CFL_tau[icube][i][j][k]/max(U_p,1.0e-8);
-                        
-                            // if(CFL_tau[icube][i][j][k]>0.001)
-                            // printf("%f\t%f\t%f\n", CFL_tau[icube][i][j][k],deltaTau,Rk1);
-                                
                     
                         temp = 1.0/deltaTau + U_p;
                     
