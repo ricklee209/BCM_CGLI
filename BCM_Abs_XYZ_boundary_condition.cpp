@@ -66,7 +66,9 @@ double (*cube_size) = new double[Ncube],
 
 double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
-double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size]
 // ================================================================================ //
 )
 
@@ -222,7 +224,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         xV_out_1 = 0.0;
                         xSigma_out = 0.0;
                         
-
+                      CFL_tau[i][j][k][icube] = -DTau_CFL;
 						//if( k == 10 && j == 10) {
 							//printf("%d\t%f\t%f\t%f\n",i,(abs1-XX)/lenght_absXm, (abs1-XX)/dx,lenght_absXm/gdXmax);
 						//}
@@ -239,7 +241,7 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         xV_in_1 = 0.0;
                         xSigma_in = 0.0;
                         
-
+                        CFL_tau[i][j][k][icube] = -DTau_CFL;
 						//if( k == 10 && j == 10) {
 							//printf("%d\t%f\t%f\t%f\n",i,(XX-abs2)/lenght_absXp, (XX-abs2)/dx,lenght_absXp/gdXmax);
 						//}
@@ -269,6 +271,8 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         yV_out_1 = 0.0;
                         ySigma_out = 0.0;
                         
+                        CFL_tau[i][j][k][icube] = -DTau_CFL;
+                        
 					    
 						} 
 					else if( YY > abs4  ) {
@@ -280,6 +284,8 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         
                         yV_in_1 = 0.0;
                         ySigma_in = 0.0;
+                        
+                        CFL_tau[i][j][k][icube] = -DTau_CFL;
                     
                     
                     } else {
@@ -306,6 +312,8 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         zV_out_1 = 0.0;
                         zSigma_out = 0.0;
                         
+                        CFL_tau[i][j][k][icube] = -DTau_CFL;
+                        
 					    
 						} 
 					else if( ZZ > abs6  ) {
@@ -317,6 +325,8 @@ double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size]
                         
                         zV_in_1 = 0.0;
                         zSigma_in = 0.0;
+                        
+                        CFL_tau[i][j][k][icube] = -DTau_CFL;
                     
                     } else {
                         

@@ -3501,6 +3501,8 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 
                     
                     #if defined(DTau)
+          
+                    if(CFL_tau[i][j][k][icube] > 0.0) {
                     
                         deltaTau = DTau_CFL/max(U_p,1.0e-8);
                         
@@ -3533,12 +3535,14 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                             CFL_tau[icube][i][j][k] = min(LL5,min(LL4,min(LL3,min(LL2,LL1))));
                             
                         }
-                        else {
-                            
-                            CFL_tau[icube][i][j][k] = DTau_CFL;
+                        else CFL_tau[icube][i][j][k] = DTau_CFL;
                             
                         }
-                    
+          
+                    else CFL_tau[icube][i][j][k] = 0.3;
+          
+                        // deltaTau = CFL_tau[icube][i][j][k]/max(U_p,1.0e-8);
+          
                         temp = 1.0/deltaTau + U_p;
                     
                         d11 = 1.0 / (3.0*beta/(2.0*deltaT) + temp);
