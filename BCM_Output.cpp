@@ -69,24 +69,28 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 	MPI_Offset  x_gcount[np], x_gdisp[np], q_gcount[np], q_gdisp[np];
 
 
-	icount = 0;
-  
-  x_gdisp[0] = 0;
-  q_gdisp[0] = 0;
-
-	for (i = 1; i <= np-1; i++) { 
+	istart = 0;
+	x_gdisp[np-1] = 0; 
+	q_gdisp[np-1] = 0; 
+	
+	for (i = 0; i < np-1; i++) { 
 
 		for (icube = 0; icube < MPI_Ncube; icube++) {
 
-			if (rank_map[0][icube] == i) icount = icount+1;
-      
+			if (rank_map[0][icube] == i) {
+
+                icount = icube;
+				break;
+                
+			}
+
 		}
-    
-    //if(myid == 0)printf("x_gdisp == %d\t%d\t%d\t\%d\n",myid,i,icount,x_gdisp[i]);
 
     x_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*3;
 		q_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*5+(MPI_Offset)icount*4;
 
+        // printf("x_gdisp == %d\t%d\t%d\t\%d\n",myid,i,icube,x_gdisp[i]);
+        
 	}
     
 	

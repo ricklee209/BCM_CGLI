@@ -126,7 +126,7 @@ void BCM_Initial_condition
 
 		for (i = 0; i < np-1; i++) { 
 
-            for (icube = 1; icube <= MPI_Ncube; icube++) {
+            for (icube = 0; icube < MPI_Ncube; icube++) {
 
                 if (rank_map[0][icube] == i) {
 
