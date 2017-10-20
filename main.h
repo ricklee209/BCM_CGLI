@@ -584,7 +584,9 @@ double (*cube_size) = new double[Ncube],
 
 double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
-double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+double (*Fabs)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size]
 // ================================================================================ //
 );
 
