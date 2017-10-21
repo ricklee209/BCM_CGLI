@@ -298,15 +298,15 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
                     
                     if( ZZ < abs5 ) {
                         
-                        zV_in_1 = ((abs5-ZZ)/lenght_absZm)*((abs5-ZZ)/lenght_absZm)*((abs5-ZZ)/lenght_absZm);
-                        zSigma_in = zV_in_1*zSigma_in_0/Char_D;
+                        // zV_in_1 = ((abs5-ZZ)/lenght_absZm)*((abs5-ZZ)/lenght_absZm)*((abs5-ZZ)/lenght_absZm);
+                        // zSigma_in = zV_in_1*zSigma_in_0/Char_D;
                         
-                        zV_in_1 = zV_in_1*zV_in_0*C_plan;
+                        // zV_in_1 = zV_in_1*zV_in_0*C_plan;
                         
-                        zV_out_1 = 0.0;
-                        zSigma_out = 0.0;
+                        // zV_out_1 = 0.0;
+                        // zSigma_out = 0.0;
                         
-                        CFL_tau[icube][i][j][k] = -DTau_CFL;
+                        // CFL_tau[icube][i][j][k] = -DTau_CFL;
                         
 					    
 						} 
