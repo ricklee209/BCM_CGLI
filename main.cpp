@@ -49,9 +49,9 @@ int main(int argc, char **argv)
 
 	int dp_step = 50000;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 500;
+	int iteration_end_step = 20;
 	int output_step = 1;
-	int count = 1;	
+	int count = 2;	
 	int step;
 
 	double deltaT = 1.0;
@@ -1579,7 +1579,10 @@ int main(int argc, char **argv)
 					#ifdef NODT
 						printf("%d\t%4.8f\t%4.8f\t%4.8f\t%4.8f\t%4.8f\n",step,-er[6],-er[7],-er[8],er[9],er[1]);
 					#else
-						printf("%d\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\t%4.12f\n",step,-er[8],-er[6],-er[7],er[1],er[2],er[3],er[4],er[5]);
+                        printf("\n>>>>=======================================================<<<<\n");
+                        printf("step\t Nusselt\t\t Cd\t\t Cl\n");
+						printf("%d\t%4.12f\t%4.12f\t%4.12f\n",step,-er[8],-er[6],-er[7]);
+                        printf(">>>>=======================================================<<<<\n\n");
 					#endif
 
 				}
