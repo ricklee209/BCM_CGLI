@@ -1185,6 +1185,7 @@ int main(int argc, char **argv)
 	for (step = 1 ; step <= count; step++) {       //
 // =============================================== //
 
+    deltaT = deltaT*0.994;
 
 
 // ============================================================================ //
@@ -1200,7 +1201,7 @@ int main(int argc, char **argv)
 				
                 // BCM_Y_boundary_condition(NYbc_l, NYbc_u, Ybc_l, Ybc_u, U1_);
 				
-				// BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
+				BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
                 
                 
 				// BCM_Abs_Y_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NYbc_l, NYbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
