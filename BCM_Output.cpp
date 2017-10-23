@@ -74,8 +74,7 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 	q_gdisp[np-1] = 0; 
 	
 	for (i = 0; i < np-1; i++) { 
-
-		for (icube = 1; icube <= MPI_Ncube; icube++) {
+		for (icube = 0; icube < MPI_Ncube; icube++) {
 
 			if (rank_map[0][icube] == i) {
 
