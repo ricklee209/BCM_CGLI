@@ -1581,7 +1581,7 @@ int main(int argc, char **argv)
 					#else
                         printf("\n>>>>=======================================================<<<<\n");
                         printf("step\t Nusselt\t\t Cd\t\t Cl\n");
-						printf("%d\t%4.12f\t%4.12f\t%4.12f\n",step,-er[8],-er[6],-er[7]);
+						printf("%d\t%4.12f\t%4.12f\t%4.12f\n",step,-er[6],-er[7],-er[8]);
                         printf(">>>>=======================================================<<<<\n\n");
 					#endif
 
