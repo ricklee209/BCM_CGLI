@@ -35,7 +35,7 @@
 // ---- DPLUSGS ---- //
 // ---- LUSGS ---- //
 
-#define LUSGS 
+#define RK3NODT 
 
 
 // ---- DTau : DT includes deltaTau ---- //

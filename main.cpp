@@ -54,9 +54,9 @@ int main(int argc, char **argv)
 	int count = 2;	
 	int step;
 
-	double deltaT = 1.0;
+	double deltaT = 0.1;
 	double deltaTau = deltaT/200.0;
-	double e = 0.01;
+	double e = 0.001;
 	double Th = 309.03531204896;
 
 
@@ -1408,6 +1408,9 @@ int main(int argc, char **argv)
 
 
 
+                BCM_Abs_XYZ_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, NYbc_l, NYbc_u, NZbc_l, NZbc_u,
+											  gXmax,gXmin,gYmax,gYmin,gZmax,gZmin,gdXmax,gdYmax,gdZmax,Xcube,Ycube,Zcube,
+											  Xbc_l, Xbc_u, Ybc_l, Ybc_u,Zbc_l, Zbc_u, cube_size, U1_, Fabs, CFL_tau);
 
 
 				//BCM_X_boundary_condition(myid, NXbc_l, NXbc_u, Xbc_l, Xbc_u, U1_);
@@ -1417,17 +1420,17 @@ int main(int argc, char **argv)
 				//BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
 
 
-				BCM_Abs_Y_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NYbc_l, NYbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
+				// BCM_Abs_Y_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NYbc_l, NYbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
 
-				BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
+				// BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
 				
-				BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
+				// BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
 
 				// BCM_Abs_XY_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, NYbc_l, NYbc_u, 
 											  // gXmax,gXmin,gYmax,gYmin,gdXmax,gdYmax,Xcube,Ycube,
 											  // Xbc_l, Xbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
                                               
-                // BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
+                BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
 
 
 				for (int ig = 1; ig <= 10; ig++) {
@@ -1492,7 +1495,7 @@ int main(int argc, char **argv)
 				
 				BCM_Flux_XYZ_Viscous_Runge_kutta(myid, Ncube, RK, deltaT, deltaTau, e, FWS, csl, cube_size,
 					U1_,U1 ,U1q,U1p1,U1p2,Fabs,Roe_dis,
-					Rku1,Residual1,
+					CFL_tau,Rku1,Residual1,
 					er);
 					
 

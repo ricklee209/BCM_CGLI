@@ -52,6 +52,8 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 	double (*Roe_dis)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
 
+    double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_size],
+
 	double (*Rku1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
 
 	double (*Residual1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
@@ -232,6 +234,9 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 	double Cdiss;
 	
+    
+    double UU1,UU2,UU3,UU4,UU5;
+
 
 
 #pragma omp parallel for private(\
@@ -274,6 +279,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 	Vx,Vy,Vz,\
 	Wx,Wy,Wz,\
 	LL1,LL2,LL3,LL4,LL5,\
+    UU1,UU2,UU3,UU4,UU5,\
 	LL1i,LL2i,LL3i,LL4i,LL5i,\
 	ML1,ML2,ML3,ML4,ML5,\
 	ML1j,ML2j,ML3j,ML4j,ML5j,\
@@ -333,7 +339,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 	dPx,dPy,dPz,dPxi,dPyi,dPzi,\
 	dTx,dTy,dTz,dTxi,dTyi,dTzi,\
 	theda_p, U_p, C_p,\
-	Cdiss\
+	Cdiss,deltaTau\
 	) 
 
 
@@ -3263,6 +3269,86 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 	
 					#else
+                    
+
+						rho = u1;
+						U = u2/u1;
+						V = u3/u1;
+						W = u4/u1;
+						VV = U*U+V*V+W*W;
+						P = (u5-0.5*rho*VV)*(K-1);
+						C = K*P/rho;
+						T = P/rho;
+						H = 0.5*VV+C/(K-1);
+
+                        beta = max(VV/C,e);
+
+                        Sx = sqrt(U*U*(beta-1)*(beta-1)+4*beta*C);
+                        Sy = sqrt(V*V*(beta-1)*(beta-1)+4*beta*C);
+                        Sz = sqrt(W*W*(beta-1)*(beta-1)+4*beta*C);
+
+                        Ux = ((beta+1)*fabs(U)+Sx)/2;
+                        Uy = ((beta+1)*fabs(V)+Sy)/2;
+                        Uz = ((beta+1)*fabs(W)+Sz)/2;
+
+                        U_p = Ux*invXI+Uy*invET+Uz*invZT;
+						
+                        
+                        #if defined(DTau)
+                  
+                            if(CFL_tau[icube][i][j][k] > -minimum) {
+                            
+                                deltaTau = DTau_CFL/max(U_p,1.0e-8);
+                                
+                                Rk1 = deltaTau*Rk1;
+                                Rk2 = deltaTau*Rk2;
+                                Rk3 = deltaTau*Rk3;
+                                Rk4 = deltaTau*Rk4;
+                                Rk5 = deltaTau*Rk5;
+                                
+                                UU1 = 0.1*max(rho*VV, 1.0e-9*P0);
+                                UU2 = 2.0*max(2.0*sqrt(VV),1.0e-8);
+                                UU3 = 2.0*max(2.0*sqrt(VV),1.0e-8);
+                                UU4 = 2.0*max(2.0*sqrt(VV),1.0e-8);
+                                UU5 = 0.1*T;
+                                
+                                LL1 = DTau_CFL;
+                                LL2 = DTau_CFL;
+                                LL3 = DTau_CFL;
+                                LL4 = DTau_CFL;
+                                LL5 = DTau_CFL;
+                                
+                                if( fabs(Rk1) > UU1 | fabs(Rk2) > UU2 | fabs(Rk3) > UU3 | fabs(Rk4) > UU4 | fabs(Rk5) > UU5 ) {
+                                
+                                    LL1 = DTau_CFL*UU1/fabs(Rk1);
+                                    LL2 = DTau_CFL*UU2/fabs(Rk2);
+                                    LL3 = DTau_CFL*UU3/fabs(Rk3);
+                                    LL4 = DTau_CFL*UU4/fabs(Rk4);
+                                    LL5 = DTau_CFL*UU5/fabs(Rk5);
+                                        
+                                    CFL_tau[icube][i][j][k] = min(LL5,min(LL4,min(LL3,min(LL2,LL1))));
+                                    
+                                }
+                                else CFL_tau[icube][i][j][k] = DTau_CFL;
+                                    
+                            }
+                  
+                            else CFL_tau[icube][i][j][k] = 0.3;
+                  
+                            deltaTau = CFL_tau[icube][i][j][k]/max(U_p,1.0e-8);
+                            
+                            // deltaTau = 1.0/max(U_p,1.0e-8);
+                            
+                            // if(deltaTau>deltaT)
+                            // printf("%f\t%f\n",U,Sx);
+                  
+                        #endif
+                        
+                        
+
+                    
+                    
+                    
 					
 						rho = u1;
 						U = u2/u1;
@@ -3314,6 +3400,16 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						d54 = (-4*H*W*temp2)/temp;
 						d55 = (2*deltaT*(2*H*(K-1)*(beta-1)*deltaT+K*T*(2*deltaT+3*beta*deltaTau)))/temp;
 
+                        
+                            
+                        Rk1 = Fabs[icube][i][j][k][0]+Rp1+Rf1;
+                        Rk2 = Fabs[icube][i][j][k][1]+Rp2+Rf2+vF2;
+                        Rk3 = Fabs[icube][i][j][k][2]+Rp3+Rf3+vF3;
+                        Rk4 = Fabs[icube][i][j][k][3]+Rp4+Rf4+vF4;
+                        Rk5 = Fabs[icube][i][j][k][4]+Rp5+Rf5+vF5;
+                        
+                        
+                        
 
 						if (IF == IFLUID) {
 
@@ -3346,32 +3442,10 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 						Rku1[icube][i][j][k][2] = MR3;
 						Rku1[icube][i][j][k][3] = MR4;
 						Rku1[icube][i][j][k][4] = MR5;
-						
-
-
-						// if (csl[icube] == 0 | csl[icube] == 1 | csl[icube] == 2) {
-						
-							// Residual1[icube][i][j][k][0] = -(Rf2)*dx*dy*dz;
-							// Residual1[icube][i][j][k][1] = -(vF2)*dx*dy*dz;
-							
-						// }
-						
-						
-						// Residual1[icube][i][j][k][1] = -(Rp2+Rf2+vF2)*dx*dy*dz;
-						
-						// if (IF == IFLUID) {
-						
-							// Residual1[icube][i][j][k][0] = -(Rp2+Rf2+vF2)*dx*dy*dz;
-							
-						// }
-						
-						//if (IF < IFLUID) {
-							
-						//if (IF < IFLUID) Residual1[icube][i][j][k][0] = -( -(dPxi-dPx)/dx + vF2 )*dx*dy*dz;
-						
-
-						//if (IF < IFLUID) Residual1[icube][i][j][k][1] = -( -(dPzi-dPz)/dz + vF4 )*dx*dy*dz;
-
+                        
+                        
+                        
+                        
 
 						if (IF < IFLUID) {
 						
@@ -3385,9 +3459,6 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						}
 
-						
-						//}
-						
 					
 				}    // ---- for (k = 2; k <= nz; k++) { ---- //
 			}
