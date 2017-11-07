@@ -315,24 +315,197 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 
             }
             
+                    
+            VV = U*U+V*V+W*W;
+
+            U1_[gicube][gi][gj][gk][0] = rho;
+            U1_[gicube][gi][gj][gk][1] = rho*U;
+            U1_[gicube][gi][gj][gk][2] = rho*V;
+            U1_[gicube][gi][gj][gk][3] = rho*W;
+            U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*VV;
+            
+            
         
         #else
         
-            U = 0.5*U;
-            V = 0.5*V;
-            W = 0.5*W;
+            
+            VV = U*U+V*V+W*W;
+
+            U1_[gicube][gi][gj][gk][0] = rho;
+            U1_[gicube][gi][gj][gk][1] = 0.5*rho*U;
+            U1_[gicube][gi][gj][gk][2] = 0.5*rho*V;
+            U1_[gicube][gi][gj][gk][3] = 0.5*rho*W;
+            U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*0.25*VV;
+            
+            
+            
+            if ( gi==(i  ) & gj==(j  ) & gk==(k  ) ) { 
+            
+            
+              rho = (wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc1+er_p)+rho0;
+              P = (wc2*(p1-P0)+wc3*(p2-P0)+wc4*(p3-P0)+wc5*(p4-P0)+wc6*(p5-P0)+wc7*(p6-P0)+wc8*(p7-P0))/(1-wc1+er_p)+P0;
+
+              U = (wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc7*u6+wc8*u7)/(2-wc1);
+              V = (wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7)/(2-wc1);
+              W = (wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6+wc8*w7)/(2-wc1);
+              
+              VV = U*U+V*V+W*W;
+              
+              U1_[gicube][gi][gj][gk][0] = rho;
+              U1_[gicube][gi][gj][gk][1] = rho*U;
+              U1_[gicube][gi][gj][gk][2] = rho*V;
+              U1_[gicube][gi][gj][gk][3] = rho*W;
+              U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*VV;
+
+
+              }
+              
+            if ( gi==(i+1) & gj==(j  ) & gk==(k  ) ) { 
+            
+              rho = (wc1*(r0-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc2+er_p)+rho0;
+              P = (wc1*(p0-P0)+wc3*(p2-P0)+wc4*(p3-P0)+wc5*(p4-P0)+wc6*(p5-P0)+wc7*(p6-P0)+wc8*(p7-P0))/(1-wc2+er_p)+P0;
+
+              U = (wc1*u0+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc7*u6+wc8*u7)/(2-wc2);
+              V = (wc1*v0+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7)/(2-wc2);
+              W = (wc1*w0+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6+wc8*w7)/(2-wc2);
+              
+              
+              VV = U*U+V*V+W*W;
+              
+              U1_[gicube][gi][gj][gk][0] = rho;
+              U1_[gicube][gi][gj][gk][1] = rho*U;
+              U1_[gicube][gi][gj][gk][2] = rho*V;
+              U1_[gicube][gi][gj][gk][3] = rho*W;
+              U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*VV;
+
+
+              }
+              
+            if ( gi==(i  ) & gj==(j+1) & gk==(k  ) ) { 
+            
+              rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc3+er_p)+rho0;
+              P = (wc1*(p0-P0)+wc2*(p1-P0)+wc4*(p3-P0)+wc5*(p4-P0)+wc6*(p5-P0)+wc7*(p6-P0)+wc8*(p7-P0))/(1-wc3+er_p)+P0;
+
+              U = (wc1*u0+wc2*u1+wc4*u3+wc5*u4+wc6*u5+wc7*u6+wc8*u7)/(2-wc3);
+              V = (wc1*v0+wc2*v1+wc4*v3+wc5*v4+wc6*v5+wc7*v6+wc8*v7)/(2-wc3);
+              W = (wc1*w0+wc2*w1+wc4*w3+wc5*w4+wc6*w5+wc7*w6+wc8*w7)/(2-wc3);
+              
+              VV = U*U+V*V+W*W;
+              
+              U1_[gicube][gi][gj][gk][0] = rho;
+              U1_[gicube][gi][gj][gk][1] = rho*U;
+              U1_[gicube][gi][gj][gk][2] = rho*V;
+              U1_[gicube][gi][gj][gk][3] = rho*W;
+              U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*VV;
+
+
+              }
+              
+            if ( gi==(i  ) & gj==(j  ) & gk==(k+1) ) { 
+            
+              rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc4+er_p)+rho0;
+              P = (wc1*(p0-P0)+wc2*(p1-P0)+wc3*(p2-P0)+wc5*(p4-P0)+wc6*(p5-P0)+wc7*(p6-P0)+wc8*(p7-P0))/(1-wc4+er_p)+P0;
+
+              U = (wc1*u0+wc2*u1+wc3*u2+wc5*u4+wc6*u5+wc7*u6+wc8*u7)/(2-wc4);
+              V = (wc1*v0+wc2*v1+wc3*v2+wc5*v4+wc6*v5+wc7*v6+wc8*v7)/(2-wc4);
+              W = (wc1*w0+wc2*w1+wc3*w2+wc5*w4+wc6*w5+wc7*w6+wc8*w7)/(2-wc4);
+              
+              
+              VV = U*U+V*V+W*W;
+              
+              U1_[gicube][gi][gj][gk][0] = rho;
+              U1_[gicube][gi][gj][gk][1] = rho*U;
+              U1_[gicube][gi][gj][gk][2] = rho*V;
+              U1_[gicube][gi][gj][gk][3] = rho*W;
+              U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*VV;
+
+
+              
+              }
+              
+            if ( gi==(i+1) & gj==(j+1) & gk==(k  ) ) { 
+              
+              rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc5+er_p)+rho0;
+              P = (wc1*(p0-P0)+wc2*(p1-P0)+wc3*(p2-P0)+wc4*(p3-P0)+wc6*(p5-P0)+wc7*(p6-P0)+wc8*(p7-P0))/(1-wc5+er_p)+P0;
+
+              U = (wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc6*u5+wc7*u6+wc8*u7)/(2-wc5);
+              V = (wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc6*v5+wc7*v6+wc8*v7)/(2-wc5);
+              W = (wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc6*w5+wc7*w6+wc8*w7)/(2-wc5);
+              
+              VV = U*U+V*V+W*W;
+              
+              U1_[gicube][gi][gj][gk][0] = rho;
+              U1_[gicube][gi][gj][gk][1] = rho*U;
+              U1_[gicube][gi][gj][gk][2] = rho*V;
+              U1_[gicube][gi][gj][gk][3] = rho*W;
+              U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*VV;
+
+
+              }
+              
+            if ( gi==(i+1) & gj==(j  ) & gk==(k+1) ) { 
+              
+              rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc7*(r6-rho0)+wc8*(r7-rho0))/(1-wc6+er_p)+rho0;
+              P = (wc1*(p0-P0)+wc2*(p1-P0)+wc3*(p2-P0)+wc4*(p3-P0)+wc5*(p4-P0)+wc7*(p6-P0)+wc8*(p7-P0))/(1-wc6+er_p)+P0;
+
+              U = (wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc7*u6+wc8*u7)/(2-wc6);
+              V = (wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc7*v6+wc8*v7)/(2-wc6);
+              W = (wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc7*w6+wc8*w7)/(2-wc6);
+              
+              VV = U*U+V*V+W*W;
+              
+              U1_[gicube][gi][gj][gk][0] = rho;
+              U1_[gicube][gi][gj][gk][1] = rho*U;
+              U1_[gicube][gi][gj][gk][2] = rho*V;
+              U1_[gicube][gi][gj][gk][3] = rho*W;
+              U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*VV;
+
+
+              }
+              
+            if ( gi==(i  ) & gj==(j+1) & gk==(k+1) ) { 
+
+              rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc8*(r7-rho0))/(1-wc7+er_p)+rho0;
+              P = (wc1*(p0-P0)+wc2*(p1-P0)+wc3*(p2-P0)+wc4*(p3-P0)+wc5*(p4-P0)+wc6*(p5-P0)+wc8*(p7-P0))/(1-wc7+er_p)+P0;
+
+              U = (wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc8*u7)/(2-wc7);
+              V = (wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc8*v7)/(2-wc7);
+              W = (wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc8*w7)/(2-wc7);
+              
+              VV = U*U+V*V+W*W;
+              
+              U1_[gicube][gi][gj][gk][0] = rho;
+              U1_[gicube][gi][gj][gk][1] = rho*U;
+              U1_[gicube][gi][gj][gk][2] = rho*V;
+              U1_[gicube][gi][gj][gk][3] = rho*W;
+              U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*VV;
+
+              }
+              
+            if ( gi==(i+1) & gj==(j+1) & gk==(k+1) ) {
+              
+                rho = (wc1*(r0-rho0)+wc2*(r1-rho0)+wc3*(r2-rho0)+wc4*(r3-rho0)+wc5*(r4-rho0)+wc6*(r5-rho0)+wc7*(r6-rho0))/(1-wc8+er_p)+rho0;
+                P = (wc1*(p0-P0)+wc2*(p1-P0)+wc3*(p2-P0)+wc4*(p3-P0)+wc5*(p4-P0)+wc6*(p5-P0)+wc7*(p6-P0))/(1-wc8+er_p)+P0;
+                
+              U = (wc1*u0+wc2*u1+wc3*u2+wc4*u3+wc5*u4+wc6*u5+wc7*u6)/(2-wc8);
+              V = (wc1*v0+wc2*v1+wc3*v2+wc4*v3+wc5*v4+wc6*v5+wc7*v6)/(2-wc8);
+              W = (wc1*w0+wc2*w1+wc3*w2+wc4*w3+wc5*w4+wc6*w5+wc7*w6)/(2-wc8);
+              
+              VV = U*U+V*V+W*W;
+              
+              U1_[gicube][gi][gj][gk][0] = rho;
+              U1_[gicube][gi][gj][gk][1] = rho*U;
+              U1_[gicube][gi][gj][gk][2] = rho*V;
+              U1_[gicube][gi][gj][gk][3] = rho*W;
+              U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*VV;
+
+
+              }
+        
         
         #endif
         
 		
-		
-		VV = U*U+V*V+W*W;
-
-		U1_[gicube][gi][gj][gk][0] = rho;
-		U1_[gicube][gi][gj][gk][1] = rho*U;
-		U1_[gicube][gi][gj][gk][2] = rho*V;
-		U1_[gicube][gi][gj][gk][3] = rho*W;
-		U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*VV;
 		
 		
 	}
