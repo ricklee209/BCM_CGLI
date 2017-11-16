@@ -3831,29 +3831,33 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 			}
 
 			
-			double DN = 1./(MPI_Ncube*NcubeX*NcubeY*NcubeZ);
+			double DN = 1./(ncube*NcubeX*NcubeY*NcubeZ);
 
+            e1 = sqrt(e1)*DN;
+            e2 = sqrt(e2)*DN;
+            e3 = sqrt(e3)*DN;
+            e4 = sqrt(e4)*DN;
+            e5 = sqrt(e5)*DN;
+                
+            MPI_Comm comm;
+            comm=MPI_COMM_WORLD;
 
-			e1 = sqrt(e1)*DN;
-			e2 = sqrt(e2)*DN;
-			e3 = sqrt(e3)*DN;
-			e4 = sqrt(e4)*DN;
-			e5 = sqrt(e5)*DN;
-			
+            MPI_Allreduce ((void*)&e1,(void*)&er[1],1,MPI_DOUBLE,MPI_SUM,comm );
+            MPI_Allreduce ((void*)&e2,(void*)&er[2],1,MPI_DOUBLE,MPI_SUM,comm );
+            MPI_Allreduce ((void*)&e3,(void*)&er[3],1,MPI_DOUBLE,MPI_SUM,comm );
+            MPI_Allreduce ((void*)&e4,(void*)&er[4],1,MPI_DOUBLE,MPI_SUM,comm );
+            MPI_Allreduce ((void*)&e5,(void*)&er[5],1,MPI_DOUBLE,MPI_SUM,comm );
+                
+            er[1] = er[1]/np;
+            er[2] = er[2]/np;
+            er[3] = er[3]/np;
+            er[4] = er[4]/np;
+            er[5] = er[5]/np;
             
-			MPI_Comm comm;
-			comm=MPI_COMM_WORLD;
-
-			MPI_Allreduce ((void*)&e1,(void*)&er[1],1,MPI_DOUBLE,MPI_SUM,comm );
-			MPI_Allreduce ((void*)&e2,(void*)&er[2],1,MPI_DOUBLE,MPI_SUM,comm );
-			MPI_Allreduce ((void*)&e3,(void*)&er[3],1,MPI_DOUBLE,MPI_SUM,comm );
-			MPI_Allreduce ((void*)&e4,(void*)&er[4],1,MPI_DOUBLE,MPI_SUM,comm );
-			MPI_Allreduce ((void*)&e5,(void*)&er[5],1,MPI_DOUBLE,MPI_SUM,comm );
-			
-			
-			MPI_Allreduce ((void*)&e6,(void*)&er[6], 1, MPI_DOUBLE, MPI_SUM, comm );
-			MPI_Allreduce ((void*)&e7,(void*)&er[7], 1, MPI_DOUBLE, MPI_SUM, comm );
-			MPI_Allreduce ((void*)&e8,(void*)&er[8], 1, MPI_DOUBLE, MPI_SUM, comm );
+                
+            MPI_Allreduce ((void*)&e6,(void*)&er[6], 1, MPI_DOUBLE, MPI_SUM, comm );
+            MPI_Allreduce ((void*)&e7,(void*)&er[7], 1, MPI_DOUBLE, MPI_SUM, comm );
+            MPI_Allreduce ((void*)&e8,(void*)&er[8], 1, MPI_DOUBLE, MPI_SUM, comm );
 
 
 		}
