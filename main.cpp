@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	int count = 2;	
 	int step;
 
-	double deltaT = 1.0;
+	double deltaT = 0.1;
 	double deltaTau = deltaT/200.0;
 	double e = 0.01;
 	double Th = 309.03531204896;
@@ -1480,7 +1480,7 @@ int main(int argc, char **argv)
 					if ( step%10 == 0 ) {
                         
                         BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
-                        printf("/n Automatic Dissipation Adjustment model /n");
+                        if(myid == 0) printf("/n Automatic Dissipation Adjustment model /n");
                 
                     }
                     
@@ -1581,7 +1581,7 @@ int main(int argc, char **argv)
 					#else
                         printf("\n>>>>=======================================================<<<<\n");
                         printf("step\t Nusselt\t\t Cd\t\t Cl\n");
-						printf("%d\t%4.12f\t%4.12f\t%4.12f\n",step,-er[8],-er[6],-er[7]);
+						printf("%d\t%4.12f\t%4.12f\t%4.12f\n",step,-er[6],-er[7],-er[8]);
                         printf(">>>>=======================================================<<<<\n\n");
 					#endif
 
