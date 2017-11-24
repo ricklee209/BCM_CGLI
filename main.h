@@ -1129,6 +1129,32 @@ double (*Ycnt)[Y_size] = new double[Ncube][Y_size],
 double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
  // ============================================================================ //
  );
+ 
+ 
+ void BCM_Output_coarse
+ (
+ // ============================================================================ //
+ int myid,
+int ncube,
+
+int step,
+
+int switch_output,
+
+int (*rank_map)[MPI_Ncube] = new int[2][MPI_Ncube],
+
+double (*U1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+double (*U1q)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+double (*cube_size) = new double[Ncube],
+
+
+double (*Xcnt)[X_size] = new double[Ncube][X_size],
+double (*Ycnt)[Y_size] = new double[Ncube][Y_size],
+double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
+ // ============================================================================ //
+ );
 
 
 void BCM_Statistic

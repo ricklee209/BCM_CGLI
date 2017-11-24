@@ -12,12 +12,12 @@ HEAD = BCM.h MPI_prm.h prm.h Resolution.h
 .SUFFIXES: .o .cpp
 
 .cpp.o:
-	mpicxx -O3 -c  $< 
+	mpiicpc -axMIC-AVX512 -O3 -no-prec-div -fp-model fast=2 -xHost -qopenmp -c  $< 
 
 
 a.out : $(OBJS)
 
-	mpicxx -O3 -o a.out  $(OBJS) 
+	mpiicpc -axMIC-AVX512 -O3 -no-prec-div -fp-model fast=2 -xHost -qopenmp -o a.out  $(OBJS) 
 
 
 main.o: main.h Array.h $(HEAD) Pre_selection.h
@@ -69,7 +69,7 @@ BCM_Flux_XYZ_Viscous_LUSGS.o: $(HEAD) Pre_selection.h implicit.h
 BCM_Output.o: $(HEAD)
 
 BCM_Output_coarse.o: $(HEAD) Pre_selection.h
-
+                                         
 BCM_Statistic.o: $(HEAD)
 
 BCM_ADM_filter.o: $(HEAD)

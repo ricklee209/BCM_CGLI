@@ -1650,6 +1650,13 @@ int main(int argc, char **argv)
 			//BCM_Nusselt_Sphere(myid, Ncube, Th, csl, Xcnt, Ycnt, Zcnt, FWS, U1);
 
 			BCM_Output(myid, Ncube, step, switch_output, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt);
+            
+            #if CR == 1 
+            
+                BCM_Output_coarse(myid, Ncube, step, switch_output, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt);
+            
+            #endif
+            
 
 		}
 

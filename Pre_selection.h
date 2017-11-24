@@ -30,6 +30,12 @@
 
 #define DT 
 
+
+// ---- 0 : no output coarse result ---- //
+// ---- 1 : output coarse result ---- //
+#define CR 1
+
+
 // ---- RK3NODT : 3rd Runge-Kutta ---- //
 // ---- RKO5 : Bogey and Bailly 5th Runge-Kutta ---- //
 // ---- DPLUSGS ---- //
