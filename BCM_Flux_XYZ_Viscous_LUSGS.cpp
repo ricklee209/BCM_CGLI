@@ -385,6 +385,8 @@ void BCM_Flux_XYZ_Viscous_LUSGS
            
     double UU1,UU2,UU3,UU4,UU5;
 
+	int ib = 0;
+
     
     #pragma omp parallel for private(\
     i,j,k\
@@ -517,7 +519,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 	dPx,dPy,dPz,dPxi,dPyi,dPzi,\
 	dTx,dTy,dTz,dTxi,dTyi,dTzi,\
 	theda_p, U_p, C_p,\
-	Cdiss,deltaTau\
+	Cdiss,deltaTau, ib\
 	) 
 
 
@@ -3581,14 +3583,87 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 
                         d51 = temp;
                         
+                    #elif defined(DTauCAA)
+
+                        deltaTau = DTau_CFL/max(U_p,1.0e-8);
+                        
+                        Rk1 = deltaTau*Rk1;
+                        Rk2 = deltaTau*Rk2;
+                        Rk3 = deltaTau*Rk3;
+                        Rk4 = deltaTau*Rk4;
+                        Rk5 = deltaTau*Rk5;
+                        
+                        UU1 = 0.1*max(rho*VV, 1.0e-9*P0);
+                        UU2 = 2.0*max(2.0*sqrt(VV),1.0e-8);
+                        UU3 = 2.0*max(2.0*sqrt(VV),1.0e-8);
+                        UU4 = 2.0*max(2.0*sqrt(VV),1.0e-8);
+                        UU5 = 0.1*T;
+                        
+                        LL1 = DTau_CFL;
+                        LL2 = DTau_CFL;
+                        LL3 = DTau_CFL;
+                        LL4 = DTau_CFL;
+                        LL5 = DTau_CFL;
+
+                        ib = 0;
+                        
+                        if( fabs(Rk1) > UU1 | fabs(Rk2) > UU2 | fabs(Rk3) > UU3 | fabs(Rk4) > UU4 | fabs(Rk5) > UU5 ) {
+                        
+                            LL1 = DTau_CFL*UU1/fabs(Rk1);
+                            LL2 = DTau_CFL*UU2/fabs(Rk2);
+                            LL3 = DTau_CFL*UU3/fabs(Rk3);
+                            LL4 = DTau_CFL*UU4/fabs(Rk4);
+                            LL5 = DTau_CFL*UU5/fabs(Rk5);
+
+                            ib = 1;
+                                
+                            CFL_tau[icube][i][j][k] = 2.0*ib;
+                            
+                        }
+                            
+                    if (ib == 0) {
+
+                        d11 = 2*deltaT/(3*beta+2*U_p*deltaT);
+
+                        d22 = d33 = d44 = d55 = 2*deltaT/(3+2*U_p*deltaT);
+
+                        temp1 = 6*(K-1)*(beta-1)*deltaT;
+                        temp2 = K*(3+2*U_p*deltaT)*(3*beta+2*U_p*deltaT)*rho;
+                        temp = -temp1/temp2;
+
+                        d51 = temp;
+
+                    }
+                    else {
+
+                        if (CFL_tau[icube][i][j][k]>0)	CFL_tau[icube][i][j][k] = min(LL5,min(LL4,min(LL3,min(LL2,LL1))));
+                        else   CFL_tau[icube][i][j][k]=0.3;
+                          
+                        temp = 1.0/deltaTau + U_p;
+                            
+                        d11 = 1.0 / (3.0*beta/(2.0*deltaT) + temp);
+
+                        d22 = d33 = d44 = d55 = 1.0 / ( 3.0/(2.0*deltaT) +temp);
+
+                        temp1 = 6*(K-1)*(beta-1)*deltaT*deltaTau*deltaTau;
+                        temp2 = K*( 3*deltaTau+2*(1.0+U_p*deltaTau)*deltaT )*(3*beta*deltaTau+2*(1.0+U_p*deltaTau)*deltaT)*rho;
+                        temp = -temp1/temp2;
+
+                        d51 = temp;
+                      
+                    }
+
+                    
+                    Residual1[icube][i][j][k][4] = ib;
+                
                     #endif
 
-						
-					U1p1[icube][i][j][k][0] = d11*MR1;
-					U1p1[icube][i][j][k][1] = d22*MR2;
-					U1p1[icube][i][j][k][2] = d33*MR3;
-					U1p1[icube][i][j][k][3] = d44*MR4;
-					U1p1[icube][i][j][k][4] = d51*MR1+d55*MR5;
+                      
+                    U1p1[icube][i][j][k][0] = d11*MR1;
+                    U1p1[icube][i][j][k][1] = d22*MR2;
+                    U1p1[icube][i][j][k][2] = d33*MR3;
+                    U1p1[icube][i][j][k][3] = d44*MR4;
+                    U1p1[icube][i][j][k][4] = d51*MR1+d55*MR5;
 
                     
                     if (IF < IFLUID) {
@@ -3929,6 +4004,39 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 
                             d51 = temp;
                             
+                        #elif defined(DTauCAA)
+                        
+                          if(Residual1[icube][i][j][k][4]<0.5) {
+                            
+                            d11 = 2*deltaT/(3*beta+2*U_p*deltaT);
+
+                              d22 = d33 = d44 = d55 = 2*deltaT/(3+2*U_p*deltaT);
+
+                              temp1 = 6*(K-1)*(beta-1)*deltaT;
+                              temp2 = K*(3+2*U_p*deltaT)*(3*beta+2*U_p*deltaT)*rho;
+                              temp = -temp1/temp2;
+
+                              d51 = temp;
+                            
+                          }
+                          else {
+                            
+                            deltaTau = CFL_tau[icube][i][j][k]/max(U_p,1.0e-8);
+                          
+                              temp = 1.0/deltaTau + U_p;
+                          
+                              d11 = 1.0 / (3.0*beta/(2.0*deltaT) + temp);
+
+                              d22 = d33 = d44 = d55 = 1.0 / ( 3.0/(2.0*deltaT) +temp);
+
+                              temp1 = 6*(K-1)*(beta-1)*deltaT*deltaTau*deltaTau;
+                              temp2 = K*( 3*deltaTau+2*(1.0+U_p*deltaTau)*deltaT )*(3*beta*deltaTau+2*(1.0+U_p*deltaTau)*deltaT)*rho;
+                              temp = -temp1/temp2;
+
+                              d51 = temp;
+                            
+                          }
+                                                       
                         #endif
                               
                               
@@ -4240,6 +4348,40 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                             temp = -temp1/temp2;
 
                             d51 = temp;
+                            
+                        #elif defined(DTauCAA)
+                        
+                          if(Residual1[icube][i][j][k][4]<0.5) {
+                            
+                            d11 = 2*deltaT/(3*beta+2*U_p*deltaT);
+
+                              d22 = d33 = d44 = d55 = 2*deltaT/(3+2*U_p*deltaT);
+
+                              temp1 = 6*(K-1)*(beta-1)*deltaT;
+                              temp2 = K*(3+2*U_p*deltaT)*(3*beta+2*U_p*deltaT)*rho;
+                              temp = -temp1/temp2;
+
+                              d51 = temp;
+                            
+                          }
+                          else {
+                            
+                            deltaTau = CFL_tau[icube][i][j][k]/max(U_p,1.0e-8);
+                          
+                              temp = 1.0/deltaTau + U_p;
+                          
+                              d11 = 1.0 / (3.0*beta/(2.0*deltaT) + temp);
+
+                              d22 = d33 = d44 = d55 = 1.0 / ( 3.0/(2.0*deltaT) +temp);
+
+                              temp1 = 6*(K-1)*(beta-1)*deltaT*deltaTau*deltaTau;
+                              temp2 = K*( 3*deltaTau+2*(1.0+U_p*deltaTau)*deltaT )*(3*beta*deltaTau+2*(1.0+U_p*deltaTau)*deltaT)*rho;
+                              temp = -temp1/temp2;
+
+                              d51 = temp;
+                            
+                          }
+
                             
                         #endif
 
