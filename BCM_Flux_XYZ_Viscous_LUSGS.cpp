@@ -3426,7 +3426,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 
 					/* preconditioning */
 
-					beta = max(VV/C,e);
+					beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
 
 
 					temp = rho*K;
@@ -3802,7 +3802,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                         C = K*P/rho;
                         H = 0.5*VV+C/(K-1.0);
                         
-                        beta = max(VV/C,e);
+                        beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
                         
                         Sx = sqrt(U*U*(beta-1)*(beta-1)+4*beta*C);
                         Ux = 0.5*((beta+1)*fabs(U)+Sx) + 2*K*mu_L/Pr_L/rho/dx;
@@ -3840,7 +3840,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                         C = K*P/rho;
                         H = 0.5*VV+C/(K-1.0);
                         
-                        beta = max(VV/C,e);
+                        beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
                         
                         Sy = sqrt(V*V*(beta-1)*(beta-1)+4*beta*C);
                         Uy = 0.5*((beta+1)*fabs(V)+Sy) + 2*K*mu_L/Pr_L/rho/dy;
@@ -3878,7 +3878,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                         C = K*P/rho;
                         H = 0.5*VV+C/(K-1.0);
                         
-                        beta = max(VV/C,e);
+                        beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
                         
                         Sz = sqrt(W*W*(beta-1)*(beta-1)+4*beta*C);
                         Uz = 0.5*((beta+1)*fabs(W)+Sz) + 2*K*mu_L/Pr_L/rho/dz;
@@ -3948,7 +3948,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 
                         /* preconditioning */
 
-                        beta = max(VV/C,e);
+                        beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
             
                         Sx = sqrt(U*U*(beta-1)*(beta-1)+4*beta*C);
                         Sy = sqrt(V*V*(beta-1)*(beta-1)+4*beta*C);
@@ -4130,7 +4130,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                         C = K*P/rho;
                         H = 0.5*VV+C/(K-1.0);
                         
-                        beta = max(VV/C,e);
+                        beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
                         
                         Sx = sqrt(U*U*(beta-1)*(beta-1)+4*beta*C);
                         Ux = 0.5*((beta+1)*fabs(U)+Sx) + 2*K*mu_L/Pr_L/rho/dx;
@@ -4173,7 +4173,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                         C = K*P/rho;
                         H = 0.5*VV+C/(K-1.0);
                         
-                        beta = max(VV/C,e);
+                        beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
                         
                         Sy = sqrt(V*V*(beta-1)*(beta-1)+4*beta*C);
                         Uy = 0.5*((beta+1)*fabs(V)+Sy) + 2*K*mu_L/Pr_L/rho/dy;
@@ -4217,7 +4217,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
                         C = K*P/rho;
                         H = 0.5*VV+C/(K-1.0);
                         
-                        beta = max(VV/C,e);
+                        beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
                         
                         Sz = sqrt(W*W*(beta-1)*(beta-1)+4*beta*C);
                         Uz = 0.5*((beta+1)*fabs(W)+Sz) + 2*K*mu_L/Pr_L/rho/dz;
@@ -4293,7 +4293,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 
                         /* preconditioning */
 
-                        beta = max(VV/C,e);
+                        beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
             
                         Sx = sqrt(U*U*(beta-1)*(beta-1)+4*beta*C);
                         Sy = sqrt(V*V*(beta-1)*(beta-1)+4*beta*C);
