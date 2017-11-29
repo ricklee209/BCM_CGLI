@@ -1477,7 +1477,7 @@ int main(int argc, char **argv)
 				
 				#ifdef ILES
 
-					if ( step%10 == 0 ) {
+					if ( (step%10 == 0)  && (iteration == 1) ) {
                         
                         BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
                         if(myid == 0) printf("/n Automatic Dissipation Adjustment model /n");
