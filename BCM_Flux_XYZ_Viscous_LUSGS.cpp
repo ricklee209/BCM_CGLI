@@ -1002,7 +1002,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 
 					#if ROE == 1 
 					
-						beta = max(VV/C,e);    // ---- theda ---- //
+						beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
 					
 						temp = 0.5*(1+beta)*W;    // ---- U' ---- //
 
@@ -1194,7 +1194,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 					#if ROE == 1
 
 						
-						beta = max(VV/C,e);    // ---- theda ---- //
+						beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
 					
 						temp = 0.5*(1+beta)*W;    // ---- U' ---- //
 
@@ -1754,7 +1754,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 
 					#if ROE == 1
 						
-						beta = max(VV/C,e);    // ---- theda ---- //
+						beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
 					
 						temp = 0.5*(1+beta)*U;    // ---- U' ---- //
 
@@ -1946,7 +1946,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 
 					#if ROE == 1
 						
-						beta = max(VV/C,e);    // ---- theda ---- //
+						beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
 						temp = 0.5*(1+beta)*U;    // ---- U' ---- //
 						S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
 
@@ -2503,7 +2503,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 					#if ROE == 1 
 
 						
-						beta = max(VV/C,e);    // ---- theda ---- //
+						beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
 						temp = 0.5*(1+beta)*V;    // ---- U' ---- //
 						S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
 
@@ -2684,7 +2684,7 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 
 					#if ROE == 1 
 						
-						beta = max(VV/C,e);    // ---- theda ---- //
+						beta = min(1.0, max( max(VV/C,e),5.0*(pow(P0/P,0.4/1.4)-1.0) ) );    // ---- theda ---- //
 						temp = 0.5*(1+beta)*V;    // ---- U' ---- //
 						S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
 
