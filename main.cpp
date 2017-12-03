@@ -54,7 +54,7 @@ int main(int argc, char **argv)
 	int count = 2;	
 	int step;
 
-	double deltaT = 1.0;
+	double deltaT = 0.1;
 	double deltaTau = deltaT/200.0;
 	double e = 0.01;
 	double Th = 309.03531204896;
@@ -1480,7 +1480,7 @@ int main(int argc, char **argv)
 					if ( step%10 == 0 ) {
                         
                         BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
-                        printf("/n Automatic Dissipation Adjustment model /n");
+                        if(myid == 0) printf("/n Automatic Dissipation Adjustment model /n");
                 
                     }
                     
@@ -1650,6 +1650,13 @@ int main(int argc, char **argv)
 			//BCM_Nusselt_Sphere(myid, Ncube, Th, csl, Xcnt, Ycnt, Zcnt, FWS, U1);
 
 			BCM_Output(myid, Ncube, step, switch_output, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt);
+            
+            #if CR == 1 
+            
+                BCM_Output_coarse(myid, Ncube, step, switch_output, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt);
+            
+            #endif
+            
 
 		}
 

@@ -384,6 +384,8 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 		   Cmius11,Cmius22,Cmius33,Cmius44,Cmius55;
            
     double UU1,UU2,UU3,UU4,UU5;
+    
+    int ib=0;
 
     
     #pragma omp parallel for private(\
@@ -517,7 +519,7 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 	dPx,dPy,dPz,dPxi,dPyi,dPzi,\
 	dTx,dTy,dTz,dTxi,dTyi,dTzi,\
 	theda_p, U_p, C_p,\
-	Cdiss,deltaTau\
+	Cdiss,deltaTau,ib\
 	) 
 
 
@@ -3502,6 +3504,8 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 					
                     #if defined(DTau)
                     
+                    if(CFL_tau[icube][i][j][k] > -minimum) {
+                    
                         deltaTau = DTau_CFL/max(U_p,1.0e-8);
                         
                         Rk1 = deltaTau*Rk1;
@@ -3533,12 +3537,14 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
                             CFL_tau[icube][i][j][k] = min(LL5,min(LL4,min(LL3,min(LL2,LL1))));
                             
                         }
-                        else {
-                            
-                            CFL_tau[icube][i][j][k] = DTau_CFL;
+                        else CFL_tau[icube][i][j][k] = DTau_CFL;
                             
                         }
-                    
+          
+                    else CFL_tau[icube][i][j][k] = 0.3;
+          
+                        deltaTau = CFL_tau[icube][i][j][k]/max(U_p,1.0e-8);
+          
                         temp = 1.0/deltaTau + U_p;
                     
                         d11 = 1.0 / (3.0*beta/(2.0*deltaT) + temp);
@@ -3576,6 +3582,79 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
                         temp = -temp1/temp2;
 
                         d51 = temp;
+                        
+                    #elif defined(DTauCAA)
+
+                        deltaTau = DTau_CFL/max(U_p,1.0e-8);
+                        
+                        Rk1 = deltaTau*Rk1;
+                        Rk2 = deltaTau*Rk2;
+                        Rk3 = deltaTau*Rk3;
+                        Rk4 = deltaTau*Rk4;
+                        Rk5 = deltaTau*Rk5;
+                        
+                        UU1 = 0.1*max(rho*VV, 1.0e-9*P0);
+                        UU2 = 2.0*max(2.0*sqrt(VV),1.0e-8);
+                        UU3 = 2.0*max(2.0*sqrt(VV),1.0e-8);
+                        UU4 = 2.0*max(2.0*sqrt(VV),1.0e-8);
+                        UU5 = 0.1*T;
+                        
+                        LL1 = DTau_CFL;
+                        LL2 = DTau_CFL;
+                        LL3 = DTau_CFL;
+                        LL4 = DTau_CFL;
+                        LL5 = DTau_CFL;
+
+                        ib = 0;
+                        
+                        if( fabs(Rk1) > UU1 | fabs(Rk2) > UU2 | fabs(Rk3) > UU3 | fabs(Rk4) > UU4 | fabs(Rk5) > UU5 ) {
+                        
+                            LL1 = DTau_CFL*UU1/fabs(Rk1);
+                            LL2 = DTau_CFL*UU2/fabs(Rk2);
+                            LL3 = DTau_CFL*UU3/fabs(Rk3);
+                            LL4 = DTau_CFL*UU4/fabs(Rk4);
+                            LL5 = DTau_CFL*UU5/fabs(Rk5);
+
+                            ib = 1;
+                                
+                            CFL_tau[icube][i][j][k] = 2.0*ib;
+                            
+                        }
+                            
+                    if (ib == 0) {
+
+                        d11 = 2*deltaT/(3*beta+2*U_p*deltaT);
+
+                        d22 = d33 = d44 = d55 = 2*deltaT/(3+2*U_p*deltaT);
+
+                        temp1 = 6*(K-1)*(beta-1)*deltaT;
+                        temp2 = K*(3+2*U_p*deltaT)*(3*beta+2*U_p*deltaT)*rho;
+                        temp = -temp1/temp2;
+
+                        d51 = temp;
+
+                    }
+                    else {
+
+                        if (CFL_tau[icube][i][j][k]>0)	CFL_tau[icube][i][j][k] = min(LL5,min(LL4,min(LL3,min(LL2,LL1))));
+                        else   CFL_tau[icube][i][j][k]=0.3;
+                          
+                        temp = 1.0/deltaTau + U_p;
+                            
+                        d11 = 1.0 / (3.0*beta/(2.0*deltaT) + temp);
+
+                        d22 = d33 = d44 = d55 = 1.0 / ( 3.0/(2.0*deltaT) +temp);
+
+                        temp1 = 6*(K-1)*(beta-1)*deltaT*deltaTau*deltaTau;
+                        temp2 = K*( 3*deltaTau+2*(1.0+U_p*deltaTau)*deltaT )*(3*beta*deltaTau+2*(1.0+U_p*deltaTau)*deltaT)*rho;
+                        temp = -temp1/temp2;
+
+                        d51 = temp;
+                      
+                    }
+
+                    
+                    Residual1[icube][i][j][k][4] = ib;
                         
                     #endif
 
@@ -4075,6 +4154,39 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 
                             d51 = temp;
                             
+                        #elif defined(DTauCAA)
+                        
+                          if(Residual1[icube][i][j][k][4]<0.5) {
+                            
+                            d11 = 2*deltaT/(3*beta+2*U_p*deltaT);
+
+                              d22 = d33 = d44 = d55 = 2*deltaT/(3+2*U_p*deltaT);
+
+                              temp1 = 6*(K-1)*(beta-1)*deltaT;
+                              temp2 = K*(3+2*U_p*deltaT)*(3*beta+2*U_p*deltaT)*rho;
+                              temp = -temp1/temp2;
+
+                              d51 = temp;
+                            
+                          }
+                          else {
+                            
+                            deltaTau = CFL_tau[icube][i][j][k]/max(U_p,1.0e-8);
+                          
+                              temp = 1.0/deltaTau + U_p;
+                          
+                              d11 = 1.0 / (3.0*beta/(2.0*deltaT) + temp);
+
+                              d22 = d33 = d44 = d55 = 1.0 / ( 3.0/(2.0*deltaT) +temp);
+
+                              temp1 = 6*(K-1)*(beta-1)*deltaT*deltaTau*deltaTau;
+                              temp2 = K*( 3*deltaTau+2*(1.0+U_p*deltaTau)*deltaT )*(3*beta*deltaTau+2*(1.0+U_p*deltaTau)*deltaT)*rho;
+                              temp = -temp1/temp2;
+
+                              d51 = temp;
+                            
+                          }
+                            
                         #endif
 
                             
@@ -4202,69 +4314,51 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
    #pragma omp barrier
         
 
-    
+
+        
     for (icube = 1; icube < ncube; icube++) {  
-			for (i = n_buffer; i <= nx; i++) {
-				for (j = n_buffer; j <= ny; j++) { 
-					for (k = n_buffer; k <= nz; k++) { 
+        for (i = n_buffer; i <= nx; i++) {
+            for (j = n_buffer; j <= ny; j++) { 
+                for (k = n_buffer; k <= nz; k++) { 
 
+                    e6 = e6+Residual1[icube][i][j][k][0];  // Averaged Nusselt number //
+                    e7 = e7+Residual1[icube][i][j][k][1];  // Cd //
+                    e8 = e8+Residual1[icube][i][j][k][2];  // Cl //
+                    
+                }
+            }
+        }
+    }
 
-							e6 = e6+Residual1[icube][i][j][k][0];
-							e7 = e7+Residual1[icube][i][j][k][1];
+    double DN = 1./(ncube*NcubeX*NcubeY*NcubeZ);
 
-							e8 = e8+Residual1[icube][i][j][k][2];
-							
-						//if ( FWS[icube][i][j][k] > ISOLID ) {
-							
-							// e1 = e1+Residual1[icube][i][j][k][2];
-							// e2 = e2+Residual1[icube][i][j][k][3];
-							// e3 = e3+Residual1[icube][i][j][k][4];
-							// e4 = e4+Residual1[icube][i][j][k][5];
-							// e5 = e5+Residual1[icube][i][j][k][6];
-								
-						//}
-							
-					}
-				}
-			}
-		}
+    e1 = sqrt(e1)*DN;
+    e2 = sqrt(e2)*DN;
+    e3 = sqrt(e3)*DN;
+    e4 = sqrt(e4)*DN;
+    e5 = sqrt(e5)*DN;
+        
+    MPI_Comm comm;
+    comm=MPI_COMM_WORLD;
 
-			
-		double DN = 1./(MPI_Ncube*NcubeX*NcubeY*NcubeZ);
-
-
-		e1 = sqrt(e1)*DN;
-		e2 = sqrt(e2)*DN;
-		e3 = sqrt(e3)*DN;
-		e4 = sqrt(e4)*DN;
-		e5 = sqrt(e5)*DN;
-			
-		e6 = e6/(0.5*rho0*0.078111805438271*0.078111805438271*0.001256637061436);
-		e7 = e7/(0.5*rho0*0.078111805438271*0.078111805438271*0.001256637061436);
-
-		//e6 = e6/(0.5*rho0*0.024701121733286*0.024701121733286*0.001256637061436);
-		//e7 = e7/(0.5*rho0*0.024701121733286*0.024701121733286*0.001256637061436);
-
-
-		e8 = 0.04*e8/(309.03531204896-T0)/(4.0* 3.14159265*0.02*0.02);
-
-		//e8 = 0.04*e8/(299.15681120-T0)/(4.0* 3.14159265*0.02*0.02);
-
-		MPI_Comm comm;
-		comm=MPI_COMM_WORLD;
-
-		MPI_Allreduce ((void*)&e1,(void*)&er[1],1,MPI_DOUBLE,MPI_SUM,comm );
-		MPI_Allreduce ((void*)&e2,(void*)&er[2],1,MPI_DOUBLE,MPI_SUM,comm );
-		MPI_Allreduce ((void*)&e3,(void*)&er[3],1,MPI_DOUBLE,MPI_SUM,comm );
-		MPI_Allreduce ((void*)&e4,(void*)&er[4],1,MPI_DOUBLE,MPI_SUM,comm );
-		MPI_Allreduce ((void*)&e5,(void*)&er[5],1,MPI_DOUBLE,MPI_SUM,comm );
-			
-			
-		MPI_Allreduce ((void*)&e6,(void*)&er[6], 1, MPI_DOUBLE, MPI_SUM, comm );
-		MPI_Allreduce ((void*)&e7,(void*)&er[7], 1, MPI_DOUBLE, MPI_SUM, comm );
-		MPI_Allreduce ((void*)&e8,(void*)&er[8], 1, MPI_DOUBLE, MPI_SUM, comm );
-
+    MPI_Allreduce ((void*)&e1,(void*)&er[1],1,MPI_DOUBLE,MPI_SUM,comm );
+    MPI_Allreduce ((void*)&e2,(void*)&er[2],1,MPI_DOUBLE,MPI_SUM,comm );
+    MPI_Allreduce ((void*)&e3,(void*)&er[3],1,MPI_DOUBLE,MPI_SUM,comm );
+    MPI_Allreduce ((void*)&e4,(void*)&er[4],1,MPI_DOUBLE,MPI_SUM,comm );
+    MPI_Allreduce ((void*)&e5,(void*)&er[5],1,MPI_DOUBLE,MPI_SUM,comm );
+        
+    er[1] = er[1]/np;
+    er[2] = er[2]/np;
+    er[3] = er[3]/np;
+    er[4] = er[4]/np;
+    er[5] = er[5]/np;
     
+        
+    MPI_Allreduce ((void*)&e6,(void*)&er[6], 1, MPI_DOUBLE, MPI_SUM, comm );
+    MPI_Allreduce ((void*)&e7,(void*)&er[7], 1, MPI_DOUBLE, MPI_SUM, comm );
+    MPI_Allreduce ((void*)&e8,(void*)&er[8], 1, MPI_DOUBLE, MPI_SUM, comm );
+
+
     
     
     
