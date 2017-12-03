@@ -56,7 +56,7 @@ int main(int argc, char **argv)
 
 	double deltaT = 0.1;
 	double deltaTau = deltaT/200.0;
-	double e = 0.01;
+	double e = 1.0;
 	double Th = 309.03531204896;
 
 

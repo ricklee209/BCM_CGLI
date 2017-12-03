@@ -7,7 +7,10 @@
 
 // ---- TDROE=4 : Roe modified by B. Thornber ---- //
 
-#define ROE 3
+// ---- ROEAMTP=5 : Roe modified by X. Li ---- //
+
+
+#define ROE 5
 
 
 // ---- limiter : limiter function ---- //

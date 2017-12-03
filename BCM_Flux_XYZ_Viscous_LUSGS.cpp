@@ -1103,6 +1103,33 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 						deltaU = (S-fabs(W))*temp1+temp2;
 
 						deltaP = W/S*(P_-UN_P)+(S-fabs(W))*rho*(W_-UN_W);
+            
+          #elif ROE == 5
+            
+            S = sqrt(C);
+
+						theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
+
+						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+						
+						deltaP = W/S*(P_-UN_P)+temp*(S-fabs(W))*rho*(W_-UN_W);
+            
+            
+            // ==== deltaU_P + deltaU_RL ==== //            
+						temp1 = (P_-UN_P)/rho/C;
+
+						deltaU = ( 1.0-pow(temp,8) )*(S-fabs(W))*temp1;
+
+            temp2 = 0.5*W/S*(W_-UN_W);
+            
+            
+            // ==== KEASI ==== //
+            beta = sqrt(abs(W)/C);
+            
+            temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
+            
+            temp = max( 0.5*fabs(W_+UN_W)+(1.0-pow(temp3,8))*0.5*(W_-UN_W), 0.0 );
+
 
 					#endif
 
@@ -1112,11 +1139,21 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 
 
 					/* artificial viscosity */
-					Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
-					Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
-					Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
-					Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
+          #ifdef ROE != 5
+						Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
+            Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
+            Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
+            Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
+            Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
+					#else
+						Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
+            Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
+            Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
+            Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_)+deltaP;
+            Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*W;
+					#endif
+            
+					
 
 					/* inviscid fluxes */
 
@@ -1299,15 +1336,54 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 						deltaP = W/S*(P_-UN_P)+(S-fabs(W))*rho*(W_-UN_W);
 
 
+					#elif ROE == 5
+            
+            S = sqrt(C);
+
+						theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
+
+						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+						
+						deltaP = W/S*(P_-UN_P)+temp*(S-fabs(W))*rho*(W_-UN_W);
+            
+            
+            // ==== deltaU_P + deltaU_RL ==== //            
+						temp1 = (P_-UN_P)/rho/C;
+
+						deltaU = ( 1.0-pow(temp,8) )*(S-fabs(W))*temp1;
+
+            temp2 = 0.5*W/S*(W_-UN_W);
+            
+            
+            // ==== KEASI ==== //
+            beta = sqrt(abs(W)/C);
+            
+            temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
+            
+            temp = max( 0.5*fabs(W_+UN_W)+(1.0-pow(temp3,8))*0.5*(W_-UN_W), 0.0 );
+
+
 					#endif
 
 
+
+
+
+
 					/* artificial viscosity */
-					Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
-					Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
-					Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
-					Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
+          #ifdef ROE != 5
+						Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
+            Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
+            Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
+            Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
+            Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
+					#else
+						Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
+            Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
+            Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
+            Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_)+deltaP;
+            Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*W;
+					#endif
 					
 
 					/* inviscid fluxes */
@@ -1863,15 +1939,49 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 
 						deltaP = U/S*(P_-UN_P)+(S-fabs(U))*rho*(U_-UN_U);
 
+          #elif ROE == 5
+            
+            S = sqrt(C);
+
+						theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
+
+						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+						
+						deltaP = U/S*(P_-UN_P)+temp*(S-fabs(U))*rho*(U_-UN_U);
+            
+            
+            // ==== deltaU_P + deltaU_RL ==== //            
+						temp1 = (P_-UN_P)/rho/C;
+
+						deltaU = ( 1.0-pow(temp,8) )*(S-fabs(U))*temp1;
+
+            temp2 = 0.5*U/S*(U_-UN_U);
+            
+            
+            // ==== KEASI ==== //
+            beta = sqrt(abs(U)/C);
+            
+            temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
+            
+            temp = max( 0.5*fabs(U_+UN_U)+(1.0-pow(temp3,8))*0.5*(U_-UN_U), 0.0 );
+
 					#endif
 
 					/* artificial viscosity */
-					Fav1 = Cdiss*fabs(U)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(U)*dU2+deltaU*rho*U+deltaP;
-					Fav3 = Cdiss*fabs(U)*dU3+deltaU*rho*V;
-					Fav4 = Cdiss*fabs(U)*dU4+deltaU*rho*W;
-					Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
-					
+          #ifdef ROE != 5
+            Fav1 = Cdiss*fabs(U)*dU1+deltaU*rho;
+            Fav2 = Cdiss*fabs(U)*dU2+deltaU*rho*U+deltaP;
+            Fav3 = Cdiss*fabs(U)*dU3+deltaU*rho*V;
+            Fav4 = Cdiss*fabs(U)*dU4+deltaU*rho*W;
+            Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
+          #else
+            Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
+            Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_)+deltaP;
+            Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
+            Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_);
+            Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*U;
+          #endif
+          
 					/* inviscid fluxes */
 					inFx1 = 0.5*((UN_rho*UN_U+rho_*U_)-Ep*Fav1);
 					inFx2 = 0.5*((UN_rho*UN_U*UN_U+UN_P+rho_*U_*U_+P_)-Ep*Fav2);
@@ -2050,15 +2160,48 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 						deltaU = (S-fabs(U))*temp1+temp2;
 
 						deltaP = U/S*(P_-UN_P)+(S-fabs(U))*rho*(U_-UN_U);
+#elif ROE == 5
+            
+            S = sqrt(C);
+
+						theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
+
+						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+						
+						deltaP = U/S*(P_-UN_P)+temp*(S-fabs(U))*rho*(U_-UN_U);
+            
+            
+            // ==== deltaU_P + deltaU_RL ==== //            
+						temp1 = (P_-UN_P)/rho/C;
+
+						deltaU = ( 1.0-pow(temp,8) )*(S-fabs(U))*temp1;
+
+            temp2 = 0.5*U/S*(U_-UN_U);
+            
+            
+            // ==== KEASI ==== //
+            beta = sqrt(abs(U)/C);
+            
+            temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
+            
+            temp = max( 0.5*fabs(U_+UN_U)+(1.0-pow(temp3,8))*0.5*(U_-UN_U), 0.0 );
 
 					#endif
 
 					/* artificial viscosity */
-					Fav1 = Cdiss*fabs(U)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(U)*dU2+deltaU*rho*U+deltaP;
-					Fav3 = Cdiss*fabs(U)*dU3+deltaU*rho*V;
-					Fav4 = Cdiss*fabs(U)*dU4+deltaU*rho*W;
-					Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
+          #ifdef ROE != 5
+            Fav1 = Cdiss*fabs(U)*dU1+deltaU*rho;
+            Fav2 = Cdiss*fabs(U)*dU2+deltaU*rho*U+deltaP;
+            Fav3 = Cdiss*fabs(U)*dU3+deltaU*rho*V;
+            Fav4 = Cdiss*fabs(U)*dU4+deltaU*rho*W;
+            Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
+          #else
+            Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
+            Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_)+deltaP;
+            Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
+            Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_);
+            Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*U;
+          #endif
 					
 
 
@@ -2603,15 +2746,50 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 						deltaU = (S-fabs(V))*temp1+temp2;
 
 						deltaP = V/S*(P_-UN_P)+(S-fabs(V))*rho*(V_-UN_V);
+            
+          #elif ROE == 5
+            
+            S = sqrt(C);
+
+						theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
+
+						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+						
+						deltaP = V/S*(P_-UN_P)+temp*(S-fabs(V))*rho*(V_-UN_V);
+            
+            
+            // ==== deltaU_P + deltaU_RL ==== //            
+						temp1 = (P_-UN_P)/rho/C;
+
+						deltaU = ( 1.0-pow(temp,8) )*(S-fabs(V))*temp1;
+
+            temp2 = 0.5*V/S*(V_-UN_V);
+            
+            
+            // ==== KEASI ==== //
+            beta = sqrt(abs(V)/C);
+            
+            temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
+            
+            temp = max( 0.5*fabs(V_+UN_V)+(1.0-pow(temp3,8))*0.5*(V_-UN_V), 0.0 );
+
 
 					#endif
 
 					/* artificial viscosity */
-					Fav1 = Cdiss*fabs(V)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(V)*dU2+deltaU*rho*U;
-					Fav3 = Cdiss*fabs(V)*dU3+deltaU*rho*V+deltaP;
-					Fav4 = Cdiss*fabs(V)*dU4+deltaU*rho*W;
-					Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
+          #ifdef ROE != 5
+            Fav1 = Cdiss*fabs(V)*dU1+deltaU*rho;
+            Fav2 = Cdiss*fabs(V)*dU2+deltaU*rho*U;
+            Fav3 = Cdiss*fabs(V)*dU3+deltaU*rho*V+deltaP;
+            Fav4 = Cdiss*fabs(V)*dU4+deltaU*rho*W;
+            Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
+          #else
+            Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
+            Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
+            Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_)+deltaP;
+            Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_);
+            Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*V;
+          #endif
 					
 					/* inviscid fluxes */
 					inFy1 = 0.5*((UN_rho*UN_V+rho_*V_-Ep*Fav1));
@@ -2784,15 +2962,49 @@ void BCM_Flux_XYZ_Viscous_LUSGS
 						deltaU = (S-fabs(V))*temp1+temp2;
 
 						deltaP = V/S*(P_-UN_P)+(S-fabs(V))*rho*(V_-UN_V);
+#elif ROE == 5
+            
+            S = sqrt(C);
+
+						theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
+
+						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+						
+						deltaP = V/S*(P_-UN_P)+temp*(S-fabs(V))*rho*(V_-UN_V);
+            
+            
+            // ==== deltaU_P + deltaU_RL ==== //            
+						temp1 = (P_-UN_P)/rho/C;
+
+						deltaU = ( 1.0-pow(temp,8) )*(S-fabs(V))*temp1;
+
+            temp2 = 0.5*V/S*(V_-UN_V);
+            
+            
+            // ==== KEASI ==== //
+            beta = sqrt(abs(V)/C);
+            
+            temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
+            
+            temp = max( 0.5*fabs(V_+UN_V)+(1.0-pow(temp3,8))*0.5*(V_-UN_V), 0.0 );
+
 
 					#endif
 
 					/* artificial viscosity */
-					Fav1 = Cdiss*fabs(V)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(V)*dU2+deltaU*rho*U;
-					Fav3 = Cdiss*fabs(V)*dU3+deltaU*rho*V+deltaP;
-					Fav4 = Cdiss*fabs(V)*dU4+deltaU*rho*W;
-					Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
+          #ifdef ROE != 5
+            Fav1 = Cdiss*fabs(V)*dU1+deltaU*rho;
+            Fav2 = Cdiss*fabs(V)*dU2+deltaU*rho*U;
+            Fav3 = Cdiss*fabs(V)*dU3+deltaU*rho*V+deltaP;
+            Fav4 = Cdiss*fabs(V)*dU4+deltaU*rho*W;
+            Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
+          #else
+            Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
+            Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
+            Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_)+deltaP;
+            Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_);
+            Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*V;
+          #endif
 					
 					/* inviscid fluxes */
 					inFy1i = 0.5*((UN_rho*UN_V+rho_*V_-Ep*Fav1));
