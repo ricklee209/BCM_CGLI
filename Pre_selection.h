@@ -53,7 +53,7 @@
 // ---- NODTau : DT doesn't include deltaTau (Aeroacoustic) ---- //
 // ---- DTauCAA : Can run Aeroacoustic ---- //
 
-#define DTauCAA
+#define DTau
 #define DTau_CFL 1000
 
 

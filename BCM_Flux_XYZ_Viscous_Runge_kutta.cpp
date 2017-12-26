@@ -918,319 +918,392 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 						deltaP = W/S*(P_-UN_P)+(S-fabs(W))*rho*(W_-UN_W);
 
-					#endif
+                    #elif ROE == 5
+                    
+                    S = sqrt(C);
+
+                    theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
+
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+                    
+                    deltaP = W/S*(P_-UN_P)+temp*(S-fabs(W))*rho*(W_-UN_W);
+                    
+                    
+                    // ==== deltaU_P + deltaU_RL ==== //            
+                    temp1 = (P_-UN_P)/rho/C;
+
+                    deltaU = ( 1.0-pow(temp,8) )*(S-fabs(W))*temp1;
+
+                    temp2 = 0.5*W/S*(W_-UN_W);
+                    
+                    
+                    // ==== KEASI ==== //
+                    beta = sqrt(abs(W)/C);
+                    
+                    temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
+                    
+                    temp = max( 0.5*fabs(W_+UN_W)+(1.0-pow(temp3,8))*0.5*(W_-UN_W), 0.0 );
+
+                    #endif
+
+
+
+
+
+
+                    /* artificial viscosity */
+                    #if ROE == 5 
+                    
+                    Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
+                    Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
+                    Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
+                    Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_)+deltaP;
+                    Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*W;
+                    
+                    #else
+                    
+                    Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
+                    Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
+                    Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
+                    Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
+                    Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
 
+                    #endif
 
+                    /* inviscid fluxes */
 
+                    inFz1 = 0.5*((UN_rho*UN_W+rho_*W_-Ep*Fav1));
+                    inFz2 = 0.5*((UN_rho*UN_U*UN_W+rho_*U_*W_)-Ep*Fav2);
+                    inFz3 = 0.5*((UN_rho*UN_V*UN_W+rho_*V_*W_)-Ep*Fav3);
+                    inFz4 = 0.5*((UN_rho*UN_W*UN_W+UN_P+rho_*W_*W_+P_)-Ep*Fav4);
+                    inFz5 = 0.5*((UN_W*(3.5*UN_P+0.5*UN_rho*UN_VV)+W_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
+                    dPz = 0.5*(UN_P+P_);
+                    /* ----------- Backward ----------- */
+                    /* -------------------------------- */
 
 
-					/* artificial viscosity */
-					Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
-					Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
-					Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
-					Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
+                    /* --------------------------------- */
+                    /* ------------ Forward ------------ */
 
-					/* inviscid fluxes */
 
-					inFz1 = 0.5*((UN_rho*UN_W+rho_*W_-Ep*Fav1));
-					inFz2 = 0.5*((UN_rho*UN_U*UN_W+rho_*U_*W_)-Ep*Fav2);
-					inFz3 = 0.5*((UN_rho*UN_V*UN_W+rho_*V_*W_)-Ep*Fav3);
-					inFz4 = 0.5*((UN_rho*UN_W*UN_W+UN_P+rho_*W_*W_+P_)-Ep*Fav4);
-					inFz5 = 0.5*((UN_W*(3.5*UN_P+0.5*UN_rho*UN_VV)+W_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
+                    /* lefr parameter */
+                    
 
-					dPz = 0.5*(UN_P+P_);
-					/* ----------- Backward ----------- */
-					/* -------------------------------- */
+                    /* jump dU */
+                    dU1 = MR1i-ML1i;
+                    dU2 = MR2i-ML2i;
+                    dU3 = MR3i-ML3i;
+                    dU4 = MR4i-ML4i;
+                    dU5 = MR5i-ML5i;
 
+                    /* lefr parameter */
+                    UN_rho = ML1i;
+                    UN_U = ML2i/UN_rho;
+                    UN_V = ML3i/UN_rho;
+                    UN_W = ML4i/UN_rho;
+                    UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
+                    UN_P = (ML5i-0.5*UN_rho*UN_VV)*(K-1);
+                    UN_T = UN_P/UN_rho;
+                    UN_C = K*UN_P/UN_rho;
+                    UN_H = 0.5*UN_VV+UN_C/(K-1);
 
-					/* --------------------------------- */
-					/* ------------ Forward ------------ */
+                    /* right parameter */
+                    rho_ = MR1i;
+                    U_ = MR2i/rho_;
+                    V_ = MR3i/rho_;
+                    W_ = MR4i/rho_;
+                    VV_ = U_*U_+V_*V_+W_*W_;
+                    P_ = (MR5i-0.5*rho_*VV_)*(K-1);
+                    T_ = P_/rho_;
+                    C_ = K*P_/rho_;
+                    H_ = 0.5*VV_+C_/(K-1);
 
+                    /* flux varibale */
 
-					/* lefr parameter */
-					
+                    
+                    #if ROE != 4 
 
-					/* jump dU */
-					dU1 = MR1i-ML1i;
-					dU2 = MR2i-ML2i;
-					dU3 = MR3i-ML3i;
-					dU4 = MR4i-ML4i;
-					dU5 = MR5i-ML5i;
+                    
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                    temp4 = temp5+temp6;
 
-					/* lefr parameter */
-					UN_rho = ML1i;
-					UN_U = ML2i/UN_rho;
-					UN_V = ML3i/UN_rho;
-					UN_W = ML4i/UN_rho;
-					UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
-					UN_P = (ML5i-0.5*UN_rho*UN_VV)*(K-1);
-					UN_T = UN_P/UN_rho;
-					UN_C = K*UN_P/UN_rho;
-					UN_H = 0.5*UN_VV+UN_C/(K-1);
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;
 
-					/* right parameter */
-					rho_ = MR1i;
-					U_ = MR2i/rho_;
-					V_ = MR3i/rho_;
-					W_ = MR4i/rho_;
-					VV_ = U_*U_+V_*V_+W_*W_;
-					P_ = (MR5i-0.5*rho_*VV_)*(K-1);
-					T_ = P_/rho_;
-					C_ = K*P_/rho_;
-					H_ = 0.5*VV_+C_/(K-1);
+                    
+                    #endif
 
-					/* flux varibale */
 
-					
-					#if ROE != 4 
 
-					
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-						temp4 = temp5+temp6;
+                    #if ROE == 1
 
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                    
+                    temp = 0.5*(1+beta)*W;    // ---- U' ---- //
 
-					
-					#endif
+                    S = 0.5*sqrt(4*beta*C+W*W*(1-beta)*(1-beta));   // ---- C' ---- //
 
 
+                    temp1 = (P_-UN_P)/rho/beta/C;
 
-					#if ROE == 1
+                    temp2 = temp/S*(W_-UN_W);
 
-						
-						beta = max(VV/C,e);    // ---- theda ---- //
-					
-						temp = 0.5*(1+beta)*W;    // ---- U' ---- //
+                    temp3 = 0.5*(1-beta)*W*temp/S;
 
-						S = 0.5*sqrt(4*beta*C+W*W*(1-beta)*(1-beta));   // ---- C' ---- //
+                    deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
 
+                    deltaP = temp/S*(P_-UN_P)+(S-fabs(W)+temp3)*rho*(W_-UN_W);
 
-						temp1 = (P_-UN_P)/rho/beta/C;
+                    #elif ROE == 2
 
-						temp2 = temp/S*(W_-UN_W);
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                    
+                    temp = 0.5*(1+beta)*W;    // ---- U' ---- //
 
-						temp3 = 0.5*(1-beta)*W*temp/S;
+                    S = 0.5*sqrt(4*beta*C+W*W*(1-beta)*(1-beta));   // ---- C' ---- //
 
-						deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
 
-						deltaP = temp/S*(P_-UN_P)+(S-fabs(W)+temp3)*rho*(W_-UN_W);
+                    theda_p = VV/C;
+                    U_p = 0.5*(1+theda_p)*W;
+                    C_p = 0.5*sqrt(4*C*theda_p+W*W*(1-theda_p)*(1-theda_p));
 
-					#elif ROE == 2
+                    temp1 = (P_-UN_P)/rho/beta/C;
 
-						
-						beta = max(VV/C,e);    // ---- theda ---- //
-					
-						temp = 0.5*(1+beta)*W;    // ---- U' ---- //
+                    temp2 = U_p/S*(W_-UN_W);
 
-						S = 0.5*sqrt(4*beta*C+W*W*(1-beta)*(1-beta));   // ---- C' ---- //
+                    temp3 = 0.5*(1-beta)*W*temp/S;
 
+                    temp4 = 0.5*(1-theda_p)*W*U_p/S;
 
-						theda_p = VV/C;
-						U_p = 0.5*(1+theda_p)*W;
-						C_p = 0.5*sqrt(4*C*theda_p+W*W*(1-theda_p)*(1-theda_p));
+                    deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
 
-						temp1 = (P_-UN_P)/rho/beta/C;
+                    deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(W)+temp4)*rho*(W_-UN_W);
+                    
+                    #elif ROE == 3
 
-						temp2 = U_p/S*(W_-UN_W);
+                    S = sqrt(C);
 
-						temp3 = 0.5*(1-beta)*W*temp/S;
+                    theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
+                    
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
 
-						temp4 = 0.5*(1-theda_p)*W*U_p/S;
+                    beta = max(temp, 1e-8);
+                    
+                    C_p = beta*S;
 
-						deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
+                    temp1 = (P_-UN_P)/rho/C;
 
-						deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(W)+temp4)*rho*(W_-UN_W);
-					
-					#elif ROE == 3
+                    temp2 = W/S*beta*(W_-UN_W);
 
-						S = sqrt(C);
+                    deltaU = (S-fabs(W))*temp1+temp2;
 
-						theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
-						
-						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+                    deltaP = W/S*(P_-UN_P)+(C_p-fabs(W))*rho*(W_-UN_W);
 
-						beta = max(temp, 1e-8);
-						
-						C_p = beta*S;
+                    #elif ROE == 4
 
-						temp1 = (P_-UN_P)/rho/C;
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
 
-						temp2 = W/S*beta*(W_-UN_W);
+                    temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+                    temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+                    temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
 
-						deltaU = (S-fabs(W))*temp1+temp2;
+                    U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+                    V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+                    W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
 
-						deltaP = W/S*(P_-UN_P)+(C_p-fabs(W))*rho*(W_-UN_W);
+                    UN_U = temp1;
+                    UN_V = temp2;
+                    UN_W = temp3;
 
-					#elif ROE == 4
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                    
+                    temp4 = temp5+temp6;
 
-						beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;
 
-						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
-						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
-						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
 
-						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
-						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
-						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+                    S = sqrt(C);
 
-						UN_U = temp1;
-						UN_V = temp2;
-						UN_W = temp3;
+                    temp1 = (P_-UN_P)/rho/C;
 
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-					
-						temp4 = temp5+temp6;
+                    temp2 = W/S*(W_-UN_W);
 
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
+                    deltaU = (S-fabs(W))*temp1+temp2;
 
+                    deltaP = W/S*(P_-UN_P)+(S-fabs(W))*rho*(W_-UN_W);
 
-						S = sqrt(C);
 
-						temp1 = (P_-UN_P)/rho/C;
+                    #elif ROE == 5
+                    
+                    S = sqrt(C);
 
-						temp2 = W/S*(W_-UN_W);
+                    theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
 
-						deltaU = (S-fabs(W))*temp1+temp2;
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+                    
+                    deltaP = W/S*(P_-UN_P)+temp*(S-fabs(W))*rho*(W_-UN_W);
+                    
+                    
+                    // ==== deltaU_P + deltaU_RL ==== //            
+                    temp1 = (P_-UN_P)/rho/C;
 
-						deltaP = W/S*(P_-UN_P)+(S-fabs(W))*rho*(W_-UN_W);
+                    deltaU = ( 1.0-pow(temp,8) )*(S-fabs(W))*temp1;
 
+                    temp2 = 0.5*W/S*(W_-UN_W);
+                    
+                    
+                    // ==== KEASI ==== //
+                    beta = sqrt(abs(W)/C);
+                    
+                    temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
+                    
+                    temp = max( 0.5*fabs(W_+UN_W)+(1.0-pow(temp3,8))*0.5*(W_-UN_W), 0.0 );
 
-					#endif
+                    #endif                                                                      
+                    /* artificial viscosity */
 
+                    #if ROE == 5 
+                    
+                    Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
+                    Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
+                    Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
+                    Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_)+deltaP;
+                    Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*W;
+                    
+                    #else
+                    
+                    Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
+                    Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
+                    Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
+                    Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
+                    Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
 
-					/* artificial viscosity */
-					Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
-					Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
-					Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
-					Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
-					
+                    #endif
+                    /* inviscid fluxes */
 
-					/* inviscid fluxes */
+                    inFz1i = 0.5*((UN_rho*UN_W+rho_*W_-Ep*Fav1));
+                    inFz2i = 0.5*((UN_rho*UN_U*UN_W+rho_*U_*W_)-Ep*Fav2);
+                    inFz3i = 0.5*((UN_rho*UN_V*UN_W+rho_*V_*W_)-Ep*Fav3);
+                    inFz4i = 0.5*((UN_rho*UN_W*UN_W+UN_P+rho_*W_*W_+P_)-Ep*Fav4);
+                    inFz5i = 0.5*((UN_W*(3.5*UN_P+0.5*UN_rho*UN_VV)+W_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
-					inFz1i = 0.5*((UN_rho*UN_W+rho_*W_-Ep*Fav1));
-					inFz2i = 0.5*((UN_rho*UN_U*UN_W+rho_*U_*W_)-Ep*Fav2);
-					inFz3i = 0.5*((UN_rho*UN_V*UN_W+rho_*V_*W_)-Ep*Fav3);
-					inFz4i = 0.5*((UN_rho*UN_W*UN_W+UN_P+rho_*W_*W_+P_)-Ep*Fav4);
-					inFz5i = 0.5*((UN_W*(3.5*UN_P+0.5*UN_rho*UN_VV)+W_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
+                    dPzi = 0.5*(UN_P+P_);
+                    /* ------------ Forward ------------ */
+                    /* --------------------------------- */
 
-					dPzi = 0.5*(UN_P+P_);
-					/* ------------ Forward ------------ */
-					/* --------------------------------- */
 
+                    Rfz1 = inFz1i - inFz1;
+                    Rfz2 = inFz2i - inFz2;
+                    Rfz3 = inFz3i - inFz3;
+                    Rfz4 = inFz4i - inFz4;
+                    Rfz5 = inFz5i - inFz5;
 
-					Rfz1 = inFz1i - inFz1;
-					Rfz2 = inFz2i - inFz2;
-					Rfz3 = inFz3i - inFz3;
-					Rfz4 = inFz4i - inFz4;
-					Rfz5 = inFz5i - inFz5;
+                    // ----------------------------- Flux-Z ----------------------------- //
+                    // ------------------------------------------------------------------ //
 
-					// ----------------------------- Flux-Z ----------------------------- //
-					// ------------------------------------------------------------------ //
 
 
 
 
 
+                    // -----------------------------------------------------------------//
+                    // -------------------------- X-direction --------------------------//
 
-					// -----------------------------------------------------------------//
-					// -------------------------- X-direction --------------------------//
+                    IF_i1 = FWS[icube][i-1][j][k];
+                    u1_i1 = U1_[icube][i-1][j][k][0];
+                    u2_i1 = U1_[icube][i-1][j][k][1];
+                    u3_i1 = U1_[icube][i-1][j][k][2];
+                    u4_i1 = U1_[icube][i-1][j][k][3];
+                    u5_i1 = U1_[icube][i-1][j][k][4];
+                    
+                    
+                    IF_i2 = FWS[icube][i-2][j][k];
+                    u1_i2 = U1_[icube][i-2][j][k][0];
+                    u2_i2 = U1_[icube][i-2][j][k][1];
+                    u3_i2 = U1_[icube][i-2][j][k][2];
+                    u4_i2 = U1_[icube][i-2][j][k][3];
+                    u5_i2 = U1_[icube][i-2][j][k][4];
 
-					IF_i1 = FWS[icube][i-1][j][k];
-					u1_i1 = U1_[icube][i-1][j][k][0];
-					u2_i1 = U1_[icube][i-1][j][k][1];
-					u3_i1 = U1_[icube][i-1][j][k][2];
-					u4_i1 = U1_[icube][i-1][j][k][3];
-					u5_i1 = U1_[icube][i-1][j][k][4];
-					
-					
-					IF_i2 = FWS[icube][i-2][j][k];
-					u1_i2 = U1_[icube][i-2][j][k][0];
-					u2_i2 = U1_[icube][i-2][j][k][1];
-					u3_i2 = U1_[icube][i-2][j][k][2];
-					u4_i2 = U1_[icube][i-2][j][k][3];
-					u5_i2 = U1_[icube][i-2][j][k][4];
+                    #ifdef Kcomputer
+                    //if(i > 2) {
+                    #else
+                    if(i > 2) {
+                        #endif
+                        
 
-					#ifdef Kcomputer
-						//if(i > 2) {
-					#else
-						if(i > 2) {
-					#endif
-					
+                        IF_i3 = FWS[icube][i-3][j][k];
+                        u1_i3 = U1_[icube][i-3][j][k][0];
+                        u2_i3 = U1_[icube][i-3][j][k][1];
+                        u3_i3 = U1_[icube][i-3][j][k][2];
+                        u4_i3 = U1_[icube][i-3][j][k][3];
+                        u5_i3 = U1_[icube][i-3][j][k][4];
 
-						IF_i3 = FWS[icube][i-3][j][k];
-						u1_i3 = U1_[icube][i-3][j][k][0];
-						u2_i3 = U1_[icube][i-3][j][k][1];
-						u3_i3 = U1_[icube][i-3][j][k][2];
-						u4_i3 = U1_[icube][i-3][j][k][3];
-						u5_i3 = U1_[icube][i-3][j][k][4];
+                        #ifdef Kcomputer
+                        //}
+                        #else
+                    }
+                    #endif
 
-					#ifdef Kcomputer
-						//}
-					#else
-						}
-					#endif
+                    IFi1 = FWS[icube][i+1][j][k];
+                    u1i1 = U1_[icube][i+1][j][k][0];
+                    u2i1 = U1_[icube][i+1][j][k][1];
+                    u3i1 = U1_[icube][i+1][j][k][2];
+                    u4i1 = U1_[icube][i+1][j][k][3];
+                    u5i1 = U1_[icube][i+1][j][k][4];
 
-					IFi1 = FWS[icube][i+1][j][k];
-					u1i1 = U1_[icube][i+1][j][k][0];
-					u2i1 = U1_[icube][i+1][j][k][1];
-					u3i1 = U1_[icube][i+1][j][k][2];
-					u4i1 = U1_[icube][i+1][j][k][3];
-					u5i1 = U1_[icube][i+1][j][k][4];
+                    IFi2 = FWS[icube][i+2][j][k];
+                    u1i2 = U1_[icube][i+2][j][k][0];
+                    u2i2 = U1_[icube][i+2][j][k][1];
+                    u3i2 = U1_[icube][i+2][j][k][2];
+                    u4i2 = U1_[icube][i+2][j][k][3];
+                    u5i2 = U1_[icube][i+2][j][k][4];
 
-					IFi2 = FWS[icube][i+2][j][k];
-					u1i2 = U1_[icube][i+2][j][k][0];
-					u2i2 = U1_[icube][i+2][j][k][1];
-					u3i2 = U1_[icube][i+2][j][k][2];
-					u4i2 = U1_[icube][i+2][j][k][3];
-					u5i2 = U1_[icube][i+2][j][k][4];
+                    #ifdef Kcomputer
+                    //if(i < nx)   {
+                    #else
+                    if(i < nx)   {
+                        #endif
 
-					#ifdef Kcomputer
-						//if(i < nx)   {
-					#else
-						if(i < nx)   {
-					#endif
+                        IFi3 = FWS[icube][i+3][j][k];
+                        u1i3 = U1_[icube][i+3][j][k][0];
+                        u2i3 = U1_[icube][i+3][j][k][1];
+                        u3i3 = U1_[icube][i+3][j][k][2];
+                        u4i3 = U1_[icube][i+3][j][k][3];
+                        u5i3 = U1_[icube][i+3][j][k][4];
 
-						IFi3 = FWS[icube][i+3][j][k];
-						u1i3 = U1_[icube][i+3][j][k][0];
-						u2i3 = U1_[icube][i+3][j][k][1];
-						u3i3 = U1_[icube][i+3][j][k][2];
-						u4i3 = U1_[icube][i+3][j][k][3];
-						u5i3 = U1_[icube][i+3][j][k][4];
+                        #ifdef Kcomputer
+                        //}
+                        #else
+                    }
+                    #endif
 
-					#ifdef Kcomputer
-						//}
-					#else
-						}
-					#endif
 
+                    // -------------------------- X-direction --------------------------//
+                    // -----------------------------------------------------------------//
 
-					// -------------------------- X-direction --------------------------//
-					// -----------------------------------------------------------------//
 
 
-
-					// ------------------------------------------------------------------- //
-					// ----------------------------- MUSCL-X ----------------------------- //
+                    // ------------------------------------------------------------------- //
+                    // ----------------------------- MUSCL-X ----------------------------- //
 
                     #ifdef limiter
                     
@@ -1238,19 +1311,19 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
                     
                     if( IFi1 == IFLUID  && IF_i1 == IFLUID) { 
 
-						if ( i==2 | IF_i2 != IFLUID ) {
+                        if ( i==2 | IF_i2 != IFLUID ) {
 
-							ML1 = 1./6*(-1*u1_i2+5*u1_i1+2*u1);
-							ML2 = 1./6*(-1*u2_i2+5*u2_i1+2*u2);
-							ML3 = 1./6*(-1*u3_i2+5*u3_i1+2*u3);
-							ML4 = 1./6*(-1*u4_i2+5*u4_i1+2*u4);
-							ML5 = 1./6*(-1*u5_i2+5*u5_i1+2*u5);
+                            ML1 = 1./6*(-1*u1_i2+5*u1_i1+2*u1);
+                            ML2 = 1./6*(-1*u2_i2+5*u2_i1+2*u2);
+                            ML3 = 1./6*(-1*u3_i2+5*u3_i1+2*u3);
+                            ML4 = 1./6*(-1*u4_i2+5*u4_i1+2*u4);
+                            ML5 = 1./6*(-1*u5_i2+5*u5_i1+2*u5);
 
-							MR1 = 1./6*(2*u1_i1+5*u1-1*u1i1);
-							MR2 = 1./6*(2*u2_i1+5*u2-1*u2i1);
-							MR3 = 1./6*(2*u3_i1+5*u3-1*u3i1);
-							MR4 = 1./6*(2*u4_i1+5*u4-1*u4i1);
-							MR5 = 1./6*(2*u5_i1+5*u5-1*u5i1);
+                            MR1 = 1./6*(2*u1_i1+5*u1-1*u1i1);
+                            MR2 = 1./6*(2*u2_i1+5*u2-1*u2i1);
+                            MR3 = 1./6*(2*u3_i1+5*u3-1*u3i1);
+                            MR4 = 1./6*(2*u4_i1+5*u4-1*u4i1);
+                            MR5 = 1./6*(2*u5_i1+5*u5-1*u5i1);
                             
                             ML1 = u1_i1 + max(0.0, min( min(u1_i1-u1_i2, u1-u1_i1), ML1-u1_i1 ));
                             ML2 = u2_i1 + max(0.0, min( min(u2_i1-u2_i2, u2-u1_i1), ML2-u2_i1 ));
@@ -1265,20 +1338,20 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
                             MR5 = u5 - max(0.0, min( min(u5i1-u5, u5-u5_i1), MR5-u5 ));
                             
                             
-						}
-						else {
+                        }
+                        else {
 
-							ML1 = 1./60*(2*u1_i3-13*u1_i2+47*u1_i1+27*u1-3*u1i1);
-							ML2 = 1./60*(2*u2_i3-13*u2_i2+47*u2_i1+27*u2-3*u2i1);
-							ML3 = 1./60*(2*u3_i3-13*u3_i2+47*u3_i1+27*u3-3*u3i1);
-							ML4 = 1./60*(2*u4_i3-13*u4_i2+47*u4_i1+27*u4-3*u4i1);
-							ML5 = 1./60*(2*u5_i3-13*u5_i2+47*u5_i1+27*u5-3*u5i1);
+                            ML1 = 1./60*(2*u1_i3-13*u1_i2+47*u1_i1+27*u1-3*u1i1);
+                            ML2 = 1./60*(2*u2_i3-13*u2_i2+47*u2_i1+27*u2-3*u2i1);
+                            ML3 = 1./60*(2*u3_i3-13*u3_i2+47*u3_i1+27*u3-3*u3i1);
+                            ML4 = 1./60*(2*u4_i3-13*u4_i2+47*u4_i1+27*u4-3*u4i1);
+                            ML5 = 1./60*(2*u5_i3-13*u5_i2+47*u5_i1+27*u5-3*u5i1);
 
-							MR1 = 1./60*(-3*u1_i2+27*u1_i1+47*u1-13*u1i1+2*u1i2);
-							MR2 = 1./60*(-3*u2_i2+27*u2_i1+47*u2-13*u2i1+2*u2i2);
-							MR3 = 1./60*(-3*u3_i2+27*u3_i1+47*u3-13*u3i1+2*u3i2);
-							MR4 = 1./60*(-3*u4_i2+27*u4_i1+47*u4-13*u4i1+2*u4i2);
-							MR5 = 1./60*(-3*u5_i2+27*u5_i1+47*u5-13*u5i1+2*u5i2);
+                            MR1 = 1./60*(-3*u1_i2+27*u1_i1+47*u1-13*u1i1+2*u1i2);
+                            MR2 = 1./60*(-3*u2_i2+27*u2_i1+47*u2-13*u2i1+2*u2i2);
+                            MR3 = 1./60*(-3*u3_i2+27*u3_i1+47*u3-13*u3i1+2*u3i2);
+                            MR4 = 1./60*(-3*u4_i2+27*u4_i1+47*u4-13*u4i1+2*u4i2);
+                            MR5 = 1./60*(-3*u5_i2+27*u5_i1+47*u5-13*u5i1+2*u5i2);
                             
                             
                             ML1 = u1_i1 + max(0.0, min( min(u1_i1-u1_i2, u1-u1_i1), ML1-u1_i1 ));
@@ -1293,24 +1366,24 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
                             MR4 = u4 - max(0.0, min( min(u4i1-u4, u4-u4_i1), MR4-u4 ));
                             MR5 = u5 - max(0.0, min( min(u5i1-u5, u5-u5_i1), MR5-u5 ));
 
-						}
-						
-						
-						
-						
-						if ( i==nx | IFi2 != IFLUID) {
+                        }
+                        
+                        
+                        
+                        
+                        if ( i==nx | IFi2 != IFLUID) {
 
-							ML1i = 1./6*(-1*u1_i1+5*u1+2*u1i1);
-							ML2i = 1./6*(-1*u2_i1+5*u2+2*u2i1);
-							ML3i = 1./6*(-1*u3_i1+5*u3+2*u3i1);
-							ML4i = 1./6*(-1*u4_i1+5*u4+2*u4i1);
-							ML5i = 1./6*(-1*u5_i1+5*u5+2*u5i1);
+                            ML1i = 1./6*(-1*u1_i1+5*u1+2*u1i1);
+                            ML2i = 1./6*(-1*u2_i1+5*u2+2*u2i1);
+                            ML3i = 1./6*(-1*u3_i1+5*u3+2*u3i1);
+                            ML4i = 1./6*(-1*u4_i1+5*u4+2*u4i1);
+                            ML5i = 1./6*(-1*u5_i1+5*u5+2*u5i1);
 
-							MR1i = 1./6*(2*u1+5*u1i1-1*u1i2);
-							MR2i = 1./6*(2*u2+5*u2i1-1*u2i2);
-							MR3i = 1./6*(2*u3+5*u3i1-1*u3i2);
-							MR4i = 1./6*(2*u4+5*u4i1-1*u4i2);
-							MR5i = 1./6*(2*u5+5*u5i1-1*u5i2);
+                            MR1i = 1./6*(2*u1+5*u1i1-1*u1i2);
+                            MR2i = 1./6*(2*u2+5*u2i1-1*u2i2);
+                            MR3i = 1./6*(2*u3+5*u3i1-1*u3i2);
+                            MR4i = 1./6*(2*u4+5*u4i1-1*u4i2);
+                            MR5i = 1./6*(2*u5+5*u5i1-1*u5i2);
                             
                             
                             ML1i = u1 + max(0.0, min( min(u1i1-u1, u1-u1_i1), MR1-u1 ));
@@ -1326,20 +1399,20 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
                             MR5i = u5i1 - max(0.0, min( min(u5i2-u5i1, u5i1-u5),MR5i-u5i1 ));
                             
 
-						}
-						else {
+                        }
+                        else {
 
-							ML1i = 1./60*(2*u1_i2-13*u1_i1+47*u1+27*u1i1-3*u1i2);
-							ML2i = 1./60*(2*u2_i2-13*u2_i1+47*u2+27*u2i1-3*u2i2);
-							ML3i = 1./60*(2*u3_i2-13*u3_i1+47*u3+27*u3i1-3*u3i2);
-							ML4i = 1./60*(2*u4_i2-13*u4_i1+47*u4+27*u4i1-3*u4i2);
-							ML5i = 1./60*(2*u5_i2-13*u5_i1+47*u5+27*u5i1-3*u5i2);
+                            ML1i = 1./60*(2*u1_i2-13*u1_i1+47*u1+27*u1i1-3*u1i2);
+                            ML2i = 1./60*(2*u2_i2-13*u2_i1+47*u2+27*u2i1-3*u2i2);
+                            ML3i = 1./60*(2*u3_i2-13*u3_i1+47*u3+27*u3i1-3*u3i2);
+                            ML4i = 1./60*(2*u4_i2-13*u4_i1+47*u4+27*u4i1-3*u4i2);
+                            ML5i = 1./60*(2*u5_i2-13*u5_i1+47*u5+27*u5i1-3*u5i2);
 
-							MR1i = 1./60*(-3*u1_i1+27*u1+47*u1i1-13*u1i2+2*u1i3);
-							MR2i = 1./60*(-3*u2_i1+27*u2+47*u2i1-13*u2i2+2*u2i3);
-							MR3i = 1./60*(-3*u3_i1+27*u3+47*u3i1-13*u3i2+2*u3i3);
-							MR4i = 1./60*(-3*u4_i1+27*u4+47*u4i1-13*u4i2+2*u4i3);
-							MR5i = 1./60*(-3*u5_i1+27*u5+47*u5i1-13*u5i2+2*u5i3);
+                            MR1i = 1./60*(-3*u1_i1+27*u1+47*u1i1-13*u1i2+2*u1i3);
+                            MR2i = 1./60*(-3*u2_i1+27*u2+47*u2i1-13*u2i2+2*u2i3);
+                            MR3i = 1./60*(-3*u3_i1+27*u3+47*u3i1-13*u3i2+2*u3i3);
+                            MR4i = 1./60*(-3*u4_i1+27*u4+47*u4i1-13*u4i2+2*u4i3);
+                            MR5i = 1./60*(-3*u5_i1+27*u5+47*u5i1-13*u5i2+2*u5i3);
                             
                             
                             
@@ -1356,16 +1429,16 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
                             MR5i = u5i1 - max(0.0, min( min(u5i2-u5i1, u5i1-u5),MR5i-u5i1 ));
                             
 
-						}
-						
-						
-						
-						
-						
-					}
-					else {
+                        }
+                        
+                        
+                        
+                        
+                        
+                    }
+                    else {
 
-						ML1 = u1_i1 + max( 0.0, min( u1_i1-u1_i2, u1-u1_i1 ) );
+                        ML1 = u1_i1 + max( 0.0, min( u1_i1-u1_i2, u1-u1_i1 ) );
                         ML2 = u2_i1 + max( 0.0, min( u2_i1-u2_i2, u2-u2_i1 ) );
                         ML3 = u3_i1 + max( 0.0, min( u3_i1-u3_i2, u3-u3_i1 ) );
                         ML4 = u4_i1 + max( 0.0, min( u4_i1-u4_i2, u4-u4_i1 ) );
@@ -1389,7 +1462,7 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
                         MR4i = u4i1 - max( 0.0, min( u4i2-u4i1, u4i1-u4 ) );
                         MR5i = u5i1 - max( 0.0, min( u5i2-u5i1, u5i1-u5 ) );
 
-					}
+                    }
                     
                     
 
@@ -1397,610 +1470,686 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
 
-					if( IFi1 == IFLUID  && IF_i1 == IFLUID) { 
+                    if( IFi1 == IFLUID  && IF_i1 == IFLUID) { 
 
-						if ( i==2 | IF_i2 != IFLUID ) {
+                        if ( i==2 | IF_i2 != IFLUID ) {
 
-							ML1 = 1./6*(-1*u1_i2+5*u1_i1+2*u1);
-							ML2 = 1./6*(-1*u2_i2+5*u2_i1+2*u2);
-							ML3 = 1./6*(-1*u3_i2+5*u3_i1+2*u3);
-							ML4 = 1./6*(-1*u4_i2+5*u4_i1+2*u4);
-							ML5 = 1./6*(-1*u5_i2+5*u5_i1+2*u5);
+                            ML1 = 1./6*(-1*u1_i2+5*u1_i1+2*u1);
+                            ML2 = 1./6*(-1*u2_i2+5*u2_i1+2*u2);
+                            ML3 = 1./6*(-1*u3_i2+5*u3_i1+2*u3);
+                            ML4 = 1./6*(-1*u4_i2+5*u4_i1+2*u4);
+                            ML5 = 1./6*(-1*u5_i2+5*u5_i1+2*u5);
 
-							MR1 = 1./6*(2*u1_i1+5*u1-1*u1i1);
-							MR2 = 1./6*(2*u2_i1+5*u2-1*u2i1);
-							MR3 = 1./6*(2*u3_i1+5*u3-1*u3i1);
-							MR4 = 1./6*(2*u4_i1+5*u4-1*u4i1);
-							MR5 = 1./6*(2*u5_i1+5*u5-1*u5i1);
+                            MR1 = 1./6*(2*u1_i1+5*u1-1*u1i1);
+                            MR2 = 1./6*(2*u2_i1+5*u2-1*u2i1);
+                            MR3 = 1./6*(2*u3_i1+5*u3-1*u3i1);
+                            MR4 = 1./6*(2*u4_i1+5*u4-1*u4i1);
+                            MR5 = 1./6*(2*u5_i1+5*u5-1*u5i1);
 
-						}
-						else {
+                        }
+                        else {
 
-							ML1 = 1./60*(2*u1_i3-13*u1_i2+47*u1_i1+27*u1-3*u1i1);
-							ML2 = 1./60*(2*u2_i3-13*u2_i2+47*u2_i1+27*u2-3*u2i1);
-							ML3 = 1./60*(2*u3_i3-13*u3_i2+47*u3_i1+27*u3-3*u3i1);
-							ML4 = 1./60*(2*u4_i3-13*u4_i2+47*u4_i1+27*u4-3*u4i1);
-							ML5 = 1./60*(2*u5_i3-13*u5_i2+47*u5_i1+27*u5-3*u5i1);
+                            ML1 = 1./60*(2*u1_i3-13*u1_i2+47*u1_i1+27*u1-3*u1i1);
+                            ML2 = 1./60*(2*u2_i3-13*u2_i2+47*u2_i1+27*u2-3*u2i1);
+                            ML3 = 1./60*(2*u3_i3-13*u3_i2+47*u3_i1+27*u3-3*u3i1);
+                            ML4 = 1./60*(2*u4_i3-13*u4_i2+47*u4_i1+27*u4-3*u4i1);
+                            ML5 = 1./60*(2*u5_i3-13*u5_i2+47*u5_i1+27*u5-3*u5i1);
 
-							MR1 = 1./60*(-3*u1_i2+27*u1_i1+47*u1-13*u1i1+2*u1i2);
-							MR2 = 1./60*(-3*u2_i2+27*u2_i1+47*u2-13*u2i1+2*u2i2);
-							MR3 = 1./60*(-3*u3_i2+27*u3_i1+47*u3-13*u3i1+2*u3i2);
-							MR4 = 1./60*(-3*u4_i2+27*u4_i1+47*u4-13*u4i1+2*u4i2);
-							MR5 = 1./60*(-3*u5_i2+27*u5_i1+47*u5-13*u5i1+2*u5i2);
+                            MR1 = 1./60*(-3*u1_i2+27*u1_i1+47*u1-13*u1i1+2*u1i2);
+                            MR2 = 1./60*(-3*u2_i2+27*u2_i1+47*u2-13*u2i1+2*u2i2);
+                            MR3 = 1./60*(-3*u3_i2+27*u3_i1+47*u3-13*u3i1+2*u3i2);
+                            MR4 = 1./60*(-3*u4_i2+27*u4_i1+47*u4-13*u4i1+2*u4i2);
+                            MR5 = 1./60*(-3*u5_i2+27*u5_i1+47*u5-13*u5i1+2*u5i2);
 
-						}
-						
-						
-						
-						
-						if ( i==nx | IFi2 != IFLUID) {
+                        }
+                        
+                        
+                        
+                        
+                        if ( i==nx | IFi2 != IFLUID) {
 
-							ML1i = 1./6*(-1*u1_i1+5*u1+2*u1i1);
-							ML2i = 1./6*(-1*u2_i1+5*u2+2*u2i1);
-							ML3i = 1./6*(-1*u3_i1+5*u3+2*u3i1);
-							ML4i = 1./6*(-1*u4_i1+5*u4+2*u4i1);
-							ML5i = 1./6*(-1*u5_i1+5*u5+2*u5i1);
+                            ML1i = 1./6*(-1*u1_i1+5*u1+2*u1i1);
+                            ML2i = 1./6*(-1*u2_i1+5*u2+2*u2i1);
+                            ML3i = 1./6*(-1*u3_i1+5*u3+2*u3i1);
+                            ML4i = 1./6*(-1*u4_i1+5*u4+2*u4i1);
+                            ML5i = 1./6*(-1*u5_i1+5*u5+2*u5i1);
 
-							MR1i = 1./6*(2*u1+5*u1i1-1*u1i2);
-							MR2i = 1./6*(2*u2+5*u2i1-1*u2i2);
-							MR3i = 1./6*(2*u3+5*u3i1-1*u3i2);
-							MR4i = 1./6*(2*u4+5*u4i1-1*u4i2);
-							MR5i = 1./6*(2*u5+5*u5i1-1*u5i2);
+                            MR1i = 1./6*(2*u1+5*u1i1-1*u1i2);
+                            MR2i = 1./6*(2*u2+5*u2i1-1*u2i2);
+                            MR3i = 1./6*(2*u3+5*u3i1-1*u3i2);
+                            MR4i = 1./6*(2*u4+5*u4i1-1*u4i2);
+                            MR5i = 1./6*(2*u5+5*u5i1-1*u5i2);
 
-						}
-						else {
+                        }
+                        else {
 
-							ML1i = 1./60*(2*u1_i2-13*u1_i1+47*u1+27*u1i1-3*u1i2);
-							ML2i = 1./60*(2*u2_i2-13*u2_i1+47*u2+27*u2i1-3*u2i2);
-							ML3i = 1./60*(2*u3_i2-13*u3_i1+47*u3+27*u3i1-3*u3i2);
-							ML4i = 1./60*(2*u4_i2-13*u4_i1+47*u4+27*u4i1-3*u4i2);
-							ML5i = 1./60*(2*u5_i2-13*u5_i1+47*u5+27*u5i1-3*u5i2);
+                            ML1i = 1./60*(2*u1_i2-13*u1_i1+47*u1+27*u1i1-3*u1i2);
+                            ML2i = 1./60*(2*u2_i2-13*u2_i1+47*u2+27*u2i1-3*u2i2);
+                            ML3i = 1./60*(2*u3_i2-13*u3_i1+47*u3+27*u3i1-3*u3i2);
+                            ML4i = 1./60*(2*u4_i2-13*u4_i1+47*u4+27*u4i1-3*u4i2);
+                            ML5i = 1./60*(2*u5_i2-13*u5_i1+47*u5+27*u5i1-3*u5i2);
 
-							MR1i = 1./60*(-3*u1_i1+27*u1+47*u1i1-13*u1i2+2*u1i3);
-							MR2i = 1./60*(-3*u2_i1+27*u2+47*u2i1-13*u2i2+2*u2i3);
-							MR3i = 1./60*(-3*u3_i1+27*u3+47*u3i1-13*u3i2+2*u3i3);
-							MR4i = 1./60*(-3*u4_i1+27*u4+47*u4i1-13*u4i2+2*u4i3);
-							MR5i = 1./60*(-3*u5_i1+27*u5+47*u5i1-13*u5i2+2*u5i3);
+                            MR1i = 1./60*(-3*u1_i1+27*u1+47*u1i1-13*u1i2+2*u1i3);
+                            MR2i = 1./60*(-3*u2_i1+27*u2+47*u2i1-13*u2i2+2*u2i3);
+                            MR3i = 1./60*(-3*u3_i1+27*u3+47*u3i1-13*u3i2+2*u3i3);
+                            MR4i = 1./60*(-3*u4_i1+27*u4+47*u4i1-13*u4i2+2*u4i3);
+                            MR5i = 1./60*(-3*u5_i1+27*u5+47*u5i1-13*u5i2+2*u5i3);
 
-						}
-						
-						
-						
-						
-						
-					}
-					else {
+                        }
+                        
+                        
+                        
+                        
+                        
+                    }
+                    else {
 
-						ML1 = u1_i1;
-						ML2 = u2_i1;
-						ML3 = u3_i1;
-						ML4 = u4_i1;
-						ML5 = u5_i1;
-						
-						MR1 = u1;
-						MR2 = u2;
-						MR3 = u3;
-						MR4 = u4;
-						MR5 = u5;
-						
-						
-						ML1i = u1;
-						ML2i = u2;
-						ML3i = u3;
-						ML4i = u4;
-						ML5i = u5;
-						
-						MR1i = u1i1;
-						MR2i = u2i1;
-						MR3i = u3i1;
-						MR4i = u4i1;
-						MR5i = u5i1;
+                        ML1 = u1_i1;
+                        ML2 = u2_i1;
+                        ML3 = u3_i1;
+                        ML4 = u4_i1;
+                        ML5 = u5_i1;
+                        
+                        MR1 = u1;
+                        MR2 = u2;
+                        MR3 = u3;
+                        MR4 = u4;
+                        MR5 = u5;
+                        
+                        
+                        ML1i = u1;
+                        ML2i = u2;
+                        ML3i = u3;
+                        ML4i = u4;
+                        ML5i = u5;
+                        
+                        MR1i = u1i1;
+                        MR2i = u2i1;
+                        MR3i = u3i1;
+                        MR4i = u4i1;
+                        MR5i = u5i1;
 
-					}
+                    }
 
                     #endif
                     
-					// ----------------------------- MUSCL-X ----------------------------- //
-					// ------------------------------------------------------------------- //
+                    // ----------------------------- MUSCL-X ----------------------------- //
+                    // ------------------------------------------------------------------- //
 
 
 
 
-					// ------------------------------------------------------------------ //
-					// ----------------------------- Flux-X ----------------------------- //
+                    // ------------------------------------------------------------------ //
+                    // ----------------------------- Flux-X ----------------------------- //
 
 
 
-					/* -------------------------------- */
-					/* ----------- Backward ----------- */
+                    /* -------------------------------- */
+                    /* ----------- Backward ----------- */
 
-					/* jump dU */
-					dU1 = MR1-ML1;
-					dU2 = MR2-ML2;
-					dU3 = MR3-ML3;
-					dU4 = MR4-ML4;
-					dU5 = MR5-ML5;
+                    /* jump dU */
+                    dU1 = MR1-ML1;
+                    dU2 = MR2-ML2;
+                    dU3 = MR3-ML3;
+                    dU4 = MR4-ML4;
+                    dU5 = MR5-ML5;
 
-					/* lefr parameter */
-					UN_rho = ML1;
-					UN_U = ML2/UN_rho;
-					UN_V = ML3/UN_rho;
-					UN_W = ML4/UN_rho;
-					UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
-					UN_P = (ML5-0.5*UN_rho*UN_VV)*(K-1);
-					UN_T = UN_P/UN_rho;
-					UN_C = K*UN_P/UN_rho;
-					UN_H = 0.5*UN_VV+UN_C/(K-1);
+                    /* lefr parameter */
+                    UN_rho = ML1;
+                    UN_U = ML2/UN_rho;
+                    UN_V = ML3/UN_rho;
+                    UN_W = ML4/UN_rho;
+                    UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
+                    UN_P = (ML5-0.5*UN_rho*UN_VV)*(K-1);
+                    UN_T = UN_P/UN_rho;
+                    UN_C = K*UN_P/UN_rho;
+                    UN_H = 0.5*UN_VV+UN_C/(K-1);
 
-					/* right parameter */
-					rho_ = MR1;
-					U_ = MR2/rho_;
-					V_ = MR3/rho_;
-					W_ = MR4/rho_;
-					VV_ = U_*U_+V_*V_+W_*W_;
-					P_ = (MR5-0.5*rho_*VV_)*(K-1);
-					T_ = P_/rho_;
-					C_ = K*P_/rho_;
-					H_ = 0.5*VV_+C_/(K-1);
+                    /* right parameter */
+                    rho_ = MR1;
+                    U_ = MR2/rho_;
+                    V_ = MR3/rho_;
+                    W_ = MR4/rho_;
+                    VV_ = U_*U_+V_*V_+W_*W_;
+                    P_ = (MR5-0.5*rho_*VV_)*(K-1);
+                    T_ = P_/rho_;
+                    C_ = K*P_/rho_;
+                    H_ = 0.5*VV_+C_/(K-1);
 
-					/* flux varibale */
+                    /* flux varibale */
 
-					#if ROE != 4 
+                    #if ROE != 4 
 
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-					
-						temp4 = temp5+temp6;
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                    
+                    temp4 = temp5+temp6;
 
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;
 
-					#endif
+                    #endif
 
 
 
 
-					#if ROE == 1
-						
-						beta = max(VV/C,e);    // ---- theda ---- //
-					
-						temp = 0.5*(1+beta)*U;    // ---- U' ---- //
+                    #if ROE == 1
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                    
+                    temp = 0.5*(1+beta)*U;    // ---- U' ---- //
 
-						S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
+                    S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
 
-						temp1 = (P_-UN_P)/rho/beta/C;
+                    temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = temp/S*(U_-UN_U);
+                    temp2 = temp/S*(U_-UN_U);
 
-						temp3 = 0.5*(1-beta)*U*temp/S;
+                    temp3 = 0.5*(1-beta)*U*temp/S;
 
 
 
-						deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
+                    deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
 
-						deltaP = temp/S*(P_-UN_P)+(S-fabs(U)+temp3)*rho*(U_-UN_U);
+                    deltaP = temp/S*(P_-UN_P)+(S-fabs(U)+temp3)*rho*(U_-UN_U);
 
-					
-					#elif ROE == 2
-						
-						beta = max(VV/C,e);    // ---- theda ---- //
-					
-						temp = 0.5*(1+beta)*U;    // ---- U' ---- //
+                    
+                    #elif ROE == 2
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                    
+                    temp = 0.5*(1+beta)*U;    // ---- U' ---- //
 
-						S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
+                    S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
 
-						theda_p = VV/C;
+                    theda_p = VV/C;
 
-						U_p = 0.5*(1+theda_p)*U;
-						C_p = 0.5*sqrt(4*C*theda_p+U*U*(1-theda_p)*(1-theda_p));
+                    U_p = 0.5*(1+theda_p)*U;
+                    C_p = 0.5*sqrt(4*C*theda_p+U*U*(1-theda_p)*(1-theda_p));
 
-						temp1 = (P_-UN_P)/rho/beta/C;
+                    temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = U_p/S*(U_-UN_U);
+                    temp2 = U_p/S*(U_-UN_U);
 
-						temp3 = 0.5*(1-beta)*U*temp/S;
+                    temp3 = 0.5*(1-beta)*U*temp/S;
 
 
-					
-						temp4 = 0.5*(1-theda_p)*U*U_p/S;
+                    
+                    temp4 = 0.5*(1-theda_p)*U*U_p/S;
 
-						deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
+                    deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
 
-						deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(U)+temp4)*rho*(U_-UN_U);
+                    deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(U)+temp4)*rho*(U_-UN_U);
 
-				
-					#elif ROE == 3
+                    
+                    #elif ROE == 3
 
-						S = sqrt(C);
+                    S = sqrt(C);
 
-						theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
-						
-						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+                    theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
+                    
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
 
-						beta = max(temp, 1e-8);
-						
-						C_p = beta*S;
+                    beta = max(temp, 1e-8);
+                    
+                    C_p = beta*S;
 
-						temp1 = (P_-UN_P)/rho/C;
+                    temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = U/S*beta*(U_-UN_U);
+                    temp2 = U/S*beta*(U_-UN_U);
 
-						deltaU = (S-fabs(U))*temp1+temp2;
+                    deltaU = (S-fabs(U))*temp1+temp2;
 
-						deltaP = U/S*(P_-UN_P)+(C_p-fabs(U))*rho*(U_-UN_U);
+                    deltaP = U/S*(P_-UN_P)+(C_p-fabs(U))*rho*(U_-UN_U);
 
-					#elif ROE == 4
+                    #elif ROE == 4
 
-						
-						beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+                    
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
 
-						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
-						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
-						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+                    temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+                    temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+                    temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
 
-						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
-						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
-						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+                    U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+                    V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+                    W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
 
-						UN_U = temp1;
-						UN_V = temp2;
-						UN_W = temp3;
+                    UN_U = temp1;
+                    UN_V = temp2;
+                    UN_W = temp3;
 
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-					
-						temp4 = temp5+temp6;
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                    
+                    temp4 = temp5+temp6;
 
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;
 
 
-						S = sqrt(C);
+                    S = sqrt(C);
 
-						temp1 = (P_-UN_P)/rho/C;
+                    temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = U/S*(U_-UN_U);
+                    temp2 = U/S*(U_-UN_U);
 
-						deltaU = (S-fabs(U))*temp1+temp2;
+                    deltaU = (S-fabs(U))*temp1+temp2;
 
-						deltaP = U/S*(P_-UN_P)+(S-fabs(U))*rho*(U_-UN_U);
+                    deltaP = U/S*(P_-UN_P)+(S-fabs(U))*rho*(U_-UN_U);
 
-					#endif
+                    #elif ROE == 5
+                    
+                    S = sqrt(C);
 
-					/* artificial viscosity */
-					Fav1 = Cdiss*fabs(U)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(U)*dU2+deltaU*rho*U+deltaP;
-					Fav3 = Cdiss*fabs(U)*dU3+deltaU*rho*V;
-					Fav4 = Cdiss*fabs(U)*dU4+deltaU*rho*W;
-					Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
-					
-					/* inviscid fluxes */
-					inFx1 = 0.5*((UN_rho*UN_U+rho_*U_)-Ep*Fav1);
-					inFx2 = 0.5*((UN_rho*UN_U*UN_U+UN_P+rho_*U_*U_+P_)-Ep*Fav2);
-					inFx3 = 0.5*((UN_rho*UN_V*UN_U+rho_*V_*U_)-Ep*Fav3);
-					inFx4 = 0.5*((UN_rho*UN_W*UN_U+rho_*W_*U_)-Ep*Fav4);
-					inFx5 = 0.5*((UN_U*(3.5*UN_P+0.5*UN_rho*UN_VV)+U_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
+                    theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
 
-					
-					dPx = 0.5*(UN_P+P_);
-					/* ----------- Backward ----------- */
-					/* -------------------------------- */
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+                    
+                    deltaP = U/S*(P_-UN_P)+temp*(S-fabs(U))*rho*(U_-UN_U);
+                    
+                    
+                    // ==== deltaU_P + deltaU_RL ==== //            
+                    temp1 = (P_-UN_P)/rho/C;
+
+                    deltaU = ( 1.0-pow(temp,8) )*(S-fabs(U))*temp1;
+
+                    temp2 = 0.5*U/S*(U_-UN_U);
+                    
+                    
+                    // ==== KEASI ==== //
+                    beta = sqrt(abs(U)/C);
+                    
+                    temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
+                    
+                    temp = max( 0.5*fabs(U_+UN_U)+(1.0-pow(temp3,8))*0.5*(U_-UN_U), 0.0 );
 
+                    #endif
+                    /* artificial viscosity */
+                    
+                    #if ROE == 5 
+                    
+                    Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
+                    Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_)+deltaP;
+                    Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
+                    Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_);
+                    Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*U;
+                    
+                    #else
+                    
+                    Fav1 = Cdiss*fabs(U)*dU1+deltaU*rho;
+                    Fav2 = Cdiss*fabs(U)*dU2+deltaU*rho*U+deltaP;
+                    Fav3 = Cdiss*fabs(U)*dU3+deltaU*rho*V;
+                    Fav4 = Cdiss*fabs(U)*dU4+deltaU*rho*W;
+                    Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
+                    
 
+                    #endif
+                    /* inviscid fluxes */
+                    inFx1 = 0.5*((UN_rho*UN_U+rho_*U_)-Ep*Fav1);
+                    inFx2 = 0.5*((UN_rho*UN_U*UN_U+UN_P+rho_*U_*U_+P_)-Ep*Fav2);
+                    inFx3 = 0.5*((UN_rho*UN_V*UN_U+rho_*V_*U_)-Ep*Fav3);
+                    inFx4 = 0.5*((UN_rho*UN_W*UN_U+rho_*W_*U_)-Ep*Fav4);
+                    inFx5 = 0.5*((UN_U*(3.5*UN_P+0.5*UN_rho*UN_VV)+U_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
+                    
+                    dPx = 0.5*(UN_P+P_);
+                    /* ----------- Backward ----------- */
+                    /* -------------------------------- */
 
 
-					/* --------------------------------- */
-					/* ------------ Forward ------------ */
-					
 
-					/* jump dU */
-					dU1 = MR1i-ML1i;
-					dU2 = MR2i-ML2i;
-					dU3 = MR3i-ML3i;
-					dU4 = MR4i-ML4i;
-					dU5 = MR5i-ML5i;
 
-					/* lefr parameter */
-					UN_rho = ML1i;
-					UN_U = ML2i/UN_rho;
-					UN_V = ML3i/UN_rho;
-					UN_W = ML4i/UN_rho;
-					UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
-					UN_P = (ML5i-0.5*UN_rho*UN_VV)*(K-1);
-					UN_T = UN_P/UN_rho;
-					UN_C = K*UN_P/UN_rho;
-					UN_H = 0.5*UN_VV+UN_C/(K-1);
 
-					/* right parameter */
-					rho_ = MR1i;
-					U_ = MR2i/rho_;
-					V_ = MR3i/rho_;
-					W_ = MR4i/rho_;
-					VV_ = U_*U_+V_*V_+W_*W_;
-					P_ = (MR5i-0.5*rho_*VV_)*(K-1);
-					T_ = P_/rho_;
-					C_ = K*P_/rho_;
-					H_ = 0.5*VV_+C_/(K-1);
+                    /* --------------------------------- */
+                    /* ------------ Forward ------------ */
+                    
 
-					/* flux varibale */
-					
-					#if ROE != 4
+                    /* jump dU */
+                    dU1 = MR1i-ML1i;
+                    dU2 = MR2i-ML2i;
+                    dU3 = MR3i-ML3i;
+                    dU4 = MR4i-ML4i;
+                    dU5 = MR5i-ML5i;
 
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-					
-						temp4 = temp5+temp6;
+                    /* lefr parameter */
+                    UN_rho = ML1i;
+                    UN_U = ML2i/UN_rho;
+                    UN_V = ML3i/UN_rho;
+                    UN_W = ML4i/UN_rho;
+                    UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
+                    UN_P = (ML5i-0.5*UN_rho*UN_VV)*(K-1);
+                    UN_T = UN_P/UN_rho;
+                    UN_C = K*UN_P/UN_rho;
+                    UN_H = 0.5*UN_VV+UN_C/(K-1);
 
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
+                    /* right parameter */
+                    rho_ = MR1i;
+                    U_ = MR2i/rho_;
+                    V_ = MR3i/rho_;
+                    W_ = MR4i/rho_;
+                    VV_ = U_*U_+V_*V_+W_*W_;
+                    P_ = (MR5i-0.5*rho_*VV_)*(K-1);
+                    T_ = P_/rho_;
+                    C_ = K*P_/rho_;
+                    H_ = 0.5*VV_+C_/(K-1);
 
-					#endif
+                    /* flux varibale */
+                    
+                    #if ROE != 4
 
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                    
+                    temp4 = temp5+temp6;
 
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;
 
+                    #endif
 
-					#if ROE == 1
-						
-						beta = max(VV/C,e);    // ---- theda ---- //
-						temp = 0.5*(1+beta)*U;    // ---- U' ---- //
-						S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
 
-						temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = temp/S*(U_-UN_U);
 
-						temp3 = 0.5*(1-beta)*U*temp/S;
+                    #if ROE == 1
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                    temp = 0.5*(1+beta)*U;    // ---- U' ---- //
+                    S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
 
-						deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
+                    temp1 = (P_-UN_P)/rho/beta/C;
 
-						deltaP = temp/S*(P_-UN_P)+(S-fabs(U)+temp3)*rho*(U_-UN_U);
+                    temp2 = temp/S*(U_-UN_U);
 
-					#elif ROE == 2
-						
-						beta = max(VV/C,e);    // ---- theda ---- //
-					
-						temp = 0.5*(1+beta)*U;    // ---- U' ---- //
+                    temp3 = 0.5*(1-beta)*U*temp/S;
 
-						S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
+                    deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
 
+                    deltaP = temp/S*(P_-UN_P)+(S-fabs(U)+temp3)*rho*(U_-UN_U);
 
-						theda_p = VV/C;
+                    #elif ROE == 2
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                    
+                    temp = 0.5*(1+beta)*U;    // ---- U' ---- //
 
+                    S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
 
 
-						U_p = 0.5*(1+theda_p)*U;
-						C_p = 0.5*sqrt(4*C*theda_p+U*U*(1-theda_p)*(1-theda_p));
+                    theda_p = VV/C;
 
-						temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = U_p/S*(U_-UN_U);
 
-						temp3 = 0.5*(1-beta)*U*temp/S;
+                    U_p = 0.5*(1+theda_p)*U;
+                    C_p = 0.5*sqrt(4*C*theda_p+U*U*(1-theda_p)*(1-theda_p));
 
+                    temp1 = (P_-UN_P)/rho/beta/C;
 
-					
-						temp4 = 0.5*(1-theda_p)*U*U_p/S;
+                    temp2 = U_p/S*(U_-UN_U);
 
-						deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
+                    temp3 = 0.5*(1-beta)*U*temp/S;
 
-						deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(U)+temp4)*rho*(U_-UN_U);
 
-					#elif ROE == 3
+                    
+                    temp4 = 0.5*(1-theda_p)*U*U_p/S;
 
-						S = sqrt(C);
+                    deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
 
-						theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
-						
-						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+                    deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(U)+temp4)*rho*(U_-UN_U);
 
-						beta = max(temp, 1e-8);
-						
-						C_p = beta*S;
+                    #elif ROE == 3
 
-						temp1 = (P_-UN_P)/rho/C;
+                    S = sqrt(C);
 
-						temp2 = U/S*beta*(U_-UN_U);
+                    theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
+                    
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
 
-						deltaU = (S-fabs(U))*temp1+temp2;
+                    beta = max(temp, 1e-8);
+                    
+                    C_p = beta*S;
 
-						deltaP = U/S*(P_-UN_P)+(C_p-fabs(U))*rho*(U_-UN_U);
-						
-					#elif ROE == 4
+                    temp1 = (P_-UN_P)/rho/C;
 
-						
-						beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+                    temp2 = U/S*beta*(U_-UN_U);
 
-						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
-						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
-						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+                    deltaU = (S-fabs(U))*temp1+temp2;
 
-						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
-						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
-						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+                    deltaP = U/S*(P_-UN_P)+(C_p-fabs(U))*rho*(U_-UN_U);
+                    
+                    #elif ROE == 4
 
-						UN_U = temp1;
-						UN_V = temp2;
-						UN_W = temp3;
+                    
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
 
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-					
-						temp4 = temp5+temp6;
+                    temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+                    temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+                    temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
 
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
+                    U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+                    V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+                    W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
 
-						S = sqrt(C);
+                    UN_U = temp1;
+                    UN_V = temp2;
+                    UN_W = temp3;
 
-						temp1 = (P_-UN_P)/rho/C;
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                    
+                    temp4 = temp5+temp6;
 
-						temp2 = U/S*(U_-UN_U);
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;
 
-						deltaU = (S-fabs(U))*temp1+temp2;
+                    S = sqrt(C);
 
-						deltaP = U/S*(P_-UN_P)+(S-fabs(U))*rho*(U_-UN_U);
+                    temp1 = (P_-UN_P)/rho/C;
 
-					#endif
+                    temp2 = U/S*(U_-UN_U);
 
-					/* artificial viscosity */
-					Fav1 = Cdiss*fabs(U)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(U)*dU2+deltaU*rho*U+deltaP;
-					Fav3 = Cdiss*fabs(U)*dU3+deltaU*rho*V;
-					Fav4 = Cdiss*fabs(U)*dU4+deltaU*rho*W;
-					Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
-					
+                    deltaU = (S-fabs(U))*temp1+temp2;
 
+                    deltaP = U/S*(P_-UN_P)+(S-fabs(U))*rho*(U_-UN_U);
+                    
+                    
+                    #elif ROE == 5
+                    
+                    S = sqrt(C);
 
-					/* inviscid fluxes */
-					inFx1i = 0.5*((UN_rho*UN_U+rho_*U_)-Ep*Fav1);
-					inFx2i = 0.5*((UN_rho*UN_U*UN_U+UN_P+rho_*U_*U_+P_)-Ep*Fav2);
-					inFx3i = 0.5*((UN_rho*UN_V*UN_U+rho_*V_*U_)-Ep*Fav3);
-					inFx4i = 0.5*((UN_rho*UN_W*UN_U+rho_*W_*U_)-Ep*Fav4);
-					inFx5i = 0.5*((UN_U*(3.5*UN_P+0.5*UN_rho*UN_VV)+U_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
+                    theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
 
-					
-					dPxi = 0.5*(UN_P+P_);
-					/* ------------ Forward ------------ */
-					/* --------------------------------- */
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+                    
+                    deltaP = U/S*(P_-UN_P)+temp*(S-fabs(U))*rho*(U_-UN_U);
+                    
+                    
+                    // ==== deltaU_P + deltaU_RL ==== //            
+                    temp1 = (P_-UN_P)/rho/C;
 
+                    deltaU = ( 1.0-pow(temp,8) )*(S-fabs(U))*temp1;
 
-					Rfx1 = inFx1i - inFx1;
-					Rfx2 = inFx2i - inFx2;
-					Rfx3 = inFx3i - inFx3;
-					Rfx4 = inFx4i - inFx4;
-					Rfx5 = inFx5i - inFx5;
+                    temp2 = 0.5*U/S*(U_-UN_U);
+                    
+                    
+                    // ==== KEASI ==== //
+                    beta = sqrt(abs(U)/C);
+                    
+                    temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
+                    
+                    temp = max( 0.5*fabs(U_+UN_U)+(1.0-pow(temp3,8))*0.5*(U_-UN_U), 0.0 );
 
-					// ----------------------------- Flux-X ----------------------------- //
-					// ------------------------------------------------------------------ //
+                    #endif
 
+                    /* artificial viscosity */
+                    #if ROE == 5 
+                    
+                    Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
+                    Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_)+deltaP;
+                    Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
+                    Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_);
+                    Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*U;
+                    
+                    #else
+                    
+                    Fav1 = Cdiss*fabs(U)*dU1+deltaU*rho;
+                    Fav2 = Cdiss*fabs(U)*dU2+deltaU*rho*U+deltaP;
+                    Fav3 = Cdiss*fabs(U)*dU3+deltaU*rho*V;
+                    Fav4 = Cdiss*fabs(U)*dU4+deltaU*rho*W;
+                    Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
+                    
 
+                    #endif
 
+                    /* inviscid fluxes */
+                    inFx1i = 0.5*((UN_rho*UN_U+rho_*U_)-Ep*Fav1);
+                    inFx2i = 0.5*((UN_rho*UN_U*UN_U+UN_P+rho_*U_*U_+P_)-Ep*Fav2);
+                    inFx3i = 0.5*((UN_rho*UN_V*UN_U+rho_*V_*U_)-Ep*Fav3);
+                    inFx4i = 0.5*((UN_rho*UN_W*UN_U+rho_*W_*U_)-Ep*Fav4);
+                    inFx5i = 0.5*((UN_U*(3.5*UN_P+0.5*UN_rho*UN_VV)+U_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
+                    
+                    dPxi = 0.5*(UN_P+P_);
+                    /* ------------ Forward ------------ */
+                    /* --------------------------------- */
 
 
+                    Rfx1 = inFx1i - inFx1;
+                    Rfx2 = inFx2i - inFx2;
+                    Rfx3 = inFx3i - inFx3;
+                    Rfx4 = inFx4i - inFx4;
+                    Rfx5 = inFx5i - inFx5;
 
-					// -----------------------------------------------------------------//
-					// -------------------------- Y-direction --------------------------//
+                    // ----------------------------- Flux-X ----------------------------- //
+                    // ------------------------------------------------------------------ //
 
-					IF_j1 = FWS[icube][i][j-1][k];
-					u1_j1 = U1_[icube][i][j-1][k][0];
-					u2_j1 = U1_[icube][i][j-1][k][1];
-					u3_j1 = U1_[icube][i][j-1][k][2];
-					u4_j1 = U1_[icube][i][j-1][k][3];
-					u5_j1 = U1_[icube][i][j-1][k][4];
 
-					IF_j2 = FWS[icube][i][j-2][k];
-					u1_j2 = U1_[icube][i][j-2][k][0];
-					u2_j2 = U1_[icube][i][j-2][k][1];
-					u3_j2 = U1_[icube][i][j-2][k][2];
-					u4_j2 = U1_[icube][i][j-2][k][3];
-					u5_j2 = U1_[icube][i][j-2][k][4];
 
-					#ifdef Kcomputer
-						//if(j > 2) {
-					#else
-						if(j > 2) {
-					#endif
-					
 
-						IF_j3 = FWS[icube][i][j-3][k];
-						u1_j3 = U1_[icube][i][j-3][k][0];
-						u2_j3 = U1_[icube][i][j-3][k][1];
-						u3_j3 = U1_[icube][i][j-3][k][2];
-						u4_j3 = U1_[icube][i][j-3][k][3];
-						u5_j3 = U1_[icube][i][j-3][k][4];
 
-					#ifdef Kcomputer
-						//}
-					#else
-						}
-					#endif
 
-					IFj1 = FWS[icube][i][j+1][k];
-					u1j1 = U1_[icube][i][j+1][k][0];
-					u2j1 = U1_[icube][i][j+1][k][1];
-					u3j1 = U1_[icube][i][j+1][k][2];
-					u4j1 = U1_[icube][i][j+1][k][3];
-					u5j1 = U1_[icube][i][j+1][k][4];
 
-					IFj2 = FWS[icube][i][j+2][k];
-					u1j2 = U1_[icube][i][j+2][k][0];
-					u2j2 = U1_[icube][i][j+2][k][1];
-					u3j2 = U1_[icube][i][j+2][k][2];
-					u4j2 = U1_[icube][i][j+2][k][3];
-					u5j2 = U1_[icube][i][j+2][k][4];
+                    // -----------------------------------------------------------------//
+                    // -------------------------- Y-direction --------------------------//
 
-					#ifdef Kcomputer
-						//if(j < ny)   {
-					#else
-						if(j < ny)   {
-					#endif
-					
+                    IF_j1 = FWS[icube][i][j-1][k];
+                    u1_j1 = U1_[icube][i][j-1][k][0];
+                    u2_j1 = U1_[icube][i][j-1][k][1];
+                    u3_j1 = U1_[icube][i][j-1][k][2];
+                    u4_j1 = U1_[icube][i][j-1][k][3];
+                    u5_j1 = U1_[icube][i][j-1][k][4];
 
-						IFj3 = FWS[icube][i][j+3][k];
-						u1j3 = U1_[icube][i][j+3][k][0];
-						u2j3 = U1_[icube][i][j+3][k][1];
-						u3j3 = U1_[icube][i][j+3][k][2];
-						u4j3 = U1_[icube][i][j+3][k][3];
-						u5j3 = U1_[icube][i][j+3][k][4];
+                    IF_j2 = FWS[icube][i][j-2][k];
+                    u1_j2 = U1_[icube][i][j-2][k][0];
+                    u2_j2 = U1_[icube][i][j-2][k][1];
+                    u3_j2 = U1_[icube][i][j-2][k][2];
+                    u4_j2 = U1_[icube][i][j-2][k][3];
+                    u5_j2 = U1_[icube][i][j-2][k][4];
 
-					#ifdef Kcomputer
-						//}
-					#else
-						}
-					#endif
-					
+                    #ifdef Kcomputer
+                    //if(j > 2) {
+                    #else
+                    if(j > 2) {
+                        #endif
+                        
 
-					// -------------------------- Y-direction --------------------------//
-					// -----------------------------------------------------------------//
+                        IF_j3 = FWS[icube][i][j-3][k];
+                        u1_j3 = U1_[icube][i][j-3][k][0];
+                        u2_j3 = U1_[icube][i][j-3][k][1];
+                        u3_j3 = U1_[icube][i][j-3][k][2];
+                        u4_j3 = U1_[icube][i][j-3][k][3];
+                        u5_j3 = U1_[icube][i][j-3][k][4];
 
+                        #ifdef Kcomputer
+                        //}
+                        #else
+                    }
+                    #endif
 
-					// ------------------------------------------------------------------- //
-					// ----------------------------- MUSCL-Y ----------------------------- //
+                    IFj1 = FWS[icube][i][j+1][k];
+                    u1j1 = U1_[icube][i][j+1][k][0];
+                    u2j1 = U1_[icube][i][j+1][k][1];
+                    u3j1 = U1_[icube][i][j+1][k][2];
+                    u4j1 = U1_[icube][i][j+1][k][3];
+                    u5j1 = U1_[icube][i][j+1][k][4];
+
+                    IFj2 = FWS[icube][i][j+2][k];
+                    u1j2 = U1_[icube][i][j+2][k][0];
+                    u2j2 = U1_[icube][i][j+2][k][1];
+                    u3j2 = U1_[icube][i][j+2][k][2];
+                    u4j2 = U1_[icube][i][j+2][k][3];
+                    u5j2 = U1_[icube][i][j+2][k][4];
+
+                    #ifdef Kcomputer
+                    //if(j < ny)   {
+                    #else
+                    if(j < ny)   {
+                        #endif
+                        
+
+                        IFj3 = FWS[icube][i][j+3][k];
+                        u1j3 = U1_[icube][i][j+3][k][0];
+                        u2j3 = U1_[icube][i][j+3][k][1];
+                        u3j3 = U1_[icube][i][j+3][k][2];
+                        u4j3 = U1_[icube][i][j+3][k][3];
+                        u5j3 = U1_[icube][i][j+3][k][4];
+
+                        #ifdef Kcomputer
+                        //}
+                        #else
+                    }
+                    #endif
+                    
+
+                    // -------------------------- Y-direction --------------------------//
+                    // -----------------------------------------------------------------//
+
+
+                    // ------------------------------------------------------------------- //
+                    // ----------------------------- MUSCL-Y ----------------------------- //
 
                     #ifdef limiter
                     
                     
                     if( IFj1 == IFLUID  && IF_j1 == IFLUID) { 
 
-						if ( j==2 | IF_j2 != IFLUID ) {
+                        if ( j==2 | IF_j2 != IFLUID ) {
 
-							ML1 = 1./6*(-1*u1_j2+5*u1_j1+2*u1);
-							ML2 = 1./6*(-1*u2_j2+5*u2_j1+2*u2);
-							ML3 = 1./6*(-1*u3_j2+5*u3_j1+2*u3);
-							ML4 = 1./6*(-1*u4_j2+5*u4_j1+2*u4);
-							ML5 = 1./6*(-1*u5_j2+5*u5_j1+2*u5);
+                            ML1 = 1./6*(-1*u1_j2+5*u1_j1+2*u1);
+                            ML2 = 1./6*(-1*u2_j2+5*u2_j1+2*u2);
+                            ML3 = 1./6*(-1*u3_j2+5*u3_j1+2*u3);
+                            ML4 = 1./6*(-1*u4_j2+5*u4_j1+2*u4);
+                            ML5 = 1./6*(-1*u5_j2+5*u5_j1+2*u5);
 
-							MR1 = 1./6*(2*u1_j1+5*u1-1*u1j1);
-							MR2 = 1./6*(2*u2_j1+5*u2-1*u2j1);
-							MR3 = 1./6*(2*u3_j1+5*u3-1*u3j1);
-							MR4 = 1./6*(2*u4_j1+5*u4-1*u4j1);
-							MR5 = 1./6*(2*u5_j1+5*u5-1*u5j1);
+                            MR1 = 1./6*(2*u1_j1+5*u1-1*u1j1);
+                            MR2 = 1./6*(2*u2_j1+5*u2-1*u2j1);
+                            MR3 = 1./6*(2*u3_j1+5*u3-1*u3j1);
+                            MR4 = 1./6*(2*u4_j1+5*u4-1*u4j1);
+                            MR5 = 1./6*(2*u5_j1+5*u5-1*u5j1);
                             
                             ML1 = u1_j1 + max(0.0, min( min(u1_j1-u1_j2, u1-u1_j1), ML1-u1_j1 ));
                             ML2 = u2_j1 + max(0.0, min( min(u2_j1-u2_j2, u2-u1_j1), ML2-u2_j1 ));
@@ -2015,20 +2164,20 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
                             MR5 = u5 - max(0.0, min( min(u5j1-u5, u5-u5_j1), MR5-u5 ));
                             
                             
-						}
-						else {
+                        }
+                        else {
 
-							ML1 = 1./60*(2*u1_j3-13*u1_j2+47*u1_j1+27*u1-3*u1j1);
-							ML2 = 1./60*(2*u2_j3-13*u2_j2+47*u2_j1+27*u2-3*u2j1);
-							ML3 = 1./60*(2*u3_j3-13*u3_j2+47*u3_j1+27*u3-3*u3j1);
-							ML4 = 1./60*(2*u4_j3-13*u4_j2+47*u4_j1+27*u4-3*u4j1);
-							ML5 = 1./60*(2*u5_j3-13*u5_j2+47*u5_j1+27*u5-3*u5j1);
+                            ML1 = 1./60*(2*u1_j3-13*u1_j2+47*u1_j1+27*u1-3*u1j1);
+                            ML2 = 1./60*(2*u2_j3-13*u2_j2+47*u2_j1+27*u2-3*u2j1);
+                            ML3 = 1./60*(2*u3_j3-13*u3_j2+47*u3_j1+27*u3-3*u3j1);
+                            ML4 = 1./60*(2*u4_j3-13*u4_j2+47*u4_j1+27*u4-3*u4j1);
+                            ML5 = 1./60*(2*u5_j3-13*u5_j2+47*u5_j1+27*u5-3*u5j1);
 
-							MR1 = 1./60*(-3*u1_j2+27*u1_j1+47*u1-13*u1j1+2*u1j2);
-							MR2 = 1./60*(-3*u2_j2+27*u2_j1+47*u2-13*u2j1+2*u2j2);
-							MR3 = 1./60*(-3*u3_j2+27*u3_j1+47*u3-13*u3j1+2*u3j2);
-							MR4 = 1./60*(-3*u4_j2+27*u4_j1+47*u4-13*u4j1+2*u4j2);
-							MR5 = 1./60*(-3*u5_j2+27*u5_j1+47*u5-13*u5j1+2*u5j2);
+                            MR1 = 1./60*(-3*u1_j2+27*u1_j1+47*u1-13*u1j1+2*u1j2);
+                            MR2 = 1./60*(-3*u2_j2+27*u2_j1+47*u2-13*u2j1+2*u2j2);
+                            MR3 = 1./60*(-3*u3_j2+27*u3_j1+47*u3-13*u3j1+2*u3j2);
+                            MR4 = 1./60*(-3*u4_j2+27*u4_j1+47*u4-13*u4j1+2*u4j2);
+                            MR5 = 1./60*(-3*u5_j2+27*u5_j1+47*u5-13*u5j1+2*u5j2);
                             
                             
                             ML1 = u1_j1 + max(0.0, min( min(u1_j1-u1_j2, u1-u1_j1), ML1-u1_j1 ));
@@ -2043,24 +2192,24 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
                             MR4 = u4 - max(0.0, min( min(u4j1-u4, u4-u4_j1), MR4-u4 ));
                             MR5 = u5 - max(0.0, min( min(u5j1-u5, u5-u5_j1), MR5-u5 ));
 
-						}
-						
-						
-						
-						
-						if ( j==nx | IFj2 != IFLUID) {
+                        }
+                        
+                        
+                        
+                        
+                        if ( j==nx | IFj2 != IFLUID) {
 
-							ML1i = 1./6*(-1*u1_j1+5*u1+2*u1j1);
-							ML2i = 1./6*(-1*u2_j1+5*u2+2*u2j1);
-							ML3i = 1./6*(-1*u3_j1+5*u3+2*u3j1);
-							ML4i = 1./6*(-1*u4_j1+5*u4+2*u4j1);
-							ML5i = 1./6*(-1*u5_j1+5*u5+2*u5j1);
+                            ML1i = 1./6*(-1*u1_j1+5*u1+2*u1j1);
+                            ML2i = 1./6*(-1*u2_j1+5*u2+2*u2j1);
+                            ML3i = 1./6*(-1*u3_j1+5*u3+2*u3j1);
+                            ML4i = 1./6*(-1*u4_j1+5*u4+2*u4j1);
+                            ML5i = 1./6*(-1*u5_j1+5*u5+2*u5j1);
 
-							MR1i = 1./6*(2*u1+5*u1j1-1*u1j2);
-							MR2i = 1./6*(2*u2+5*u2j1-1*u2j2);
-							MR3i = 1./6*(2*u3+5*u3j1-1*u3j2);
-							MR4i = 1./6*(2*u4+5*u4j1-1*u4j2);
-							MR5i = 1./6*(2*u5+5*u5j1-1*u5j2);
+                            MR1i = 1./6*(2*u1+5*u1j1-1*u1j2);
+                            MR2i = 1./6*(2*u2+5*u2j1-1*u2j2);
+                            MR3i = 1./6*(2*u3+5*u3j1-1*u3j2);
+                            MR4i = 1./6*(2*u4+5*u4j1-1*u4j2);
+                            MR5i = 1./6*(2*u5+5*u5j1-1*u5j2);
                             
                             
                             ML1i = u1 + max(0.0, min( min(u1j1-u1, u1-u1_j1), MR1-u1 ));
@@ -2076,20 +2225,20 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
                             MR5i = u5j1 - max(0.0, min( min(u5j2-u5j1, u5j1-u5),MR5i-u5j1 ));
                             
 
-						}
-						else {
+                        }
+                        else {
 
-							ML1i = 1./60*(2*u1_j2-13*u1_j1+47*u1+27*u1j1-3*u1j2);
-							ML2i = 1./60*(2*u2_j2-13*u2_j1+47*u2+27*u2j1-3*u2j2);
-							ML3i = 1./60*(2*u3_j2-13*u3_j1+47*u3+27*u3j1-3*u3j2);
-							ML4i = 1./60*(2*u4_j2-13*u4_j1+47*u4+27*u4j1-3*u4j2);
-							ML5i = 1./60*(2*u5_j2-13*u5_j1+47*u5+27*u5j1-3*u5j2);
+                            ML1i = 1./60*(2*u1_j2-13*u1_j1+47*u1+27*u1j1-3*u1j2);
+                            ML2i = 1./60*(2*u2_j2-13*u2_j1+47*u2+27*u2j1-3*u2j2);
+                            ML3i = 1./60*(2*u3_j2-13*u3_j1+47*u3+27*u3j1-3*u3j2);
+                            ML4i = 1./60*(2*u4_j2-13*u4_j1+47*u4+27*u4j1-3*u4j2);
+                            ML5i = 1./60*(2*u5_j2-13*u5_j1+47*u5+27*u5j1-3*u5j2);
 
-							MR1i = 1./60*(-3*u1_j1+27*u1+47*u1j1-13*u1j2+2*u1j3);
-							MR2i = 1./60*(-3*u2_j1+27*u2+47*u2j1-13*u2j2+2*u2j3);
-							MR3i = 1./60*(-3*u3_j1+27*u3+47*u3j1-13*u3j2+2*u3j3);
-							MR4i = 1./60*(-3*u4_j1+27*u4+47*u4j1-13*u4j2+2*u4j3);
-							MR5i = 1./60*(-3*u5_j1+27*u5+47*u5j1-13*u5j2+2*u5j3);
+                            MR1i = 1./60*(-3*u1_j1+27*u1+47*u1j1-13*u1j2+2*u1j3);
+                            MR2i = 1./60*(-3*u2_j1+27*u2+47*u2j1-13*u2j2+2*u2j3);
+                            MR3i = 1./60*(-3*u3_j1+27*u3+47*u3j1-13*u3j2+2*u3j3);
+                            MR4i = 1./60*(-3*u4_j1+27*u4+47*u4j1-13*u4j2+2*u4j3);
+                            MR5i = 1./60*(-3*u5_j1+27*u5+47*u5j1-13*u5j2+2*u5j3);
                             
                             
                             
@@ -2106,16 +2255,16 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
                             MR5i = u5j1 - max(0.0, min( min(u5j2-u5j1, u5j1-u5),MR5i-u5j1 ));
                             
 
-						}
-						
-						
-						
-						
-						
-					}
-					else {
+                        }
+                        
+                        
+                        
+                        
+                        
+                    }
+                    else {
 
-						ML1 = u1_j1 + max( 0.0, min( u1_j1-u1_j2, u1-u1_j1 ) );
+                        ML1 = u1_j1 + max( 0.0, min( u1_j1-u1_j2, u1-u1_j1 ) );
                         ML2 = u2_j1 + max( 0.0, min( u2_j1-u2_j2, u2-u2_j1 ) );
                         ML3 = u3_j1 + max( 0.0, min( u3_j1-u3_j2, u3-u3_j1 ) );
                         ML4 = u4_j1 + max( 0.0, min( u4_j1-u4_j2, u4-u4_j1 ) );
@@ -2139,505 +2288,586 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
                         MR4i = u4j1 - max( 0.0, min( u4j2-u4j1, u4j1-u4 ) );
                         MR5i = u5j1 - max( 0.0, min( u5j2-u5j1, u5j1-u5 ) );
 
-					}
+                    }
                     
                     
                     
-					#else
+                    #else
 
 
 
 
 
-					if( IFj1 == IFLUID  && IF_j1 == IFLUID) { 
+                    if( IFj1 == IFLUID  && IF_j1 == IFLUID) { 
 
-						if ( j==2 | IF_j2 != IFLUID ) {
+                        if ( j==2 | IF_j2 != IFLUID ) {
 
-							ML1 = 1./6*(-1*u1_j2+5*u1_j1+2*u1);
-							ML2 = 1./6*(-1*u2_j2+5*u2_j1+2*u2);
-							ML3 = 1./6*(-1*u3_j2+5*u3_j1+2*u3);
-							ML4 = 1./6*(-1*u4_j2+5*u4_j1+2*u4);
-							ML5 = 1./6*(-1*u5_j2+5*u5_j1+2*u5);
+                            ML1 = 1./6*(-1*u1_j2+5*u1_j1+2*u1);
+                            ML2 = 1./6*(-1*u2_j2+5*u2_j1+2*u2);
+                            ML3 = 1./6*(-1*u3_j2+5*u3_j1+2*u3);
+                            ML4 = 1./6*(-1*u4_j2+5*u4_j1+2*u4);
+                            ML5 = 1./6*(-1*u5_j2+5*u5_j1+2*u5);
 
-							MR1 = 1./6*(2*u1_j1+5*u1-1*u1j1);
-							MR2 = 1./6*(2*u2_j1+5*u2-1*u2j1);
-							MR3 = 1./6*(2*u3_j1+5*u3-1*u3j1);
-							MR4 = 1./6*(2*u4_j1+5*u4-1*u4j1);
-							MR5 = 1./6*(2*u5_j1+5*u5-1*u5j1);
+                            MR1 = 1./6*(2*u1_j1+5*u1-1*u1j1);
+                            MR2 = 1./6*(2*u2_j1+5*u2-1*u2j1);
+                            MR3 = 1./6*(2*u3_j1+5*u3-1*u3j1);
+                            MR4 = 1./6*(2*u4_j1+5*u4-1*u4j1);
+                            MR5 = 1./6*(2*u5_j1+5*u5-1*u5j1);
 
-						}
-						else {
+                        }
+                        else {
 
-							ML1 = 1./60*(2*u1_j3-13*u1_j2+47*u1_j1+27*u1-3*u1j1);
-							ML2 = 1./60*(2*u2_j3-13*u2_j2+47*u2_j1+27*u2-3*u2j1);
-							ML3 = 1./60*(2*u3_j3-13*u3_j2+47*u3_j1+27*u3-3*u3j1);
-							ML4 = 1./60*(2*u4_j3-13*u4_j2+47*u4_j1+27*u4-3*u4j1);
-							ML5 = 1./60*(2*u5_j3-13*u5_j2+47*u5_j1+27*u5-3*u5j1);
+                            ML1 = 1./60*(2*u1_j3-13*u1_j2+47*u1_j1+27*u1-3*u1j1);
+                            ML2 = 1./60*(2*u2_j3-13*u2_j2+47*u2_j1+27*u2-3*u2j1);
+                            ML3 = 1./60*(2*u3_j3-13*u3_j2+47*u3_j1+27*u3-3*u3j1);
+                            ML4 = 1./60*(2*u4_j3-13*u4_j2+47*u4_j1+27*u4-3*u4j1);
+                            ML5 = 1./60*(2*u5_j3-13*u5_j2+47*u5_j1+27*u5-3*u5j1);
 
-							MR1 = 1./60*(-3*u1_j2+27*u1_j1+47*u1-13*u1j1+2*u1j2);
-							MR2 = 1./60*(-3*u2_j2+27*u2_j1+47*u2-13*u2j1+2*u2j2);
-							MR3 = 1./60*(-3*u3_j2+27*u3_j1+47*u3-13*u3j1+2*u3j2);
-							MR4 = 1./60*(-3*u4_j2+27*u4_j1+47*u4-13*u4j1+2*u4j2);
-							MR5 = 1./60*(-3*u5_j2+27*u5_j1+47*u5-13*u5j1+2*u5j2);
+                            MR1 = 1./60*(-3*u1_j2+27*u1_j1+47*u1-13*u1j1+2*u1j2);
+                            MR2 = 1./60*(-3*u2_j2+27*u2_j1+47*u2-13*u2j1+2*u2j2);
+                            MR3 = 1./60*(-3*u3_j2+27*u3_j1+47*u3-13*u3j1+2*u3j2);
+                            MR4 = 1./60*(-3*u4_j2+27*u4_j1+47*u4-13*u4j1+2*u4j2);
+                            MR5 = 1./60*(-3*u5_j2+27*u5_j1+47*u5-13*u5j1+2*u5j2);
 
-						}
-						
-						
-						
-						
-						if ( j==nx | IFj2 != IFLUID) {
+                        }
+                        
+                        
+                        
+                        
+                        if ( j==nx | IFj2 != IFLUID) {
 
-							ML1i = 1./6*(-1*u1_j1+5*u1+2*u1j1);
-							ML2i = 1./6*(-1*u2_j1+5*u2+2*u2j1);
-							ML3i = 1./6*(-1*u3_j1+5*u3+2*u3j1);
-							ML4i = 1./6*(-1*u4_j1+5*u4+2*u4j1);
-							ML5i = 1./6*(-1*u5_j1+5*u5+2*u5j1);
+                            ML1i = 1./6*(-1*u1_j1+5*u1+2*u1j1);
+                            ML2i = 1./6*(-1*u2_j1+5*u2+2*u2j1);
+                            ML3i = 1./6*(-1*u3_j1+5*u3+2*u3j1);
+                            ML4i = 1./6*(-1*u4_j1+5*u4+2*u4j1);
+                            ML5i = 1./6*(-1*u5_j1+5*u5+2*u5j1);
 
-							MR1i = 1./6*(2*u1+5*u1j1-1*u1j2);
-							MR2i = 1./6*(2*u2+5*u2j1-1*u2j2);
-							MR3i = 1./6*(2*u3+5*u3j1-1*u3j2);
-							MR4i = 1./6*(2*u4+5*u4j1-1*u4j2);
-							MR5i = 1./6*(2*u5+5*u5j1-1*u5j2);
+                            MR1i = 1./6*(2*u1+5*u1j1-1*u1j2);
+                            MR2i = 1./6*(2*u2+5*u2j1-1*u2j2);
+                            MR3i = 1./6*(2*u3+5*u3j1-1*u3j2);
+                            MR4i = 1./6*(2*u4+5*u4j1-1*u4j2);
+                            MR5i = 1./6*(2*u5+5*u5j1-1*u5j2);
 
-						}
-						else {
+                        }
+                        else {
 
-							ML1i = 1./60*(2*u1_j2-13*u1_j1+47*u1+27*u1j1-3*u1j2);
-							ML2i = 1./60*(2*u2_j2-13*u2_j1+47*u2+27*u2j1-3*u2j2);
-							ML3i = 1./60*(2*u3_j2-13*u3_j1+47*u3+27*u3j1-3*u3j2);
-							ML4i = 1./60*(2*u4_j2-13*u4_j1+47*u4+27*u4j1-3*u4j2);
-							ML5i = 1./60*(2*u5_j2-13*u5_j1+47*u5+27*u5j1-3*u5j2);
+                            ML1i = 1./60*(2*u1_j2-13*u1_j1+47*u1+27*u1j1-3*u1j2);
+                            ML2i = 1./60*(2*u2_j2-13*u2_j1+47*u2+27*u2j1-3*u2j2);
+                            ML3i = 1./60*(2*u3_j2-13*u3_j1+47*u3+27*u3j1-3*u3j2);
+                            ML4i = 1./60*(2*u4_j2-13*u4_j1+47*u4+27*u4j1-3*u4j2);
+                            ML5i = 1./60*(2*u5_j2-13*u5_j1+47*u5+27*u5j1-3*u5j2);
 
-							MR1i = 1./60*(-3*u1_j1+27*u1+47*u1j1-13*u1j2+2*u1j3);
-							MR2i = 1./60*(-3*u2_j1+27*u2+47*u2j1-13*u2j2+2*u2j3);
-							MR3i = 1./60*(-3*u3_j1+27*u3+47*u3j1-13*u3j2+2*u3j3);
-							MR4i = 1./60*(-3*u4_j1+27*u4+47*u4j1-13*u4j2+2*u4j3);
-							MR5i = 1./60*(-3*u5_j1+27*u5+47*u5j1-13*u5j2+2*u5j3);
+                            MR1i = 1./60*(-3*u1_j1+27*u1+47*u1j1-13*u1j2+2*u1j3);
+                            MR2i = 1./60*(-3*u2_j1+27*u2+47*u2j1-13*u2j2+2*u2j3);
+                            MR3i = 1./60*(-3*u3_j1+27*u3+47*u3j1-13*u3j2+2*u3j3);
+                            MR4i = 1./60*(-3*u4_j1+27*u4+47*u4j1-13*u4j2+2*u4j3);
+                            MR5i = 1./60*(-3*u5_j1+27*u5+47*u5j1-13*u5j2+2*u5j3);
 
-						}
-						
-						
-						
-						
-						
-					}
-					else {
+                        }
+                        
+                        
+                        
+                        
+                        
+                    }
+                    else {
 
-						ML1 = u1_j1;
-						ML2 = u2_j1;
-						ML3 = u3_j1;
-						ML4 = u4_j1;
-						ML5 = u5_j1;
-						
-						MR1 = u1;
-						MR2 = u2;
-						MR3 = u3;
-						MR4 = u4;
-						MR5 = u5;
-						
-						
-						ML1i = u1;
-						ML2i = u2;
-						ML3i = u3;
-						ML4i = u4;
-						ML5i = u5;
-						
-						MR1i = u1j1;
-						MR2i = u2j1;
-						MR3i = u3j1;
-						MR4i = u4j1;
-						MR5i = u5j1;
+                        ML1 = u1_j1;
+                        ML2 = u2_j1;
+                        ML3 = u3_j1;
+                        ML4 = u4_j1;
+                        ML5 = u5_j1;
+                        
+                        MR1 = u1;
+                        MR2 = u2;
+                        MR3 = u3;
+                        MR4 = u4;
+                        MR5 = u5;
+                        
+                        
+                        ML1i = u1;
+                        ML2i = u2;
+                        ML3i = u3;
+                        ML4i = u4;
+                        ML5i = u5;
+                        
+                        MR1i = u1j1;
+                        MR2i = u2j1;
+                        MR3i = u3j1;
+                        MR4i = u4j1;
+                        MR5i = u5j1;
 
-					}
+                    }
                     
                     #endif
 
 
-					// ----------------------------- MUSCL-Y ----------------------------- //
-					// ------------------------------------------------------------------- //
+                    // ----------------------------- MUSCL-Y ----------------------------- //
+                    // ------------------------------------------------------------------- //
 
 
 
-					// ------------------------------------------------------------------ //
-					// ----------------------------- Flux-Y ----------------------------- //
+                    // ------------------------------------------------------------------ //
+                    // ----------------------------- Flux-Y ----------------------------- //
 
-					/* -------------------------------- */
-					/* ----------- Backward ----------- */
+                    /* -------------------------------- */
+                    /* ----------- Backward ----------- */
 
-					/* jump dU */
-					dU1 = MR1-ML1;
-					dU2 = MR2-ML2;
-					dU3 = MR3-ML3;
-					dU4 = MR4-ML4;
-					dU5 = MR5-ML5;
+                    /* jump dU */
+                    dU1 = MR1-ML1;
+                    dU2 = MR2-ML2;
+                    dU3 = MR3-ML3;
+                    dU4 = MR4-ML4;
+                    dU5 = MR5-ML5;
 
-					/* lefr parameter */
-					UN_rho = ML1;
-					UN_U = ML2/UN_rho;
-					UN_V = ML3/UN_rho;
-					UN_W = ML4/UN_rho;
-					UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
-					UN_P = (ML5-0.5*UN_rho*UN_VV)*(K-1);
-					UN_T = UN_P/UN_rho;
-					UN_C = K*UN_P/UN_rho;
-					UN_H = 0.5*UN_VV+UN_C/(K-1);
+                    /* lefr parameter */
+                    UN_rho = ML1;
+                    UN_U = ML2/UN_rho;
+                    UN_V = ML3/UN_rho;
+                    UN_W = ML4/UN_rho;
+                    UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
+                    UN_P = (ML5-0.5*UN_rho*UN_VV)*(K-1);
+                    UN_T = UN_P/UN_rho;
+                    UN_C = K*UN_P/UN_rho;
+                    UN_H = 0.5*UN_VV+UN_C/(K-1);
 
-					/* right parameter */
-					rho_ = MR1;
-					U_ = MR2/rho_;
-					V_ = MR3/rho_;
-					W_ = MR4/rho_;
-					VV_ = U_*U_+V_*V_+W_*W_;
-					P_ = (MR5-0.5*rho_*VV_)*(K-1);
-					T_ = P_/rho_;
-					C_ = K*P_/rho_;
-					H_ = 0.5*VV_+C_/(K-1);
+                    /* right parameter */
+                    rho_ = MR1;
+                    U_ = MR2/rho_;
+                    V_ = MR3/rho_;
+                    W_ = MR4/rho_;
+                    VV_ = U_*U_+V_*V_+W_*W_;
+                    P_ = (MR5-0.5*rho_*VV_)*(K-1);
+                    T_ = P_/rho_;
+                    C_ = K*P_/rho_;
+                    H_ = 0.5*VV_+C_/(K-1);
 
-					/* flux varibale */
+                    /* flux varibale */
 
-					#if ROE != 4
+                    #if ROE != 4
 
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-					
-						temp4 = temp5+temp6;
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                    
+                    temp4 = temp5+temp6;
 
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;
 
-					#endif
+                    #endif
 
 
-					#if ROE == 1 
+                    #if ROE == 1 
 
-						
-						beta = max(VV/C,e);    // ---- theda ---- //
-						temp = 0.5*(1+beta)*V;    // ---- U' ---- //
-						S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                    temp = 0.5*(1+beta)*V;    // ---- U' ---- //
+                    S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
 
-						temp1 = (P_-UN_P)/rho/beta/C;
+                    temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = temp/S*(V_-UN_V);
+                    temp2 = temp/S*(V_-UN_V);
 
-						temp3 = 0.5*(1-beta)*V*temp/S;
+                    temp3 = 0.5*(1-beta)*V*temp/S;
 
-						deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
+                    deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
 
-						deltaP = temp/S*(P_-UN_P)+(S-fabs(V)+temp3)*rho*(V_-UN_V);
+                    deltaP = temp/S*(P_-UN_P)+(S-fabs(V)+temp3)*rho*(V_-UN_V);
 
-					#elif ROE == 2
-						
-						beta = max(VV/C,e);    // ---- theda ---- //
-						temp = 0.5*(1+beta)*V;    // ---- U' ---- //
-						S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
+                    #elif ROE == 2
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                    temp = 0.5*(1+beta)*V;    // ---- U' ---- //
+                    S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
 
 
-						theda_p = VV/C;
-						U_p = 0.5*(1+theda_p)*V;
-						C_p = 0.5*sqrt(4*C*theda_p+V*V*(1-theda_p)*(1-theda_p));
+                    theda_p = VV/C;
+                    U_p = 0.5*(1+theda_p)*V;
+                    C_p = 0.5*sqrt(4*C*theda_p+V*V*(1-theda_p)*(1-theda_p));
 
-						temp1 = (P_-UN_P)/rho/beta/C;
+                    temp1 = (P_-UN_P)/rho/beta/C;
 
-						temp2 = U_p/S*(V_-UN_V);
+                    temp2 = U_p/S*(V_-UN_V);
 
-						temp3 = 0.5*(1-beta)*V*temp/S;
+                    temp3 = 0.5*(1-beta)*V*temp/S;
 
 
-					
-						temp4 = 0.5*(1-theda_p)*V*U_p/S;
+                    
+                    temp4 = 0.5*(1-theda_p)*V*U_p/S;
 
-						deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
+                    deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
 
 
-						deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(V)+temp4)*rho*(V_-UN_V);
+                    deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(V)+temp4)*rho*(V_-UN_V);
 
-					#elif ROE == 3
+                    #elif ROE == 3
 
-						S = sqrt(C);
+                    S = sqrt(C);
 
-						theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
-						
-						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+                    theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
+                    
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
 
-						beta = max(temp, 1e-8);
-						
-						C_p = beta*S;
+                    beta = max(temp, 1e-8);
+                    
+                    C_p = beta*S;
 
-						temp1 = (P_-UN_P)/rho/C;
+                    temp1 = (P_-UN_P)/rho/C;
 
-						temp2 = V/S*beta*(V_-UN_V);
+                    temp2 = V/S*beta*(V_-UN_V);
 
-						deltaU = (S-fabs(V))*temp1+temp2;
+                    deltaU = (S-fabs(V))*temp1+temp2;
 
-						deltaP = V/S*(P_-UN_P)+(C_p-fabs(V))*rho*(V_-UN_V);
+                    deltaP = V/S*(P_-UN_P)+(C_p-fabs(V))*rho*(V_-UN_V);
 
-					#elif ROE == 4
-					
-						
-						beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+                    #elif ROE == 4
+                    
+                    
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
 
-						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
-						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
-						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+                    temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+                    temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+                    temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
 
-						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
-						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
-						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+                    U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+                    V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+                    W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
 
-						UN_U = temp1;
-						UN_V = temp2;
-						UN_W = temp3;
+                    UN_U = temp1;
+                    UN_V = temp2;
+                    UN_W = temp3;
 
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-					
-						temp4 = temp5+temp6;
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                    
+                    temp4 = temp5+temp6;
+
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;
+
+                    S = sqrt(C);
+
+                    temp1 = (P_-UN_P)/rho/C;
+
+                    temp2 = V/S*(V_-UN_V);
+
+                    deltaU = (S-fabs(V))*temp1+temp2;
+
+                    deltaP = V/S*(P_-UN_P)+(S-fabs(V))*rho*(V_-UN_V);
+
+                    #elif ROE == 5
+                    
+                    S = sqrt(C);
+
+                    theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
+
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+                    
+                    deltaP = V/S*(P_-UN_P)+temp*(S-fabs(V))*rho*(V_-UN_V);
+                    
+                    
+                    // ==== deltaU_P + deltaU_RL ==== //            
+                    temp1 = (P_-UN_P)/rho/C;
+
+                    deltaU = ( 1.0-pow(temp,8) )*(S-fabs(V))*temp1;
+
+                    temp2 = 0.5*V/S*(V_-UN_V);
+                    
+                    
+                    // ==== KEASI ==== //
+                    beta = sqrt(abs(V)/C);
+                    
+                    temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
+                    
+                    temp = max( 0.5*fabs(V_+UN_V)+(1.0-pow(temp3,8))*0.5*(V_-UN_V), 0.0 );
+
 
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
+                    #endif
 
-						S = sqrt(C);
+                    /* artificial viscosity */
+                    
+                    #if ROE == 5 
+                    
+                    Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
+                    Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
+                    Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_)+deltaP;
+                    Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_);
+                    Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*V;
+                    
+                    #else
+                    
+                    Fav1 = Cdiss*fabs(V)*dU1+deltaU*rho;
+                    Fav2 = Cdiss*fabs(V)*dU2+deltaU*rho*U;
+                    Fav3 = Cdiss*fabs(V)*dU3+deltaU*rho*V+deltaP;
+                    Fav4 = Cdiss*fabs(V)*dU4+deltaU*rho*W;
+                    Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
+                    
 
-						temp1 = (P_-UN_P)/rho/C;
+                    #endif
+                    /* inviscid fluxes */
+                    inFy1 = 0.5*((UN_rho*UN_V+rho_*V_-Ep*Fav1));
+                    inFy2 = 0.5*((UN_rho*UN_U*UN_V+rho_*U_*V_)-Ep*Fav2);
+                    inFy3 = 0.5*((UN_rho*UN_V*UN_V+UN_P+rho_*V_*V_+P_)-Ep*Fav3);
+                    inFy4 = 0.5*((UN_rho*UN_W*UN_V+rho_*W_*V_)-Ep*Fav4);
+                    inFy5 = 0.5*((UN_V*(3.5*UN_P+0.5*UN_rho*UN_VV)+V_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
-						temp2 = V/S*(V_-UN_V);
+                    dPy = 0.5*(UN_P+P_);
 
-						deltaU = (S-fabs(V))*temp1+temp2;
 
-						deltaP = V/S*(P_-UN_P)+(S-fabs(V))*rho*(V_-UN_V);
+                    /* ----------- Backward ----------- */
+                    /* -------------------------------- */
 
-					#endif
 
-					/* artificial viscosity */
-					Fav1 = Cdiss*fabs(V)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(V)*dU2+deltaU*rho*U;
-					Fav3 = Cdiss*fabs(V)*dU3+deltaU*rho*V+deltaP;
-					Fav4 = Cdiss*fabs(V)*dU4+deltaU*rho*W;
-					Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
-					
-					/* inviscid fluxes */
-					inFy1 = 0.5*((UN_rho*UN_V+rho_*V_-Ep*Fav1));
-					inFy2 = 0.5*((UN_rho*UN_U*UN_V+rho_*U_*V_)-Ep*Fav2);
-					inFy3 = 0.5*((UN_rho*UN_V*UN_V+UN_P+rho_*V_*V_+P_)-Ep*Fav3);
-					inFy4 = 0.5*((UN_rho*UN_W*UN_V+rho_*W_*V_)-Ep*Fav4);
-					inFy5 = 0.5*((UN_V*(3.5*UN_P+0.5*UN_rho*UN_VV)+V_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
+                    /* --------------------------------- */
+                    /* ------------ Forward ------------ */
+                    
+                    /* jump dU */
+                    dU1 = MR1i-ML1i;
+                    dU2 = MR2i-ML2i;
+                    dU3 = MR3i-ML3i;
+                    dU4 = MR4i-ML4i;
+                    dU5 = MR5i-ML5i;
 
-					dPy = 0.5*(UN_P+P_);
+                    /* lefr parameter */
+                    UN_rho = ML1i;
+                    UN_U = ML2i/UN_rho;
+                    UN_V = ML3i/UN_rho;
+                    UN_W = ML4i/UN_rho;
+                    UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
+                    UN_P = (ML5i-0.5*UN_rho*UN_VV)*(K-1);
+                    UN_T = UN_P/UN_rho;
+                    UN_C = K*UN_P/UN_rho;
+                    UN_H = 0.5*UN_VV+UN_C/(K-1);
 
+                    /* right parameter */
+                    rho_ = MR1i;
+                    U_ = MR2i/rho_;
+                    V_ = MR3i/rho_;
+                    W_ = MR4i/rho_;
+                    VV_ = U_*U_+V_*V_+W_*W_;
+                    P_ = (MR5i-0.5*rho_*VV_)*(K-1);
+                    T_ = P_/rho_;
+                    C_ = K*P_/rho_;
+                    H_ = 0.5*VV_+C_/(K-1);
 
-					/* ----------- Backward ----------- */
-					/* -------------------------------- */
+                    /* flux varibale */
 
+                    #if ROE != 4
 
-					/* --------------------------------- */
-					/* ------------ Forward ------------ */
-					
-					/* jump dU */
-					dU1 = MR1i-ML1i;
-					dU2 = MR2i-ML2i;
-					dU3 = MR3i-ML3i;
-					dU4 = MR4i-ML4i;
-					dU5 = MR5i-ML5i;
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                    
+                    temp4 = temp5+temp6;
 
-					/* lefr parameter */
-					UN_rho = ML1i;
-					UN_U = ML2i/UN_rho;
-					UN_V = ML3i/UN_rho;
-					UN_W = ML4i/UN_rho;
-					UN_VV = UN_U*UN_U+UN_V*UN_V+UN_W*UN_W;
-					UN_P = (ML5i-0.5*UN_rho*UN_VV)*(K-1);
-					UN_T = UN_P/UN_rho;
-					UN_C = K*UN_P/UN_rho;
-					UN_H = 0.5*UN_VV+UN_C/(K-1);
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;
 
-					/* right parameter */
-					rho_ = MR1i;
-					U_ = MR2i/rho_;
-					V_ = MR3i/rho_;
-					W_ = MR4i/rho_;
-					VV_ = U_*U_+V_*V_+W_*W_;
-					P_ = (MR5i-0.5*rho_*VV_)*(K-1);
-					T_ = P_/rho_;
-					C_ = K*P_/rho_;
-					H_ = 0.5*VV_+C_/(K-1);
+                    #endif
 
-					/* flux varibale */
 
-					#if ROE != 4
 
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-					
-						temp4 = temp5+temp6;
 
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
+                    #if ROE == 1 
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                    temp = 0.5*(1+beta)*V;    // ---- U' ---- //
+                    S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
 
-					#endif
+                    temp1 = (P_-UN_P)/rho/beta/C;
 
+                    temp2 = temp/S*(V_-UN_V);
 
+                    temp3 = 0.5*(1-beta)*V*temp/S;
 
 
-					#if ROE == 1 
-						
-						beta = max(VV/C,e);    // ---- theda ---- //
-						temp = 0.5*(1+beta)*V;    // ---- U' ---- //
-						S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
 
-						temp1 = (P_-UN_P)/rho/beta/C;
+                    deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
 
-						temp2 = temp/S*(V_-UN_V);
+                    deltaP = temp/S*(P_-UN_P)+(S-fabs(V)+temp3)*rho*(V_-UN_V);
 
-						temp3 = 0.5*(1-beta)*V*temp/S;
+                    #elif ROE == 2
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                    temp = 0.5*(1+beta)*V;    // ---- U' ---- //
+                    S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
 
+                    theda_p = VV/C;
+                    U_p = 0.5*(1+theda_p)*V;
+                    C_p = 0.5*sqrt(4*C*theda_p+V*V*(1-theda_p)*(1-theda_p));
 
+                    temp1 = (P_-UN_P)/rho/beta/C;
 
-						deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
+                    temp2 = U_p/S*(V_-UN_V);
 
-						deltaP = temp/S*(P_-UN_P)+(S-fabs(V)+temp3)*rho*(V_-UN_V);
+                    temp3 = 0.5*(1-beta)*V*temp/S;
 
-					#elif ROE == 2
-					
-						beta = max(VV/C,e);    // ---- theda ---- //
-						temp = 0.5*(1+beta)*V;    // ---- U' ---- //
-						S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
 
-						theda_p = VV/C;
-						U_p = 0.5*(1+theda_p)*V;
-						C_p = 0.5*sqrt(4*C*theda_p+V*V*(1-theda_p)*(1-theda_p));
+                    
+                    temp4 = 0.5*(1-theda_p)*V*U_p/S;
 
-						temp1 = (P_-UN_P)/rho/beta/C;
+                    deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
 
-						temp2 = U_p/S*(V_-UN_V);
 
-						temp3 = 0.5*(1-beta)*V*temp/S;
+                    deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(V)+temp4)*rho*(V_-UN_V);
 
+                    #elif ROE == 3
 
-					
-						temp4 = 0.5*(1-theda_p)*V*U_p/S;
+                    S = sqrt(C);
 
-						deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
+                    theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
+                    
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
 
+                    beta = max(temp, 1e-8);
+                    
+                    C_p = beta*S;
 
-						deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(V)+temp4)*rho*(V_-UN_V);
+                    temp1 = (P_-UN_P)/rho/C;
 
-					#elif ROE == 3
+                    temp2 = V/S*beta*(V_-UN_V);
 
-						S = sqrt(C);
+                    deltaU = (S-fabs(V))*temp1+temp2;
 
-						theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
-						
-						temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+                    deltaP = V/S*(P_-UN_P)+(C_p-fabs(V))*rho*(V_-UN_V);
 
-						beta = max(temp, 1e-8);
-						
-						C_p = beta*S;
+                    #elif ROE == 4
+                    
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
 
-						temp1 = (P_-UN_P)/rho/C;
+                    temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+                    temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+                    temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
 
-						temp2 = V/S*beta*(V_-UN_V);
+                    U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+                    V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+                    W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
 
-						deltaU = (S-fabs(V))*temp1+temp2;
+                    UN_U = temp1;
+                    UN_V = temp2;
+                    UN_W = temp3;
 
-						deltaP = V/S*(P_-UN_P)+(C_p-fabs(V))*rho*(V_-UN_V);
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                    
+                    temp4 = temp5+temp6;
 
-					#elif ROE == 4
-					
-						beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;
 
-						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
-						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
-						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+                    S = sqrt(C);
 
-						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
-						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
-						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+                    temp1 = (P_-UN_P)/rho/C;
 
-						UN_U = temp1;
-						UN_V = temp2;
-						UN_W = temp3;
+                    temp2 = V/S*(V_-UN_V);
 
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-					
-						temp4 = temp5+temp6;
+                    deltaU = (S-fabs(V))*temp1+temp2;
 
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
+                    deltaP = V/S*(P_-UN_P)+(S-fabs(V))*rho*(V_-UN_V);
 
-						S = sqrt(C);
+                    #elif ROE == 5
+                    
+                    S = sqrt(C);
 
-						temp1 = (P_-UN_P)/rho/C;
+                    theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
 
-						temp2 = V/S*(V_-UN_V);
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+                    
+                    deltaP = V/S*(P_-UN_P)+temp*(S-fabs(V))*rho*(V_-UN_V);
+                    
+                    
+                    // ==== deltaU_P + deltaU_RL ==== //            
+                    temp1 = (P_-UN_P)/rho/C;
 
-						deltaU = (S-fabs(V))*temp1+temp2;
+                    deltaU = ( 1.0-pow(temp,8) )*(S-fabs(V))*temp1;
 
-						deltaP = V/S*(P_-UN_P)+(S-fabs(V))*rho*(V_-UN_V);
+                    temp2 = 0.5*V/S*(V_-UN_V);
+                    
+                    
+                    // ==== KEASI ==== //
+                    beta = sqrt(abs(V)/C);
+                    
+                    temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
+                    
+                    temp = max( 0.5*fabs(V_+UN_V)+(1.0-pow(temp3,8))*0.5*(V_-UN_V), 0.0 );
 
-					#endif
 
-					/* artificial viscosity */
-					Fav1 = Cdiss*fabs(V)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(V)*dU2+deltaU*rho*U;
-					Fav3 = Cdiss*fabs(V)*dU3+deltaU*rho*V+deltaP;
-					Fav4 = Cdiss*fabs(V)*dU4+deltaU*rho*W;
-					Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
-					
-					/* inviscid fluxes */
-					inFy1i = 0.5*((UN_rho*UN_V+rho_*V_-Ep*Fav1));
-					inFy2i = 0.5*((UN_rho*UN_U*UN_V+rho_*U_*V_)-Ep*Fav2);
-					inFy3i = 0.5*((UN_rho*UN_V*UN_V+UN_P+rho_*V_*V_+P_)-Ep*Fav3);
-					inFy4i = 0.5*((UN_rho*UN_W*UN_V+rho_*W_*V_)-Ep*Fav4);
-					inFy5i = 0.5*((UN_V*(3.5*UN_P+0.5*UN_rho*UN_VV)+V_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
+                    #endif
 
+                    /* artificial viscosity */
+                    
+                    #if ROE == 5 
+                    
+                    Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
+                    Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
+                    Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_)+deltaP;
+                    Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_);
+                    Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*V;
+                    
+                    #else
+                    
+                    Fav1 = Cdiss*fabs(V)*dU1+deltaU*rho;
+                    Fav2 = Cdiss*fabs(V)*dU2+deltaU*rho*U;
+                    Fav3 = Cdiss*fabs(V)*dU3+deltaU*rho*V+deltaP;
+                    Fav4 = Cdiss*fabs(V)*dU4+deltaU*rho*W;
+                    Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
+                    
 
-					dPyi = 0.5*(UN_P+P_);
-					/* ------------ Forward ------------ */
-					/* --------------------------------- */
+                    #endif
+                    
+                    
+                    /* inviscid fluxes */
+                    inFy1i = 0.5*((UN_rho*UN_V+rho_*V_-Ep*Fav1));
+                    inFy2i = 0.5*((UN_rho*UN_U*UN_V+rho_*U_*V_)-Ep*Fav2);
+                    inFy3i = 0.5*((UN_rho*UN_V*UN_V+UN_P+rho_*V_*V_+P_)-Ep*Fav3);
+                    inFy4i = 0.5*((UN_rho*UN_W*UN_V+rho_*W_*V_)-Ep*Fav4);
+                    inFy5i = 0.5*((UN_V*(3.5*UN_P+0.5*UN_rho*UN_VV)+V_*(3.5*P_+0.5*rho_*VV_))-Ep*Fav5);
 
 
+                    dPyi = 0.5*(UN_P+P_);
+                    /* ------------ Forward ------------ */
+                    /* --------------------------------- */
 
-					Rfy1 = inFy1i - inFy1;
-					Rfy2 = inFy2i - inFy2;
-					Rfy3 = inFy3i - inFy3;
-					Rfy4 = inFy4i - inFy4;
-					Rfy5 = inFy5i - inFy5;
 
-					// ----------------------------- Flux-Y ----------------------------- //
-					// ------------------------------------------------------------------ //
 
+                    Rfy1 = inFy1i - inFy1;
+                    Rfy2 = inFy2i - inFy2;
+                    Rfy3 = inFy3i - inFy3;
+                    Rfy4 = inFy4i - inFy4;
+                    Rfy5 = inFy5i - inFy5;
 
-					Rf1 = -(Rfx1/dx+Rfy1/dy+Rfz1/dz);
-					Rf2 = -(Rfx2/dx+Rfy2/dy+Rfz2/dz);
-					Rf3 = -(Rfx3/dx+Rfy3/dy+Rfz3/dz);
-					Rf4 = -(Rfx4/dx+Rfy4/dy+Rfz4/dz);
-					Rf5 = -(Rfx5/dx+Rfy5/dy+Rfz5/dz);
+                    // ----------------------------- Flux-Y ----------------------------- //
+                    // ------------------------------------------------------------------ //
 
+
+                    Rf1 = -(Rfx1/dx+Rfy1/dy+Rfz1/dz);
+                    Rf2 = -(Rfx2/dx+Rfy2/dy+Rfz2/dz);
+                    Rf3 = -(Rfx3/dx+Rfy3/dy+Rfz3/dz);
+                    Rf4 = -(Rfx4/dx+Rfy4/dy+Rfz4/dz);
+                    Rf5 = -(Rfx5/dx+Rfy5/dy+Rfz5/dz);
 
 
 

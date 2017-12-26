@@ -49,14 +49,14 @@ int main(int argc, char **argv)
 
 	int dp_step = 50000;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 20;
+	int iteration_end_step = 10;
 	int output_step = 1;
 	int count = 2;	
 	int step;
 
 	double deltaT = 0.1;
 	double deltaTau = deltaT/200.0;
-	double e = 1.0;
+	double e = 1;
 	double Th = 309.03531204896;
 
 
@@ -1652,6 +1652,65 @@ int main(int argc, char **argv)
 			BCM_Output(myid, Ncube, step, switch_output, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt);
             
             #if CR == 1 
+            
+            
+                BCM_Interface(myid,Ncube, 
+
+					MPI_Nadj,
+
+					Ncpu_bs, Ncpu_eq, Ncpu_sb,
+					Max_nei_bs,Max_nei_eq,Max_nei_bs,
+
+					nadjX_eq, nadjY_eq, nadjZ_eq,
+					nadjX_bs_plus, nadjX_sb_plus, nadjX_bs_minus, nadjX_sb_minus,
+					nadjY_bs_plus, nadjY_sb_plus, nadjY_bs_minus, nadjY_sb_minus,
+					nadjZ_bs_plus, nadjZ_sb_plus, nadjZ_bs_minus, nadjZ_sb_minus,
+
+					rank_map,
+
+					MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+					neighbor_cpu_eq, Ncube_Ncpu_eq, neighbor_cpu_sb, Ncube_Ncpu_sb, neighbor_cpu_bs, Ncube_Ncpu_bs,
+					Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq,  
+					Scube_Ncpu_sb, Rcube_Ncpu_sb, send_data_curr_sb, recv_data_curr_sb, send_data_neig_sb, recv_data_neig_sb, Sdir_sb, Rdir_sb,
+					Scube_Ncpu_bs, Rcube_Ncpu_bs, send_data_curr_bs, recv_data_curr_bs, send_data_neig_bs, recv_data_neig_bs, Sdir_bs, Rdir_bs,
+					ist_eq,ist_sb,ist_bs, adjN_sb, RadjN_bs, SadjN_bs,
+
+					csl, 
+					adj_number, 
+					adjX_eq, adjY_eq, adjZ_eq,
+					adjX_bs_plus, adjX_sb_plus, adjX_bs_minus, adjX_sb_minus,
+					adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
+					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
+					U1_);
+                
+                BCM_Interface(myid,Ncube, 
+
+					MPI_Nadj,
+
+					Ncpu_bs, Ncpu_eq, Ncpu_sb,
+					Max_nei_bs,Max_nei_eq,Max_nei_bs,
+
+					nadjX_eq, nadjY_eq, nadjZ_eq,
+					nadjX_bs_plus, nadjX_sb_plus, nadjX_bs_minus, nadjX_sb_minus,
+					nadjY_bs_plus, nadjY_sb_plus, nadjY_bs_minus, nadjY_sb_minus,
+					nadjZ_bs_plus, nadjZ_sb_plus, nadjZ_bs_minus, nadjZ_sb_minus,
+
+					rank_map,
+
+					MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+					neighbor_cpu_eq, Ncube_Ncpu_eq, neighbor_cpu_sb, Ncube_Ncpu_sb, neighbor_cpu_bs, Ncube_Ncpu_bs,
+					Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq,  
+					Scube_Ncpu_sb, Rcube_Ncpu_sb, send_data_curr_sb, recv_data_curr_sb, send_data_neig_sb, recv_data_neig_sb, Sdir_sb, Rdir_sb,
+					Scube_Ncpu_bs, Rcube_Ncpu_bs, send_data_curr_bs, recv_data_curr_bs, send_data_neig_bs, recv_data_neig_bs, Sdir_bs, Rdir_bs,
+					ist_eq,ist_sb,ist_bs, adjN_sb, RadjN_bs, SadjN_bs,
+
+					csl, 
+					adj_number, 
+					adjX_eq, adjY_eq, adjZ_eq,
+					adjX_bs_plus, adjX_sb_plus, adjX_bs_minus, adjX_sb_minus,
+					adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
+					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
+					U1_);
             
                 BCM_Output_coarse(myid, Ncube, step, switch_output, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt);
             
