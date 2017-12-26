@@ -68,6 +68,8 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 	int float_size = sizeof(float);
 
 	int double_dize = sizeof(double);
+    
+    int ii,jj,kk;
 
 	MPI_Offset  x_gcount[np], x_gdisp[np], q_gcount[np], q_gdisp[np];
 
@@ -240,14 +242,18 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
         for (k = 0; k <= nz_out-1; k++) {
             for (j = 0; j <= ny_out-1; j++) { 
                 for (i = 0; i <= nx_out-1; i++) { 
+                
+                ii = 2*i;
+                jj = 2*j;
+                kk = 2*k;
 
                 icount = icount + 1;
                 
                 Solution[icount] = 0.125*\
-                    (U1[icube][i][j][k][0]+U1[icube][i+1][j][k][0]+\
-                     U1[icube][i][j+1][k][0]+U1[icube][i][j][k+1][0]+\
-                     U1[icube][i+1][j+1][k][0]+U1[icube][i+1][j][k+1][0]+\
-                     U1[icube][i][j+1][k+1][0]+U1[icube][i+1][j+1][k+1][0]);
+                    (U1[icube][ii  ][jj  ][kk  ][0]+U1[icube][ii+1][jj  ][kk  ][0]+\
+                     U1[icube][ii  ][jj+1][kk  ][0]+U1[icube][ii  ][jj  ][kk+1][0]+\
+                     U1[icube][ii+1][jj+1][kk  ][0]+U1[icube][ii+1][jj  ][kk+1][0]+\
+                     U1[icube][ii  ][jj+1][kk+1][0]+U1[icube][ii+1][jj+1][kk+1][0]);
 
                 }
             }
@@ -257,13 +263,17 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
             for (j = 0; j <= ny_out-1; j++) { 
                 for (i = 0; i <= nx_out-1; i++) { 
 
-                    icount = icount + 1;
-                    
+                ii = 2*i;
+                jj = 2*j;
+                kk = 2*k;
+
+                icount = icount + 1;
+                
                 Solution[icount] = 0.125*\
-                    (U1[icube][i][j][k][1]+U1[icube][i+1][j][k][1]+\
-                     U1[icube][i][j+1][k][1]+U1[icube][i][j][k+1][1]+\
-                     U1[icube][i+1][j+1][k][1]+U1[icube][i+1][j][k+1][1]+\
-                     U1[icube][i][j+1][k+1][1]+U1[icube][i+1][j+1][k+1][1]);
+                    (U1[icube][ii  ][jj  ][kk  ][1]+U1[icube][ii+1][jj  ][kk  ][1]+\
+                     U1[icube][ii  ][jj+1][kk  ][1]+U1[icube][ii  ][jj  ][kk+1][1]+\
+                     U1[icube][ii+1][jj+1][kk  ][1]+U1[icube][ii+1][jj  ][kk+1][1]+\
+                     U1[icube][ii  ][jj+1][kk+1][1]+U1[icube][ii+1][jj+1][kk+1][1]);
 
                 }
             }
@@ -273,30 +283,17 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
             for (j = 0; j <= ny_out-1; j++) { 
                 for (i = 0; i <= nx_out-1; i++) { 
 
-                    icount = icount + 1;
-                    
+                ii = 2*i;
+                jj = 2*j;
+                kk = 2*k;
+
+                icount = icount + 1;
+                
                 Solution[icount] = 0.125*\
-                    (U1[icube][i][j][k][2]+U1[icube][i+1][j][k][2]+\
-                     U1[icube][i][j+1][k][2]+U1[icube][i][j][k+1][2]+\
-                     U1[icube][i+1][j+1][k][2]+U1[icube][i+1][j][k+1][2]+\
-                     U1[icube][i][j+1][k+1][2]+U1[icube][i+1][j+1][k+1][2]);
-
-
-                }
-            }
-        }
-
-        for (k = 0; k <= nz_out-1; k++) {
-            for (j = 0; j <= ny_out-1; j++) { 
-                for (i = 0; i <= nx_out-1; i++) { 
-
-                    icount = icount + 1;
-                    
-                Solution[icount] = 0.125*\
-                    (U1[icube][i][j][k][3]+U1[icube][i+1][j][k][3]+\
-                     U1[icube][i][j+1][k][3]+U1[icube][i][j][k+1][3]+\
-                     U1[icube][i+1][j+1][k][3]+U1[icube][i+1][j][k+1][3]+\
-                     U1[icube][i][j+1][k+1][3]+U1[icube][i+1][j+1][k+1][3]);
+                    (U1[icube][ii  ][jj  ][kk  ][2]+U1[icube][ii+1][jj  ][kk  ][2]+\
+                     U1[icube][ii  ][jj+1][kk  ][2]+U1[icube][ii  ][jj  ][kk+1][2]+\
+                     U1[icube][ii+1][jj+1][kk  ][2]+U1[icube][ii+1][jj  ][kk+1][2]+\
+                     U1[icube][ii  ][jj+1][kk+1][2]+U1[icube][ii+1][jj+1][kk+1][2]);
 
 
                 }
@@ -307,13 +304,38 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
             for (j = 0; j <= ny_out-1; j++) { 
                 for (i = 0; i <= nx_out-1; i++) { 
 
-                    icount = icount + 1;
-                    
+                ii = 2*i;
+                jj = 2*j;
+                kk = 2*k;
+
+                icount = icount + 1;
+                
                 Solution[icount] = 0.125*\
-                    (U1[icube][i][j][k][4]+U1[icube][i+1][j][k][4]+\
-                     U1[icube][i][j+1][k][4]+U1[icube][i][j][k+1][4]+\
-                     U1[icube][i+1][j+1][k][4]+U1[icube][i+1][j][k+1][4]+\
-                     U1[icube][i][j+1][k+1][4]+U1[icube][i+1][j+1][k+1][4]);
+                    (U1[icube][ii  ][jj  ][kk  ][3]+U1[icube][ii+1][jj  ][kk  ][3]+\
+                     U1[icube][ii  ][jj+1][kk  ][3]+U1[icube][ii  ][jj  ][kk+1][3]+\
+                     U1[icube][ii+1][jj+1][kk  ][3]+U1[icube][ii+1][jj  ][kk+1][3]+\
+                     U1[icube][ii  ][jj+1][kk+1][3]+U1[icube][ii+1][jj+1][kk+1][3]);
+
+
+                }
+            }
+        }
+
+        for (k = 0; k <= nz_out-1; k++) {
+            for (j = 0; j <= ny_out-1; j++) { 
+                for (i = 0; i <= nx_out-1; i++) { 
+
+                ii = 2*i;
+                jj = 2*j;
+                kk = 2*k;
+
+                icount = icount + 1;
+                
+                Solution[icount] = 0.125*\
+                    (U1[icube][ii  ][jj  ][kk  ][4]+U1[icube][ii+1][jj  ][kk  ][4]+\
+                     U1[icube][ii  ][jj+1][kk  ][4]+U1[icube][ii  ][jj  ][kk+1][4]+\
+                     U1[icube][ii+1][jj+1][kk  ][4]+U1[icube][ii+1][jj  ][kk+1][4]+\
+                     U1[icube][ii  ][jj+1][kk+1][4]+U1[icube][ii+1][jj+1][kk+1][4]);
 
 
                 }
