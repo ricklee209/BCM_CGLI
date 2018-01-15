@@ -149,10 +149,10 @@ double (*filter)[11][X_size][Y_size][Z_size][Ndim] = new double[Ncube][11][X_siz
                         jj = CR_switch*j;
                         kk = CR_switch*k;
 
-                        filter[icube][0][i][j][k][0] = 0.5*( Xcnt[icube][ii]+Xcnt[icube][ii+1] );
-                        filter[icube][0][i][j][k][1] = 0.5*( Ycnt[icube][jj]+Ycnt[icube][jj+1] );
-                        filter[icube][0][i][j][k][2] = 0.5*( Zcnt[icube][kk]+Zcnt[icube][kk+1] );
-
+                        filter[icube][0][i][j][k][0] = 1.0/CR_switch*( (CR_switch-1.0)*Xcnt[icube][ii]+Xcnt[icube][ii+1] );
+                        filter[icube][0][i][j][k][1] = 1.0/CR_switch*( (CR_switch-1.0)*Ycnt[icube][jj]+Ycnt[icube][jj+1] );
+                        filter[icube][0][i][j][k][2] = 1.0/CR_switch*( (CR_switch-1.0)*Zcnt[icube][kk]+Zcnt[icube][kk+1] );
+                        
                     }
                 }
             }
@@ -262,41 +262,53 @@ double (*filter)[11][X_size][Y_size][Z_size][Ndim] = new double[Ncube][11][X_siz
             for (j = 0; j <= ny_out; j++) { 
                 for (k = 0; k <= nz_out; k++) {
 
-                    ii = 2*i;
-                    jj = 2*j;
-                    kk = 2*k;
+                    ii = CR_switch*i;
+                    jj = CR_switch*j;
+                    kk = CR_switch*k;
+                    
+                    if (CR_switch == 2) {
 
-                    filter[icube][0][i][j][k][0] = 0.125*\
-                        (U1[icube][ii  ][jj  ][kk  ][0]+U1[icube][ii+1][jj  ][kk  ][0]+\
-                         U1[icube][ii  ][jj+1][kk  ][0]+U1[icube][ii  ][jj  ][kk+1][0]+\
-                         U1[icube][ii+1][jj+1][kk  ][0]+U1[icube][ii+1][jj  ][kk+1][0]+\
-                         U1[icube][ii  ][jj+1][kk+1][0]+U1[icube][ii+1][jj+1][kk+1][0]);
-                         
-                    filter[icube][0][i][j][k][1] = 0.125*\
-                        (U1[icube][ii  ][jj  ][kk  ][1]+U1[icube][ii+1][jj  ][kk  ][1]+\
-                         U1[icube][ii  ][jj+1][kk  ][1]+U1[icube][ii  ][jj  ][kk+1][1]+\
-                         U1[icube][ii+1][jj+1][kk  ][1]+U1[icube][ii+1][jj  ][kk+1][1]+\
-                         U1[icube][ii  ][jj+1][kk+1][1]+U1[icube][ii+1][jj+1][kk+1][1]);
+                        filter[icube][0][i][j][k][0] = 0.125*\
+                            (U1[icube][ii  ][jj  ][kk  ][0]+U1[icube][ii+1][jj  ][kk  ][0]+\
+                             U1[icube][ii  ][jj+1][kk  ][0]+U1[icube][ii  ][jj  ][kk+1][0]+\
+                             U1[icube][ii+1][jj+1][kk  ][0]+U1[icube][ii+1][jj  ][kk+1][0]+\
+                             U1[icube][ii  ][jj+1][kk+1][0]+U1[icube][ii+1][jj+1][kk+1][0]);
+                             
+                        filter[icube][0][i][j][k][1] = 0.125*\
+                            (U1[icube][ii  ][jj  ][kk  ][1]+U1[icube][ii+1][jj  ][kk  ][1]+\
+                             U1[icube][ii  ][jj+1][kk  ][1]+U1[icube][ii  ][jj  ][kk+1][1]+\
+                             U1[icube][ii+1][jj+1][kk  ][1]+U1[icube][ii+1][jj  ][kk+1][1]+\
+                             U1[icube][ii  ][jj+1][kk+1][1]+U1[icube][ii+1][jj+1][kk+1][1]);
 
-                    filter[icube][0][i][j][k][2] = 0.125*\
-                        (U1[icube][ii  ][jj  ][kk  ][2]+U1[icube][ii+1][jj  ][kk  ][2]+\
-                         U1[icube][ii  ][jj+1][kk  ][2]+U1[icube][ii  ][jj  ][kk+1][2]+\
-                         U1[icube][ii+1][jj+1][kk  ][2]+U1[icube][ii+1][jj  ][kk+1][2]+\
-                         U1[icube][ii  ][jj+1][kk+1][2]+U1[icube][ii+1][jj+1][kk+1][2]);
+                        filter[icube][0][i][j][k][2] = 0.125*\
+                            (U1[icube][ii  ][jj  ][kk  ][2]+U1[icube][ii+1][jj  ][kk  ][2]+\
+                             U1[icube][ii  ][jj+1][kk  ][2]+U1[icube][ii  ][jj  ][kk+1][2]+\
+                             U1[icube][ii+1][jj+1][kk  ][2]+U1[icube][ii+1][jj  ][kk+1][2]+\
+                             U1[icube][ii  ][jj+1][kk+1][2]+U1[icube][ii+1][jj+1][kk+1][2]);
+                            
                         
-                    
-                    filter[icube][0][i][j][k][3] = 0.125*\
-                        (U1[icube][ii  ][jj  ][kk  ][3]+U1[icube][ii+1][jj  ][kk  ][3]+\
-                         U1[icube][ii  ][jj+1][kk  ][3]+U1[icube][ii  ][jj  ][kk+1][3]+\
-                         U1[icube][ii+1][jj+1][kk  ][3]+U1[icube][ii+1][jj  ][kk+1][3]+\
-                         U1[icube][ii  ][jj+1][kk+1][3]+U1[icube][ii+1][jj+1][kk+1][3]);
-                    
-                    
-                    filter[icube][0][i][j][k][4] = 0.125*\
-                        (U1[icube][ii  ][jj  ][kk  ][4]+U1[icube][ii+1][jj  ][kk  ][4]+\
-                         U1[icube][ii  ][jj+1][kk  ][4]+U1[icube][ii  ][jj  ][kk+1][4]+\
-                         U1[icube][ii+1][jj+1][kk  ][4]+U1[icube][ii+1][jj  ][kk+1][4]+\
-                         U1[icube][ii  ][jj+1][kk+1][4]+U1[icube][ii+1][jj+1][kk+1][4]);
+                        filter[icube][0][i][j][k][3] = 0.125*\
+                            (U1[icube][ii  ][jj  ][kk  ][3]+U1[icube][ii+1][jj  ][kk  ][3]+\
+                             U1[icube][ii  ][jj+1][kk  ][3]+U1[icube][ii  ][jj  ][kk+1][3]+\
+                             U1[icube][ii+1][jj+1][kk  ][3]+U1[icube][ii+1][jj  ][kk+1][3]+\
+                             U1[icube][ii  ][jj+1][kk+1][3]+U1[icube][ii+1][jj+1][kk+1][3]);
+                        
+                        
+                        filter[icube][0][i][j][k][4] = 0.125*\
+                            (U1[icube][ii  ][jj  ][kk  ][4]+U1[icube][ii+1][jj  ][kk  ][4]+\
+                             U1[icube][ii  ][jj+1][kk  ][4]+U1[icube][ii  ][jj  ][kk+1][4]+\
+                             U1[icube][ii+1][jj+1][kk  ][4]+U1[icube][ii+1][jj  ][kk+1][4]+\
+                             U1[icube][ii  ][jj+1][kk+1][4]+U1[icube][ii+1][jj+1][kk+1][4]);
+                         
+                    }
+                    else {
+                        
+                        filter[icube][0][i][j][k][0] = U1[icube][ii+1][jj+1][kk+1][0];
+                        filter[icube][0][i][j][k][1] = U1[icube][ii+1][jj+1][kk+1][1];
+                        filter[icube][0][i][j][k][2] = U1[icube][ii+1][jj+1][kk+1][2];
+                        filter[icube][0][i][j][k][3] = U1[icube][ii+1][jj+1][kk+1][3];
+                        filter[icube][0][i][j][k][4] = U1[icube][ii+1][jj+1][kk+1][4];
+                    }
                         
                 }
             }
