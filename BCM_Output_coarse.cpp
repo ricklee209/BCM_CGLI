@@ -138,16 +138,20 @@ double (*filter)[11][X_size][Y_size][Z_size][Ndim] = new double[Ncube][11][X_siz
 
 		icount = -1;
         
-        #pragma omp parallel for private(i,k,j)
+        #pragma omp parallel for private(i,k,j,ii,jj,kk)
 		for (icube = 1; icube < ncube; icube++) {  
         
             for (i = 0; i <= nx_out; i++) { 
                 for (j = 0; j <= ny_out; j++) { 
                     for (k = 0; k <= nz_out; k++) {
+                        
+                        ii = CR_switch*i;
+                        jj = CR_switch*j;
+                        kk = CR_switch*k;
 
-                        filter[icube][0][i][j][k][0] = 0.5*( Xcnt[icube][2*i]+Xcnt[icube][2*i+1] );
-                        filter[icube][0][i][j][k][1] = 0.5*( Ycnt[icube][2*j]+Ycnt[icube][2*j+1] );
-                        filter[icube][0][i][j][k][2] = 0.5*( Zcnt[icube][2*k]+Zcnt[icube][2*k+1] );
+                        filter[icube][0][i][j][k][0] = 0.5*( Xcnt[icube][ii]+Xcnt[icube][ii+1] );
+                        filter[icube][0][i][j][k][1] = 0.5*( Ycnt[icube][jj]+Ycnt[icube][jj+1] );
+                        filter[icube][0][i][j][k][2] = 0.5*( Zcnt[icube][kk]+Zcnt[icube][kk+1] );
 
                     }
                 }
