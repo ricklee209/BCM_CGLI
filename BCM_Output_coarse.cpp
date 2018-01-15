@@ -297,6 +297,100 @@ double (*filter)[11][X_size][Y_size][Z_size][Ndim] = new double[Ncube][11][X_siz
                 }
             }
         }
+        
+        
+        
+        
+		for (i = 0; i <= nx_out; i++) {
+
+			filter[icube][0][i][0][0][0] =  0.5*(filter[icube][0][i][0][1][0]+filter[icube][0][i][1][0][0]);
+			filter[icube][0][i][0][0][1] =  0.5*(filter[icube][0][i][0][1][1]+filter[icube][0][i][1][0][1]);
+			filter[icube][0][i][0][0][2] =  0.5*(filter[icube][0][i][0][1][2]+filter[icube][0][i][1][0][2]);
+			filter[icube][0][i][0][0][3] =  0.5*(filter[icube][0][i][0][1][3]+filter[icube][0][i][1][0][3]);
+			filter[icube][0][i][0][0][4] =  0.5*(filter[icube][0][i][0][1][4]+filter[icube][0][i][1][0][4]);
+
+			filter[icube][0][i][ny_out][0][0] =  0.5*(filter[icube][0][i][ny_out][1][0]+filter[icube][0][i][ny_out-1][0][0]);
+			filter[icube][0][i][ny_out][0][1] =  0.5*(filter[icube][0][i][ny_out][1][1]+filter[icube][0][i][ny_out-1][0][1]);
+			filter[icube][0][i][ny_out][0][2] =  0.5*(filter[icube][0][i][ny_out][1][2]+filter[icube][0][i][ny_out-1][0][2]);
+			filter[icube][0][i][ny_out][0][3] =  0.5*(filter[icube][0][i][ny_out][1][3]+filter[icube][0][i][ny_out-1][0][3]);
+			filter[icube][0][i][ny_out][0][4] =  0.5*(filter[icube][0][i][ny_out][1][4]+filter[icube][0][i][ny_out-1][0][4]);
+
+			filter[icube][0][i][0][nz_out][0] =  0.5*(filter[icube][0][i][0][nz_out-1][0]+filter[icube][0][i][1][nz_out][0]);
+			filter[icube][0][i][0][nz_out][1] =  0.5*(filter[icube][0][i][0][nz_out-1][1]+filter[icube][0][i][1][nz_out][1]);
+			filter[icube][0][i][0][nz_out][2] =  0.5*(filter[icube][0][i][0][nz_out-1][2]+filter[icube][0][i][1][nz_out][2]);
+			filter[icube][0][i][0][nz_out][3] =  0.5*(filter[icube][0][i][0][nz_out-1][3]+filter[icube][0][i][1][nz_out][3]);
+			filter[icube][0][i][0][nz_out][4] =  0.5*(filter[icube][0][i][0][nz_out-1][4]+filter[icube][0][i][1][nz_out][4]);
+
+			filter[icube][0][i][ny_out][nz_out][0] =  0.5*(filter[icube][0][i][ny_out][nz_out-1][0]+filter[icube][0][i][ny_out-1][nz_out][0]);
+			filter[icube][0][i][ny_out][nz_out][1] =  0.5*(filter[icube][0][i][ny_out][nz_out-1][1]+filter[icube][0][i][ny_out-1][nz_out][1]);
+			filter[icube][0][i][ny_out][nz_out][2] =  0.5*(filter[icube][0][i][ny_out][nz_out-1][2]+filter[icube][0][i][ny_out-1][nz_out][2]);
+			filter[icube][0][i][ny_out][nz_out][3] =  0.5*(filter[icube][0][i][ny_out][nz_out-1][3]+filter[icube][0][i][ny_out-1][nz_out][3]);
+			filter[icube][0][i][ny_out][nz_out][4] =  0.5*(filter[icube][0][i][ny_out][nz_out-1][4]+filter[icube][0][i][ny_out-1][nz_out][4]);
+
+		}
+
+
+
+
+		for (j = 0; j <= ny_out; j++) {
+
+			filter[icube][0][0][j][0][0] =  0.5*(filter[icube][0][0][j][1][0]+filter[icube][0][1][j][0][0]);
+			filter[icube][0][0][j][0][1] =  0.5*(filter[icube][0][0][j][1][1]+filter[icube][0][1][j][0][1]);
+			filter[icube][0][0][j][0][2] =  0.5*(filter[icube][0][0][j][1][2]+filter[icube][0][1][j][0][2]);
+			filter[icube][0][0][j][0][3] =  0.5*(filter[icube][0][0][j][1][3]+filter[icube][0][1][j][0][3]);
+			filter[icube][0][0][j][0][4] =  0.5*(filter[icube][0][0][j][1][4]+filter[icube][0][1][j][0][4]);
+
+			filter[icube][0][0][j][nz_out][0] =  0.5*(filter[icube][0][1][j][nz_out][0]+filter[icube][0][0][j][nz_out-1][0]);
+			filter[icube][0][0][j][nz_out][1] =  0.5*(filter[icube][0][1][j][nz_out][1]+filter[icube][0][0][j][nz_out-1][1]);
+			filter[icube][0][0][j][nz_out][2] =  0.5*(filter[icube][0][1][j][nz_out][2]+filter[icube][0][0][j][nz_out-1][2]);
+			filter[icube][0][0][j][nz_out][3] =  0.5*(filter[icube][0][1][j][nz_out][3]+filter[icube][0][0][j][nz_out-1][3]);
+			filter[icube][0][0][j][nz_out][4] =  0.5*(filter[icube][0][1][j][nz_out][4]+filter[icube][0][0][j][nz_out-1][4]);
+
+			filter[icube][0][nx_out][j][0][0] =  0.5*(filter[icube][0][nx_out-1][j][0][0]+filter[icube][0][nx_out][j][1][0]);
+			filter[icube][0][nx_out][j][0][1] =  0.5*(filter[icube][0][nx_out-1][j][0][1]+filter[icube][0][nx_out][j][1][1]);
+			filter[icube][0][nx_out][j][0][2] =  0.5*(filter[icube][0][nx_out-1][j][0][2]+filter[icube][0][nx_out][j][1][2]);
+			filter[icube][0][nx_out][j][0][3] =  0.5*(filter[icube][0][nx_out-1][j][0][3]+filter[icube][0][nx_out][j][1][3]);
+			filter[icube][0][nx_out][j][0][4] =  0.5*(filter[icube][0][nx_out-1][j][0][4]+filter[icube][0][nx_out][j][1][4]);
+
+			filter[icube][0][nx_out][j][nz_out][0] =  0.5*(filter[icube][0][nx_out-1][j][nz_out][0]+filter[icube][0][nx_out][j][nz_out-1][0]);
+			filter[icube][0][nx_out][j][nz_out][1] =  0.5*(filter[icube][0][nx_out-1][j][nz_out][1]+filter[icube][0][nx_out][j][nz_out-1][1]);
+			filter[icube][0][nx_out][j][nz_out][2] =  0.5*(filter[icube][0][nx_out-1][j][nz_out][2]+filter[icube][0][nx_out][j][nz_out-1][2]);
+			filter[icube][0][nx_out][j][nz_out][3] =  0.5*(filter[icube][0][nx_out-1][j][nz_out][3]+filter[icube][0][nx_out][j][nz_out-1][3]);
+			filter[icube][0][nx_out][j][nz_out][4] =  0.5*(filter[icube][0][nx_out-1][j][nz_out][4]+filter[icube][0][nx_out][j][nz_out-1][4]);
+
+		}
+
+
+
+		for (k = 0; k <= nz_out; k++) {
+
+			filter[icube][0][0][0][k][0] =  0.5*(filter[icube][0][0][1][k][0]+filter[icube][0][0][1][k][0]);
+			filter[icube][0][0][0][k][1] =  0.5*(filter[icube][0][0][1][k][1]+filter[icube][0][0][1][k][1]);
+			filter[icube][0][0][0][k][2] =  0.5*(filter[icube][0][0][1][k][2]+filter[icube][0][0][1][k][2]);
+			filter[icube][0][0][0][k][3] =  0.5*(filter[icube][0][0][1][k][3]+filter[icube][0][0][1][k][3]);
+			filter[icube][0][0][0][k][4] =  0.5*(filter[icube][0][0][1][k][4]+filter[icube][0][0][1][k][4]);
+
+			filter[icube][0][0][ny_out][k][0] =  0.5*(filter[icube][0][1][ny_out][k][0]+filter[icube][0][0][ny_out-1][k][0]);
+			filter[icube][0][0][ny_out][k][1] =  0.5*(filter[icube][0][1][ny_out][k][1]+filter[icube][0][0][ny_out-1][k][1]);
+			filter[icube][0][0][ny_out][k][2] =  0.5*(filter[icube][0][1][ny_out][k][2]+filter[icube][0][0][ny_out-1][k][2]);
+			filter[icube][0][0][ny_out][k][3] =  0.5*(filter[icube][0][1][ny_out][k][3]+filter[icube][0][0][ny_out-1][k][3]);
+			filter[icube][0][0][ny_out][k][4] =  0.5*(filter[icube][0][1][ny_out][k][4]+filter[icube][0][0][ny_out-1][k][4]);
+
+			filter[icube][0][nx_out][0][k][0] =  0.5*(filter[icube][0][nx_out-1][0][k][0]+filter[icube][0][nx_out][1][k][0]);
+			filter[icube][0][nx_out][0][k][1] =  0.5*(filter[icube][0][nx_out-1][0][k][1]+filter[icube][0][nx_out][1][k][1]);
+			filter[icube][0][nx_out][0][k][2] =  0.5*(filter[icube][0][nx_out-1][0][k][2]+filter[icube][0][nx_out][1][k][2]);
+			filter[icube][0][nx_out][0][k][3] =  0.5*(filter[icube][0][nx_out-1][0][k][3]+filter[icube][0][nx_out][1][k][3]);
+			filter[icube][0][nx_out][0][k][4] =  0.5*(filter[icube][0][nx_out-1][0][k][4]+filter[icube][0][nx_out][1][k][4]);
+
+			filter[icube][0][nx_out][ny_out][k][0] =  0.5*(filter[icube][0][nx_out-1][ny_out][k][0]+filter[icube][0][nx_out][ny_out-1][k][0]);
+			filter[icube][0][nx_out][ny_out][k][1] =  0.5*(filter[icube][0][nx_out-1][ny_out][k][1]+filter[icube][0][nx_out][ny_out-1][k][1]);
+			filter[icube][0][nx_out][ny_out][k][2] =  0.5*(filter[icube][0][nx_out-1][ny_out][k][2]+filter[icube][0][nx_out][ny_out-1][k][2]);
+			filter[icube][0][nx_out][ny_out][k][3] =  0.5*(filter[icube][0][nx_out-1][ny_out][k][3]+filter[icube][0][nx_out][ny_out-1][k][3]);
+			filter[icube][0][nx_out][ny_out][k][4] =  0.5*(filter[icube][0][nx_out-1][ny_out][k][4]+filter[icube][0][nx_out][ny_out-1][k][4]);
+			
+		}
+        
+        
 
     }
     
