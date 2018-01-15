@@ -1712,7 +1712,7 @@ int main(int argc, char **argv)
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
             
-                BCM_Output_coarse(myid, Ncube, step, switch_output, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt);
+                BCM_Output_coarse(myid, Ncube, step, switch_output, rank_map, U1_,U1q,cube_size, Xcnt, Ycnt, Zcnt, filter);
             
             #endif
             

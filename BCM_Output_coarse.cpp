@@ -36,7 +36,9 @@ double (*cube_size) = new double[Ncube],
 
 double (*Xcnt)[X_size] = new double[Ncube][X_size],
 double (*Ycnt)[Y_size] = new double[Ncube][Y_size],
-double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
+double (*Zcnt)[Z_size] = new double[Ncube][Z_size],
+
+double (*filter)[11][X_size][Y_size][Z_size][Ndim] = new double[Ncube][11][X_size][Y_size][Z_size][Ndim]
 
 // ============================================================================ //
 )
@@ -54,9 +56,9 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
     int CR_switch = 2;
 
 	
-	int nx_out = NcubeX/CR_switch+2;
-	int ny_out = NcubeY/CR_switch+2;
-	int nz_out = NcubeZ/CR_switch+2;
+	int nx_out = NcubeX/CR_switch+1;
+	int ny_out = NcubeY/CR_switch+1;
+	int nz_out = NcubeZ/CR_switch+1;
 
 
 
@@ -138,9 +140,9 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
         
 		for (icube = 1; icube < ncube; icube++) {  
 
-            for (k = 0; k <= nz_out-1; k++) {
-                for (j = 0; j <= ny_out-1; j++) { 
-                    for (i = 0; i <= nx_out-1; i++) { 
+            for (k = 1; k <= nz_out; k++) {
+                for (j = 1; j <= ny_out; j++) { 
+                    for (i = 1; i <= nx_out; i++) { 
 
                         icount = icount+1;
 
@@ -151,9 +153,9 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
             }
 
 
-            for (k = 0; k <= nz_out-1; k++) {
-                for (j = 0; j <= ny_out-1; j++) { 
-                    for (i = 0; i <= nx_out-1; i++) { 
+            for (k = 1; k <= nz_out; k++) {
+                for (j = 1; j <= ny_out; j++) { 
+                    for (i = 1; i <= nx_out; i++) { 
 
                         icount = icount+1;
 
@@ -164,9 +166,9 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
             }
 
 
-            for (k = 0; k <= nz_out-1; k++) {
-                for (j = 0; j <= ny_out-1; j++) { 
-                    for (i = 0; i <= nx_out-1; i++) { 
+            for (k = 1; k <= nz_out; k++) {
+                for (j = 1; j <= ny_out; j++) { 
+                    for (i = 1; i <= nx_out; i++) { 
 
                         icount = icount+1;
 
@@ -239,10 +241,10 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 		icount = icount + 1;
 		Solution[icount] = 1.0;
     
-        for (k = 0; k <= nz_out-1; k++) {
-            for (j = 0; j <= ny_out-1; j++) { 
-                for (i = 0; i <= nx_out-1; i++) { 
-                
+            for (k = 1; k <= nz_out; k++) {
+                for (j = 1; j <= ny_out; j++) { 
+                    for (i = 1; i <= nx_out; i++) { 
+
                 ii = 2*i;
                 jj = 2*j;
                 kk = 2*k;
@@ -259,9 +261,9 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
             }
         }
 
-        for (k = 0; k <= nz_out-1; k++) {
-            for (j = 0; j <= ny_out-1; j++) { 
-                for (i = 0; i <= nx_out-1; i++) { 
+            for (k = 1; k <= nz_out; k++) {
+                for (j = 1; j <= ny_out; j++) { 
+                    for (i = 1; i <= nx_out; i++) { 
 
                 ii = 2*i;
                 jj = 2*j;
@@ -279,9 +281,9 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
             }
         }
 
-        for (k = 0; k <= nz_out-1; k++) {
-            for (j = 0; j <= ny_out-1; j++) { 
-                for (i = 0; i <= nx_out-1; i++) { 
+            for (k = 1; k <= nz_out; k++) {
+                for (j = 1; j <= ny_out; j++) { 
+                    for (i = 1; i <= nx_out; i++) { 
 
                 ii = 2*i;
                 jj = 2*j;
@@ -300,9 +302,9 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
             }
         }
 
-        for (k = 0; k <= nz_out-1; k++) {
-            for (j = 0; j <= ny_out-1; j++) { 
-                for (i = 0; i <= nx_out-1; i++) { 
+            for (k = 1; k <= nz_out; k++) {
+                for (j = 1; j <= ny_out; j++) { 
+                    for (i = 1; i <= nx_out; i++) { 
 
                 ii = 2*i;
                 jj = 2*j;
@@ -321,9 +323,9 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
             }
         }
 
-        for (k = 0; k <= nz_out-1; k++) {
-            for (j = 0; j <= ny_out-1; j++) { 
-                for (i = 0; i <= nx_out-1; i++) { 
+            for (k = 1; k <= nz_out; k++) {
+                for (j = 1; j <= ny_out; j++) { 
+                    for (i = 1; i <= nx_out; i++) { 
 
                 ii = 2*i;
                 jj = 2*j;
