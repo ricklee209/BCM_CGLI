@@ -1152,7 +1152,9 @@ double (*cube_size) = new double[Ncube],
 
 double (*Xcnt)[X_size] = new double[Ncube][X_size],
 double (*Ycnt)[Y_size] = new double[Ncube][Y_size],
-double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
+double (*Zcnt)[Z_size] = new double[Ncube][Z_size],
+
+double (*filter)[11][X_size][Y_size][Z_size][Ndim] = new double[Ncube][11][X_size][Y_size][Z_size][Ndim]
  // ============================================================================ //
  );
 

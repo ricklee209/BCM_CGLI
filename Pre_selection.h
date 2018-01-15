@@ -7,7 +7,10 @@
 
 // ---- TDROE=4 : Roe modified by B. Thornber ---- //
 
-#define ROE 3
+// ---- ROEAMTP=5 : Roe modified by X. Li ---- //
+
+
+#define ROE 5
 
 
 // ---- limiter : limiter function ---- //
@@ -50,7 +53,7 @@
 // ---- NODTau : DT doesn't include deltaTau (Aeroacoustic) ---- //
 // ---- DTauCAA : Can run Aeroacoustic ---- //
 
-#define DTauCAA
+#define DTau
 #define DTau_CFL 1000
 
 
