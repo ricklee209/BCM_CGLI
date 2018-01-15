@@ -138,41 +138,63 @@ double (*filter)[11][X_size][Y_size][Z_size][Ndim] = new double[Ncube][11][X_siz
 
 		icount = -1;
         
+        #pragma omp parallel for private(i,k,j)
 		for (icube = 1; icube < ncube; icube++) {  
+        
+            for (i = 0; i <= nx_out; i++) { 
+                for (j = 0; j <= ny_out; j++) { 
+                    for (k = 0; k <= nz_out; k++) {
 
-            for (k = 1; k <= nz_out; k++) {
-                for (j = 1; j <= ny_out; j++) { 
-                    for (i = 1; i <= nx_out; i++) { 
+                        filter[icube][0][i][j][k][0] = 0.5*( Xcnt[icube][2*i]+Xcnt[icube][2*i+1] );
+                        filter[icube][0][i][j][k][1] = 0.5*( Ycnt[icube][2*j]+Ycnt[icube][2*j+1] );
+                        filter[icube][0][i][j][k][2] = 0.5*( Zcnt[icube][2*k]+Zcnt[icube][2*k+1] );
+
+                    }
+                }
+            }
+
+        }
+            
+            
+        
+        for (icube = 1; icube < ncube; icube++) {  
+        
+            for (k = 0; k <= nz_out-1; k++) {
+                for (j = 0; j <= ny_out-1; j++) { 
+                    for (i = 0; i <= nx_out-1; i++) { 
 
                         icount = icount+1;
 
-                        Grid[icount] = 0.5*( Xcnt[icube][2*i]+Xcnt[icube][2*i+1] );
+                        Grid[icount] = 0.5*( filter[icube][0][i  ][j][k][0]\
+                                            +filter[icube][0][i+1][j][k][0] );
 
                     }
                 }
             }
 
 
-            for (k = 1; k <= nz_out; k++) {
-                for (j = 1; j <= ny_out; j++) { 
-                    for (i = 1; i <= nx_out; i++) { 
+            for (k = 0; k <= nz_out-1; k++) {
+                for (j = 0; j <= ny_out-1; j++) { 
+                    for (i = 0; i <= nx_out-1; i++) { 
 
                         icount = icount+1;
 
-                        Grid[icount] = 0.5*( Ycnt[icube][2*j]+Ycnt[icube][2*j+1] );
+                        Grid[icount] = 0.5*( filter[icube][0][i][j  ][k][1]\
+                                            +filter[icube][0][i][j+1][k][1] );
 
                     }
                 }
             }
 
 
-            for (k = 1; k <= nz_out; k++) {
-                for (j = 1; j <= ny_out; j++) { 
-                    for (i = 1; i <= nx_out; i++) { 
+            for (k = 0; k <= nz_out-1; k++) {
+                for (j = 0; j <= ny_out-1; j++) { 
+                    for (i = 0; i <= nx_out-1; i++) { 
 
                         icount = icount+1;
 
-                        Grid[icount] = 0.5*( Zcnt[icube][2*k]+Zcnt[icube][2*k+1] );
+                        Grid[icount] = 0.5*( filter[icube][0][i][j][k  ][2]\
+                                            +filter[icube][0][i][j][k+1][2] );
 
                     }
                 }
@@ -197,7 +219,6 @@ double (*filter)[11][X_size][Y_size][Z_size][Ndim] = new double[Ncube][11][X_siz
 
 
 
-	float (*Solution) = new float[(ncube-1)*nx_out*ny_out*nz_out*5+4*(ncube-1)];
 
 	sprintf(data,"qBCMdata_coarse""%0.5d"".q",step);
 	MPI_File fh1;
@@ -205,7 +226,7 @@ double (*filter)[11][X_size][Y_size][Z_size][Ndim] = new double[Ncube][11][X_siz
 	MPI_File_open( MPI_COMM_WORLD, data,  MPI_MODE_RDWR | MPI_MODE_CREATE, MPI_INFO_NULL, &fh1 ) ; 
 
 	if (myid == 0) {
-
+        
 		FILE *fptr_solution;
 
 		fptr_solution = fopen(data,"wb");
@@ -223,8 +244,70 @@ double (*filter)[11][X_size][Y_size][Z_size][Ndim] = new double[Ncube][11][X_siz
 		fclose(fptr_solution);
 
 	}
+    
+    
+    
+    
+    // ---------------------------------------------------------------------- //
+    // ------------ Center value for interoplation to Node value ------------ //
+    #pragma omp parallel for private(i,k,j,ii,jj,kk)
+    
+    for (icube = 1; icube < ncube; icube++) {  
+    
+        for (i = 0; i <= nx_out; i++) { 
+            for (j = 0; j <= ny_out; j++) { 
+                for (k = 0; k <= nz_out; k++) {
+
+                    ii = 2*i;
+                    jj = 2*j;
+                    kk = 2*k;
+
+                    filter[icube][0][i][j][k][0] = 0.125*\
+                        (U1[icube][ii  ][jj  ][kk  ][0]+U1[icube][ii+1][jj  ][kk  ][0]+\
+                         U1[icube][ii  ][jj+1][kk  ][0]+U1[icube][ii  ][jj  ][kk+1][0]+\
+                         U1[icube][ii+1][jj+1][kk  ][0]+U1[icube][ii+1][jj  ][kk+1][0]+\
+                         U1[icube][ii  ][jj+1][kk+1][0]+U1[icube][ii+1][jj+1][kk+1][0]);
+                         
+                    filter[icube][0][i][j][k][1] = 0.125*\
+                        (U1[icube][ii  ][jj  ][kk  ][1]+U1[icube][ii+1][jj  ][kk  ][1]+\
+                         U1[icube][ii  ][jj+1][kk  ][1]+U1[icube][ii  ][jj  ][kk+1][1]+\
+                         U1[icube][ii+1][jj+1][kk  ][1]+U1[icube][ii+1][jj  ][kk+1][1]+\
+                         U1[icube][ii  ][jj+1][kk+1][1]+U1[icube][ii+1][jj+1][kk+1][1]);
+
+                    filter[icube][0][i][j][k][2] = 0.125*\
+                        (U1[icube][ii  ][jj  ][kk  ][2]+U1[icube][ii+1][jj  ][kk  ][2]+\
+                         U1[icube][ii  ][jj+1][kk  ][2]+U1[icube][ii  ][jj  ][kk+1][2]+\
+                         U1[icube][ii+1][jj+1][kk  ][2]+U1[icube][ii+1][jj  ][kk+1][2]+\
+                         U1[icube][ii  ][jj+1][kk+1][2]+U1[icube][ii+1][jj+1][kk+1][2]);
+                        
+                    
+                    filter[icube][0][i][j][k][3] = 0.125*\
+                        (U1[icube][ii  ][jj  ][kk  ][3]+U1[icube][ii+1][jj  ][kk  ][3]+\
+                         U1[icube][ii  ][jj+1][kk  ][3]+U1[icube][ii  ][jj  ][kk+1][3]+\
+                         U1[icube][ii+1][jj+1][kk  ][3]+U1[icube][ii+1][jj  ][kk+1][3]+\
+                         U1[icube][ii  ][jj+1][kk+1][3]+U1[icube][ii+1][jj+1][kk+1][3]);
+                    
+                    
+                    filter[icube][0][i][j][k][4] = 0.125*\
+                        (U1[icube][ii  ][jj  ][kk  ][4]+U1[icube][ii+1][jj  ][kk  ][4]+\
+                         U1[icube][ii  ][jj+1][kk  ][4]+U1[icube][ii  ][jj  ][kk+1][4]+\
+                         U1[icube][ii+1][jj+1][kk  ][4]+U1[icube][ii+1][jj  ][kk+1][4]+\
+                         U1[icube][ii  ][jj+1][kk+1][4]+U1[icube][ii+1][jj+1][kk+1][4]);
+                        
+                }
+            }
+        }
+
+    }
+    
+    // ------------ Center value for interoplation to Node value ------------ //
+    // ---------------------------------------------------------------------- //
+
+    
 
 
+
+	float (*Solution) = new float[(ncube-1)*nx_out*ny_out*nz_out*5+4*(ncube-1)];
 
 	icount = -1;
 	for (icube = 1; icube < ncube; icube++) {  
@@ -240,104 +323,84 @@ double (*filter)[11][X_size][Y_size][Z_size][Ndim] = new double[Ncube][11][X_siz
 		
 		icount = icount + 1;
 		Solution[icount] = 1.0;
-    
-            for (k = 1; k <= nz_out; k++) {
-                for (j = 1; j <= ny_out; j++) { 
-                    for (i = 1; i <= nx_out; i++) { 
 
-                ii = 2*i;
-                jj = 2*j;
-                kk = 2*k;
+        for (k = 0; k <= nz_out-1; k++) {
+            for (j = 0; j <= ny_out-1; j++) { 
+                for (i = 0; i <= nx_out-1; i++) { 
 
                 icount = icount + 1;
                 
                 Solution[icount] = 0.125*\
-                    (U1[icube][ii  ][jj  ][kk  ][0]+U1[icube][ii+1][jj  ][kk  ][0]+\
-                     U1[icube][ii  ][jj+1][kk  ][0]+U1[icube][ii  ][jj  ][kk+1][0]+\
-                     U1[icube][ii+1][jj+1][kk  ][0]+U1[icube][ii+1][jj  ][kk+1][0]+\
-                     U1[icube][ii  ][jj+1][kk+1][0]+U1[icube][ii+1][jj+1][kk+1][0]);
+                    (filter[icube][0][i  ][j  ][k  ][0]+filter[icube][0][i+1][j  ][k  ][0]+\
+                     filter[icube][0][i  ][j+1][k  ][0]+filter[icube][0][i  ][j  ][k+1][0]+\
+                     filter[icube][0][i+1][j+1][k  ][0]+filter[icube][0][i+1][j  ][k+1][0]+\
+                     filter[icube][0][i  ][j+1][k+1][0]+filter[icube][0][i+1][j+1][k+1][0]);
 
                 }
             }
         }
 
-            for (k = 1; k <= nz_out; k++) {
-                for (j = 1; j <= ny_out; j++) { 
-                    for (i = 1; i <= nx_out; i++) { 
-
-                ii = 2*i;
-                jj = 2*j;
-                kk = 2*k;
+        for (k = 0; k <= nz_out-1; k++) {
+            for (j = 0; j <= ny_out-1; j++) { 
+                for (i = 0; i <= nx_out-1; i++) { 
 
                 icount = icount + 1;
                 
                 Solution[icount] = 0.125*\
-                    (U1[icube][ii  ][jj  ][kk  ][1]+U1[icube][ii+1][jj  ][kk  ][1]+\
-                     U1[icube][ii  ][jj+1][kk  ][1]+U1[icube][ii  ][jj  ][kk+1][1]+\
-                     U1[icube][ii+1][jj+1][kk  ][1]+U1[icube][ii+1][jj  ][kk+1][1]+\
-                     U1[icube][ii  ][jj+1][kk+1][1]+U1[icube][ii+1][jj+1][kk+1][1]);
+                    (filter[icube][0][i  ][j  ][k  ][1]+filter[icube][0][i+1][j  ][k  ][1]+\
+                     filter[icube][0][i  ][j+1][k  ][1]+filter[icube][0][i  ][j  ][k+1][1]+\
+                     filter[icube][0][i+1][j+1][k  ][1]+filter[icube][0][i+1][j  ][k+1][1]+\
+                     filter[icube][0][i  ][j+1][k+1][1]+filter[icube][0][i+1][j+1][k+1][1]);
 
                 }
             }
         }
 
-            for (k = 1; k <= nz_out; k++) {
-                for (j = 1; j <= ny_out; j++) { 
-                    for (i = 1; i <= nx_out; i++) { 
-
-                ii = 2*i;
-                jj = 2*j;
-                kk = 2*k;
+        for (k = 0; k <= nz_out-1; k++) {
+            for (j = 0; j <= ny_out-1; j++) { 
+                for (i = 0; i <= nx_out-1; i++) { 
 
                 icount = icount + 1;
                 
                 Solution[icount] = 0.125*\
-                    (U1[icube][ii  ][jj  ][kk  ][2]+U1[icube][ii+1][jj  ][kk  ][2]+\
-                     U1[icube][ii  ][jj+1][kk  ][2]+U1[icube][ii  ][jj  ][kk+1][2]+\
-                     U1[icube][ii+1][jj+1][kk  ][2]+U1[icube][ii+1][jj  ][kk+1][2]+\
-                     U1[icube][ii  ][jj+1][kk+1][2]+U1[icube][ii+1][jj+1][kk+1][2]);
+                    (filter[icube][0][i  ][j  ][k  ][2]+filter[icube][0][i+1][j  ][k  ][2]+\
+                     filter[icube][0][i  ][j+1][k  ][2]+filter[icube][0][i  ][j  ][k+1][2]+\
+                     filter[icube][0][i+1][j+1][k  ][2]+filter[icube][0][i+1][j  ][k+1][2]+\
+                     filter[icube][0][i  ][j+1][k+1][2]+filter[icube][0][i+1][j+1][k+1][2]);
 
 
                 }
             }
         }
 
-            for (k = 1; k <= nz_out; k++) {
-                for (j = 1; j <= ny_out; j++) { 
-                    for (i = 1; i <= nx_out; i++) { 
-
-                ii = 2*i;
-                jj = 2*j;
-                kk = 2*k;
+        for (k = 0; k <= nz_out-1; k++) {
+            for (j = 0; j <= ny_out-1; j++) { 
+                for (i = 0; i <= nx_out-1; i++) { 
 
                 icount = icount + 1;
                 
                 Solution[icount] = 0.125*\
-                    (U1[icube][ii  ][jj  ][kk  ][3]+U1[icube][ii+1][jj  ][kk  ][3]+\
-                     U1[icube][ii  ][jj+1][kk  ][3]+U1[icube][ii  ][jj  ][kk+1][3]+\
-                     U1[icube][ii+1][jj+1][kk  ][3]+U1[icube][ii+1][jj  ][kk+1][3]+\
-                     U1[icube][ii  ][jj+1][kk+1][3]+U1[icube][ii+1][jj+1][kk+1][3]);
+                    (filter[icube][0][i  ][j  ][k  ][3]+filter[icube][0][i+1][j  ][k  ][3]+\
+                     filter[icube][0][i  ][j+1][k  ][3]+filter[icube][0][i  ][j  ][k+1][3]+\
+                     filter[icube][0][i+1][j+1][k  ][3]+filter[icube][0][i+1][j  ][k+1][3]+\
+                     filter[icube][0][i  ][j+1][k+1][3]+filter[icube][0][i+1][j+1][k+1][3]);
 
 
                 }
             }
         }
 
-            for (k = 1; k <= nz_out; k++) {
-                for (j = 1; j <= ny_out; j++) { 
-                    for (i = 1; i <= nx_out; i++) { 
-
-                ii = 2*i;
-                jj = 2*j;
-                kk = 2*k;
+        for (k = 0; k <= nz_out-1; k++) {
+            for (j = 0; j <= ny_out-1; j++) { 
+                for (i = 0; i <= nx_out-1; i++) { 
 
                 icount = icount + 1;
                 
                 Solution[icount] = 0.125*\
-                    (U1[icube][ii  ][jj  ][kk  ][4]+U1[icube][ii+1][jj  ][kk  ][4]+\
-                     U1[icube][ii  ][jj+1][kk  ][4]+U1[icube][ii  ][jj  ][kk+1][4]+\
-                     U1[icube][ii+1][jj+1][kk  ][4]+U1[icube][ii+1][jj  ][kk+1][4]+\
-                     U1[icube][ii  ][jj+1][kk+1][4]+U1[icube][ii+1][jj+1][kk+1][4]);
+                    (filter[icube][0][i  ][j  ][k  ][4]+filter[icube][0][i+1][j  ][k  ][4]+\
+                     filter[icube][0][i  ][j+1][k  ][4]+filter[icube][0][i  ][j  ][k+1][4]+\
+                     filter[icube][0][i+1][j+1][k  ][4]+filter[icube][0][i+1][j  ][k+1][4]+\
+                     filter[icube][0][i  ][j+1][k+1][4]+filter[icube][0][i+1][j+1][k+1][4]);
 
 
                 }
@@ -364,6 +427,7 @@ double (*filter)[11][X_size][Y_size][Z_size][Ndim] = new double[Ncube][11][X_siz
 	
 
 	delete []Solution;
+
 
 
 }
