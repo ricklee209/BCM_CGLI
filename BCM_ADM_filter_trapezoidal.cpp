@@ -71,6 +71,8 @@ void BCM_ADM_filter
 		u1_k3,u2_k3,u3_k3,u4_k3;
 
 	double delta_I = 0.01;
+  double ration_dissp = 0.7;
+  double tolerance = 0.03; // 3 % 
 
 
 	for(ic = 0; ic <= 10; ic++) {
@@ -138,9 +140,10 @@ void BCM_ADM_filter
 						u4k1 = filter[icube][ic][i][j][k+1][3]/u1k1;
 
 
-						filter[icube][3][i][j][k][1] = 0.125*(u2_k1+6.0*u2+u2k1);
-						filter[icube][3][i][j][k][2] = 0.125*(u3_k1+6.0*u3+u3k1);
-						filter[icube][3][i][j][k][3] = 0.125*(u4_k1+6.0*u4+u4k1);
+						filter[icube][3][i][j][k][1] = 0.25*(u2_k1+2.0*u2+u2k1);
+						filter[icube][3][i][j][k][2] = 0.25*(u3_k1+2.0*u3+u3k1);
+						filter[icube][3][i][j][k][3] = 0.25*(u4_k1+2.0*u4+u4k1);
+            
             
 					}
 				}
@@ -150,6 +153,8 @@ void BCM_ADM_filter
 			for (i = n_buffer; i < nxx; i++) {
 				for (j = n_buffer; j < nyy; j++) {
 					for (k = n_buffer; k < nzz; k++) {
+
+
 
 						u1 = filter[icube][3][i][j][k][0];
 						u2 = filter[icube][3][i][j][k][1]/u1;
@@ -162,17 +167,18 @@ void BCM_ADM_filter
 						u3_j1 = filter[icube][3][i][j-1][k][2]/u1_j1;
 						u4_j1 = filter[icube][3][i][j-1][k][3]/u1_j1;
 
-
+            
 						u1j1 = filter[icube][3][i][j+1][k][0];
 						u2j1 = filter[icube][3][i][j+1][k][1]/u1j1;
 						u3j1 = filter[icube][3][i][j+1][k][2]/u1j1;
 						u4j1 = filter[icube][3][i][j+1][k][3]/u1j1;
 
 
-						filter[icube][2][i][j][k][1] = 0.125*(u2_j1+6.0*u2+u2j1);
-						filter[icube][2][i][j][k][2] = 0.125*(u3_j1+6.0*u3+u3j1);
-						filter[icube][2][i][j][k][3] = 0.125*(u4_j1+6.0*u4+u4j1);
-
+						filter[icube][2][i][j][k][1] = 0.25*(u2_j1+2.0*u2+u2j1);
+						filter[icube][2][i][j][k][2] = 0.25*(u3_j1+2.0*u3+u3j1);
+						filter[icube][2][i][j][k][3] = 0.25*(u4_j1+2.0*u4+u4j1);
+            
+            
 					}
 				}
 			}
@@ -181,6 +187,7 @@ void BCM_ADM_filter
 			for (i = n_buffer; i < nxx; i++) {
 				for (j = n_buffer; j < nyy; j++) {
 					for (k = n_buffer; k < nzz; k++) {
+
 
 
 						u1 = filter[icube][2][i][j][k][0];
@@ -201,9 +208,9 @@ void BCM_ADM_filter
 						u4i1 = filter[icube][2][i+1][j][k][3]/u1i1;
 
 
-						filter[icube][ic+1][i][j][k][1] = 0.125*(u2_i1+6.0*u2+u2i1);
-						filter[icube][ic+1][i][j][k][2] = 0.125*(u3_i1+6.0*u3+u3i1);
-						filter[icube][ic+1][i][j][k][3] = 0.125*(u4_i1+6.0*u4+u4i1);
+						filter[icube][ic+1][i][j][k][1] = 0.25*(u2_i1+2.0*u2+u2i1);
+						filter[icube][ic+1][i][j][k][2] = 0.25*(u3_i1+2.0*u3+u3i1);
+						filter[icube][ic+1][i][j][k][3] = 0.25*(u4_i1+2.0*u4+u4i1);
 
 
 					}
@@ -259,7 +266,7 @@ void BCM_ADM_filter
 
 		
 
-	for(ic = 4; ic <= 9; ic++) {
+	for(ic = 4; ic <= 7; ic++) {
 
 #pragma omp parallel for private(i,j,k,\
 		u1,u2,u3,u4,\
@@ -369,28 +376,20 @@ void BCM_ADM_filter
 				for (j = n_buffer; j < nyy; j++) {
 					for (k = n_buffer; k < nzz; k++) {
 
-						filter[icube][1][i][j][k][1] = 6.0 *filter[icube][4][i][j][k][1] \
-														-15.0*filter[icube][5][i][j][k][1] \
-														+20.0*filter[icube][6][i][j][k][1] \
-														-15.0*filter[icube][7][i][j][k][1] \
-														+6.0 *filter[icube][8][i][j][k][1] \
-														-1.0 *filter[icube][9][i][j][k][1];
+						filter[icube][1][i][j][k][1] = 4.0*filter[icube][4][i][j][k][1] \
+                                          -6.0*filter[icube][5][i][j][k][1] \
+                                          +4.0*filter[icube][6][i][j][k][1] \
+                                          -1.0*filter[icube][7][i][j][k][1];
 
-						filter[icube][1][i][j][k][2] = 6.0 *filter[icube][4][i][j][k][2] \
-														-15.0*filter[icube][5][i][j][k][2] \
-														+20.0*filter[icube][6][i][j][k][2] \
-														-15.0*filter[icube][7][i][j][k][2] \
-														+6.0 *filter[icube][8][i][j][k][2] \
-														-1.0 *filter[icube][9][i][j][k][2];
+						filter[icube][1][i][j][k][2] = 4.0*filter[icube][4][i][j][k][2] \
+                                          -6.0*filter[icube][5][i][j][k][2] \
+                                          +4.0*filter[icube][6][i][j][k][2] \
+                                          -1.0*filter[icube][7][i][j][k][2];
 
-						filter[icube][1][i][j][k][3] = 6.0 *filter[icube][4][i][j][k][3] \
-														-15.0*filter[icube][5][i][j][k][3] \
-														+20.0*filter[icube][6][i][j][k][3] \
-														-15.0*filter[icube][7][i][j][k][3] \
-														+6.0 *filter[icube][8][i][j][k][3] \
-														-1.0 *filter[icube][9][i][j][k][3];
-
-
+						filter[icube][1][i][j][k][3] = 4.0*filter[icube][4][i][j][k][3] \
+                                          -6.0*filter[icube][5][i][j][k][3] \
+                                          +4.0*filter[icube][6][i][j][k][3] \
+                                          -1.0*filter[icube][7][i][j][k][3];
 
 					}
 				}
@@ -430,13 +429,13 @@ void BCM_ADM_filter
 							  ( u1i2*u1i2 + u2i2*u2i2 + u3i2*u3i2 );
 
 
-						if(tmp > 0.009) {
+						if( tmp > (1.0+tolerance)*ration_dissp ) {
 							
 							Roe_dis[icube][i][j][k] = min(Roe_dis[icube][i][j][k]+delta_I, 1.0); 
 
 						}
 
-						if(tmp < 0.007) {
+						if(tmp < (1.0-tolerance)*ration_dissp) {
 
 							Roe_dis[icube][i][j][k] = max(Roe_dis[icube][i][j][k]-delta_I, 0.0); 
 
@@ -448,17 +447,6 @@ void BCM_ADM_filter
 			}
 		
 		}
-
-
-
-
-
-
-
-
-
-
-
 
 
 
