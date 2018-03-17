@@ -143,6 +143,17 @@ void BCM_ADM_filter
 						filter[icube][3][i][j][k][1] = 0.25*(u2_k1+2.0*u2+u2k1);
 						filter[icube][3][i][j][k][2] = 0.25*(u3_k1+2.0*u3+u3k1);
 						filter[icube][3][i][j][k][3] = 0.25*(u4_k1+2.0*u4+u4k1);
+            
+            
+					}
+				}
+			}
+
+      
+			for (i = n_buffer; i < nxx; i++) {
+				for (j = n_buffer; j < nyy; j++) {
+					for (k = n_buffer; k < nzz; k++) {
+
 
 
 						u1 = filter[icube][3][i][j][k][0];
@@ -156,7 +167,7 @@ void BCM_ADM_filter
 						u3_j1 = filter[icube][3][i][j-1][k][2]/u1_j1;
 						u4_j1 = filter[icube][3][i][j-1][k][3]/u1_j1;
 
-
+            
 						u1j1 = filter[icube][3][i][j+1][k][0];
 						u2j1 = filter[icube][3][i][j+1][k][1]/u1j1;
 						u3j1 = filter[icube][3][i][j+1][k][2]/u1j1;
@@ -166,6 +177,17 @@ void BCM_ADM_filter
 						filter[icube][2][i][j][k][1] = 0.25*(u2_j1+2.0*u2+u2j1);
 						filter[icube][2][i][j][k][2] = 0.25*(u3_j1+2.0*u3+u3j1);
 						filter[icube][2][i][j][k][3] = 0.25*(u4_j1+2.0*u4+u4j1);
+            
+            
+					}
+				}
+			}
+
+      
+			for (i = n_buffer; i < nxx; i++) {
+				for (j = n_buffer; j < nyy; j++) {
+					for (k = n_buffer; k < nzz; k++) {
+
 
 
 						u1 = filter[icube][2][i][j][k][0];
