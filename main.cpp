@@ -8,7 +8,7 @@
 #include <time.h>
 #include <omp.h>
 #include <mpi.h>
-#include <string>
+#include <string.h>
 
 #define min(a,b) (((a)<(b))?(a):(b)) 
 #define max(a,b) (((a)>(b))?(a):(b)) 
@@ -43,26 +43,26 @@ int main(int argc, char **argv)
 #include "Pre_selection.h"
 
 
-	int statistic_step = 5;    // ---- periodic step ---- //
+	int statistic_step = 40000;    // ---- periodic step ---- //
 
-	int start_step = 1;    // ---- how many steps to reach the quasi steady ---- //
+	int start_step = 0;    // ---- how many steps to reach the quasi steady ---- //
 
-	int dp_step = 5;    // ---- how many steps for periodically outputing the dp ---- //
+	int dp_step = 5000;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 2;
-	int output_step = 1000;
-	int count = 5;	
+	int iteration_end_step = 20;
+	int output_step = 5000;
+	int count = 10000;
 	int step;
-
+    
 	double deltaT = 0.002;
 	double deltaTau = deltaT/200.0;
 	double e = 0.000005;
 	double Th = 309.03531204896;
 
 
-	int switch_initial = 1; // ---- 1 reading initial coniditon ---- //
+	int switch_initial = 0; // ---- 1 reading initial coniditon ---- //
 
-	int switch_IBM = 0;     // ---- 1 run IBM ---- //
+	int switch_IBM = 1;     // ---- 1 run IBM ---- //
 
 	int switch_output = 0;  // ---- 1 output grid file ---- //
 
@@ -1452,7 +1452,7 @@ int main(int argc, char **argv)
 					if ( step%10 == 0 ) {
                         
                         BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
-                        printf("/n Automatic Dissipation Adjustment model /n");
+                        if(myid == 0) printf("/n Automatic Dissipation Adjustment model /n");
                 
                     }
                     
