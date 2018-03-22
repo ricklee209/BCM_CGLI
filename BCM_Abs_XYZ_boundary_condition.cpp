@@ -308,6 +308,8 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
                         
                         CFL_tau[icube][i][j][k] = -DTau_CFL;
                         
+                        // if Z is slip or no slip zV_in_1 et al. should be set to 0//
+                        
 					    
 						} 
 					else if( ZZ > abs6  ) {
