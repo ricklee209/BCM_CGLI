@@ -1285,4 +1285,35 @@ int (*wallcube) = new int[Ncube]
 );
 
 
+void BCM_Slice_output
+(
+// =================================================== //
+int myid,
+int ncube,
+
+double Xp,
+
+int step,
+
+int slice_normal,
+
+char slice_name[100],
+
+int (*rank_map)[MPI_Ncube] = new int[2][MPI_Ncube],
+
+double (*U1)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim],
+
+double (*cube_size) = new double[Ncube],
+
+double (*Xcube) = new double[Ncube],
+double (*Ycube) = new double[Ncube],
+double (*Zcube) = new double[Ncube],
+
+double (*Xcnt)[X_size] = new double[Ncube][X_size],
+double (*Ycnt)[Y_size] = new double[Ncube][Y_size],
+double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
+// ================================================== //
+);
+
+
 

@@ -49,9 +49,9 @@ int main(int argc, char **argv)
 
 	int dp_step = 50000;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 10;
+	int iteration_end_step = 5;
 	int output_step = 1;
-	int count = 2;	
+	int count = 1;	
 	int step;
 
 	double deltaT = 0.1;
@@ -1657,7 +1657,8 @@ int main(int argc, char **argv)
                 
             #endif
             
-
+            BCM_Slice_output(myid, Ncube, 0, step, 1, "Slice1", rank_map, U1_, cube_size, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt);
+            
 		}
 
 
