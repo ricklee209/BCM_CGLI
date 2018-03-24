@@ -1210,7 +1210,7 @@ int main(int argc, char **argv)
 				// BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
 
 
-				for (int ig = 1; ig <= 10; ig++) {
+				for (int ig = 1; ig <= 1; ig++) {
 
 					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
 
@@ -1657,7 +1657,7 @@ int main(int argc, char **argv)
                 
             #endif
             
-            BCM_Slice_output(myid, Ncube, 0, step, 1, "Slice1", rank_map, U1_, cube_size, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt);
+            BCM_Slice_output(myid, Ncube, 0.0, step, 1, "Slice1", rank_map, U1_, cube_size, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt);
             
 		}
 
