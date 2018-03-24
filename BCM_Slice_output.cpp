@@ -50,7 +50,6 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
     MPI_Comm comm;
 	comm=MPI_COMM_WORLD;
 	MPI_Status istat[8];
-    MPI_Status *status;
 	MPI_Offset disp;
     
     int nx_out = NcubeX+1;
@@ -121,7 +120,7 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
         
         for (i = 1; i <= np-1; i++) {
             
-            MPI_Recv(&x_gcount[i], 1, MPI_INT, i, itag, comm, status);
+            MPI_Recv(&x_gcount[i], 1, MPI_INT, i, itag, comm, istat);
             
         }
         
