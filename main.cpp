@@ -47,14 +47,14 @@ int main(int argc, char **argv)
 
 	int start_step = 0;    // ---- how many steps to reach the quasi steady ---- //
 
-	int dp_step = 5000;    // ---- how many steps for periodically outputing the dp ---- //
+	int dp_step = 10000;    // ---- how many steps for periodically outputing the dp ---- //
 
 	int iteration_end_step = 20;
-	int output_step = 5000;
-	int count = 10000;
+	int output_step = 10000;
+	int count = 100000;
 	int step;
     
-	double deltaT = 0.002;
+	double deltaT = 0.001;
 	double deltaTau = deltaT/200.0;
 	double e = 0.000005;
 	double Th = 309.03531204896;
@@ -1529,7 +1529,7 @@ int main(int argc, char **argv)
 
 
 // ==================================================================================================================== //
-			if ((er[1]<0.01 & er[2]<0.01 & er[3]<0.01 & er[4]<0.01 & er[5]<0.01) | iteration == iteration_end_step) {   //
+			if ((er[1]<0.0001 & er[2]<0.0001 & er[3]<0.0001 & er[4]<0.0001 & er[5]<0.0001) | iteration == iteration_end_step) {   //
 // ==================================================================================================================== //
 
 
