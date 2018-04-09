@@ -139,7 +139,7 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
     
         icount = icount+x_gcount[i-1];
     
-        x_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*3;
+        x_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*2;
 		q_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*5+(MPI_Offset)icount*4;
 
 	}
@@ -165,7 +165,6 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 
             fwrite(&nx_out, sizeof(int), 1,fptr_xyz);
             fwrite(&ny_out, sizeof(int), 1,fptr_xyz);
-            fwrite(&nz_out, sizeof(int), 1,fptr_xyz);
 
         }
 
@@ -174,7 +173,7 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 	}
     
     
-    float (*Grid) = new float[ncube_local*nx_out*ny_out*nz_out*3];
+    float (*Grid) = new float[ncube_local*nx_out*ny_out*2];
     
     icount = -1;
     
@@ -192,46 +191,28 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
         zmax = zmin+dx;
         
         if( (Xp < zmax) && (Xp >= zmin) ) {
-            
-            
-            for (k = 0; k <= nz_out-1; k++) {
-                for (j = 0; j <= ny_out-1; j++) { 
-                    for (i = 0; i <= nx_out-1; i++) { 
-
-                        icount = icount+1;
-
-                        Grid[icount] = 0.5*( Xcnt[icube][i+1]+Xcnt[icube][i+2] );
-
-                    }
-                }
-            }
-
-
-            for (k = 0; k <= nz_out-1; k++) {
-                for (j = 0; j <= ny_out-1; j++) { 
-                    for (i = 0; i <= nx_out-1; i++) { 
-
-                        icount = icount+1;
-
-                        Grid[icount] = 0.5*( Ycnt[icube][j+1]+Ycnt[icube][j+2] );
-
-                    }
-                }
-            }
-
-
-            for (k = 0; k <= nz_out-1; k++) {
-                for (j = 0; j <= ny_out-1; j++) { 
-                    for (i = 0; i <= nx_out-1; i++) { 
-
-                        icount = icount+1;
-
-                        Grid[icount] = 0.5*( Zcnt[icube][k+1]+Zcnt[icube][k+2] );
-
-                    }
-                }
-            }
         
+        
+            for (j = 0; j <= ny_out-1; j++) { 
+                for (i = 0; i <= nx_out-1; i++) { 
+
+                    icount = icount+1;
+
+                    Grid[icount] = 0.5*( Xcnt[icube][i+1]+Xcnt[icube][i+2] );
+
+                }
+            }
+       
+            for (j = 0; j <= ny_out-1; j++) { 
+                for (i = 0; i <= nx_out-1; i++) { 
+
+                    icount = icount+1;
+
+                    Grid[icount] = 0.5*( Ycnt[icube][j+1]+Ycnt[icube][j+2] );
+
+                }
+            }
+
         }    // ==== if( (Xp <= zmax) && (Xp >= zmin) ) ==== //
         
     }
@@ -240,9 +221,9 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
     // printf("%d\t%d\t%d\t%d\t%d\n",myid,ncube_local,ncube_out,icount,(icount+1)/17/17/17/3);
     
     
-    disp = ((MPI_Offset)ncube_out*3)*(MPI_Offset)sizeof(int)+1*(MPI_Offset)sizeof(int)+x_gdisp[myid]*(MPI_Offset)sizeof(float);
+    disp = ((MPI_Offset)ncube_out*2)*(MPI_Offset)sizeof(int)+1*(MPI_Offset)sizeof(int)+x_gdisp[myid]*(MPI_Offset)sizeof(float);
 
-    MPI_File_write_at_all(fh0, disp, Grid, ncube_local*nx_out*ny_out*nz_out*3, MPI_FLOAT, MPI_STATUS_IGNORE);
+    MPI_File_write_at_all(fh0, disp, Grid, ncube_local*nx_out*ny_out*2, MPI_FLOAT, MPI_STATUS_IGNORE);
 
     delete []Grid;
 
