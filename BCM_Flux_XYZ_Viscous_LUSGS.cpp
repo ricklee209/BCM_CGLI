@@ -4789,6 +4789,45 @@ double (*er) = new double[10]
     
     
 #pragma omp barrier
+
+
+#pragma omp parallel for private(IF,i,j,k,rho,P,U,V,W,VV)
+
+    for (icube = 1; icube < ncube; icube++) {  
+
+        for (i = n_buffer ; i < nxx; i++) {
+            for (j = n_buffer; j < nyy; j++) {
+                for (k = n_buffer; k < nzz; k++) {
+
+                    /* flux parameter */
+                    rho = U1_[icube][i][j][k][0];
+                    U = U1_[icube][i][j][k][1]/rho;
+                    V = U1_[icube][i][j][k][2]/rho;
+                    W = U1_[icube][i][j][k][3]/rho;
+                    VV = U*U+V*V+W*W;
+                    P = (U1_[icube][i][j][k][4]-0.5*rho*VV)*(K-1);
+                    
+                    rho = max(rho_limit, min(rholimit,rho));
+                    U = max(U_limit, min(Ulimit,U));
+                    V = max(V_limit, min(Vlimit,V));
+                    W = max(W_limit, min(Wlimit,W));
+                    P = max(P_limit, min(Plimit,P));
+                    
+                    U1_[icube][i][j][k][0] = rho;
+                    U1_[icube][i][j][k][1] = rho*U;
+                    U1_[icube][i][j][k][2] = rho*V;
+                    U1_[icube][i][j][k][3] = rho*W;
+                    U1_[icube][i][j][k][4] = P/(K-1)+0.5*rho*VV;
+
+                }
+            }
+        }
+        
+        
+    }
+
+#pragma omp barrier
+    
     
 
     
