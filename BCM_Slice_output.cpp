@@ -54,7 +54,7 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
     
     int nx_out = NcubeX+1;
 	int ny_out = NcubeY+1;
-	int nz_out = NcubeZ+1;
+	int nz_out = 1;
     
     int int_size = sizeof(int);
 	int float_size = sizeof(float);
@@ -140,7 +140,7 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
         icount = icount+x_gcount[i-1];
     
         x_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*2;
-		q_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*(MPI_Offset)nz_out*5+(MPI_Offset)icount*4;
+		q_gdisp[i] = (MPI_Offset)icount*(MPI_Offset)nx_out*(MPI_Offset)ny_out*4+(MPI_Offset)icount*4;
 
 	}
     
@@ -256,7 +256,6 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 
             fwrite(&nx_out, sizeof(int), 1,fptr_xyz);
             fwrite(&ny_out, sizeof(int), 1,fptr_xyz);
-            fwrite(&nz_out, sizeof(int), 1,fptr_xyz);
 
         }
 
@@ -265,7 +264,7 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 	}
     
     
-    float (*Solution) = new float[ncube_local*nx_out*ny_out*nz_out*5+4*(ncube-1)];
+    float (*Solution) = new float[ncube_local*nx_out*ny_out*4+4*ncube_local];
     
     
     icount = -1;
@@ -297,118 +296,106 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
             icount = icount + 1;
             Solution[icount] = 1.0;
             
+            k = (Xp-zmin)/dx;
             
-            for (k = 0; k <= nz_out-1; k++) {
-                for (j = 0; j <= ny_out-1; j++) { 
-                    for (i = 0; i <= nx_out-1; i++) { 
-                    
-                    ii = i+1;
-                    jj = j+1;
-                    kk = k+1;
-
-                    icount = icount + 1;
-                    
-                    Solution[icount] = 0.125*\
-                        (U1[icube][ii  ][jj  ][kk  ][0]+U1[icube][ii+1][jj  ][kk  ][0]+\
-                         U1[icube][ii  ][jj+1][kk  ][0]+U1[icube][ii  ][jj  ][kk+1][0]+\
-                         U1[icube][ii+1][jj+1][kk  ][0]+U1[icube][ii+1][jj  ][kk+1][0]+\
-                         U1[icube][ii  ][jj+1][kk+1][0]+U1[icube][ii+1][jj+1][kk+1][0]);
-
-                    }
-                }
-            }
-
-            for (k = 0; k <= nz_out-1; k++) {
-                for (j = 0; j <= ny_out-1; j++) { 
-                    for (i = 0; i <= nx_out-1; i++) { 
-                    
-                    ii = i+1;
-                    jj = j+1;
-                    kk = k+1;
-
-                    icount = icount + 1;
-                    
-                    Solution[icount] = 0.125*\
-                        (U1[icube][ii  ][jj  ][kk  ][1]+U1[icube][ii+1][jj  ][kk  ][1]+\
-                         U1[icube][ii  ][jj+1][kk  ][1]+U1[icube][ii  ][jj  ][kk+1][1]+\
-                         U1[icube][ii+1][jj+1][kk  ][1]+U1[icube][ii+1][jj  ][kk+1][1]+\
-                         U1[icube][ii  ][jj+1][kk+1][1]+U1[icube][ii+1][jj+1][kk+1][1]);
-
-                    }
-                }
-            }
-
-            for (k = 0; k <= nz_out-1; k++) {
-                for (j = 0; j <= ny_out-1; j++) { 
-                    for (i = 0; i <= nx_out-1; i++) { 
-                    
-                    ii = i+1;
-                    jj = j+1;
-                    kk = k+1;
-
-                    icount = icount + 1;
-                    
-                    Solution[icount] = 0.125*\
-                        (U1[icube][ii  ][jj  ][kk  ][2]+U1[icube][ii+1][jj  ][kk  ][2]+\
-                         U1[icube][ii  ][jj+1][kk  ][2]+U1[icube][ii  ][jj  ][kk+1][2]+\
-                         U1[icube][ii+1][jj+1][kk  ][2]+U1[icube][ii+1][jj  ][kk+1][2]+\
-                         U1[icube][ii  ][jj+1][kk+1][2]+U1[icube][ii+1][jj+1][kk+1][2]);
-
-
-                    }
-                }
-            }
-
-            for (k = 0; k <= nz_out-1; k++) {
-                for (j = 0; j <= ny_out-1; j++) { 
-                    for (i = 0; i <= nx_out-1; i++) { 
-                    
-                    ii = i+1;
-                    jj = j+1;
-                    kk = k+1;
-
-                    icount = icount + 1;
-                    
-                    Solution[icount] = 0.125*\
-                        (U1[icube][ii  ][jj  ][kk  ][3]+U1[icube][ii+1][jj  ][kk  ][3]+\
-                         U1[icube][ii  ][jj+1][kk  ][3]+U1[icube][ii  ][jj  ][kk+1][3]+\
-                         U1[icube][ii+1][jj+1][kk  ][3]+U1[icube][ii+1][jj  ][kk+1][3]+\
-                         U1[icube][ii  ][jj+1][kk+1][3]+U1[icube][ii+1][jj+1][kk+1][3]);
-
-
-                    }
-                }
-            }
-
-            for (k = 0; k <= nz_out-1; k++) {
-                for (j = 0; j <= ny_out-1; j++) { 
-                    for (i = 0; i <= nx_out-1; i++) { 
-                    
-                    ii = i+1;
-                    jj = j+1;
-                    kk = k+1;
-
-                    icount = icount + 1;
-                    
-                    Solution[icount] = 0.125*\
-                        (U1[icube][ii  ][jj  ][kk  ][4]+U1[icube][ii+1][jj  ][kk  ][4]+\
-                         U1[icube][ii  ][jj+1][kk  ][4]+U1[icube][ii  ][jj  ][kk+1][4]+\
-                         U1[icube][ii+1][jj+1][kk  ][4]+U1[icube][ii+1][jj  ][kk+1][4]+\
-                         U1[icube][ii  ][jj+1][kk+1][4]+U1[icube][ii+1][jj+1][kk+1][4]);
-
-
-                    }
-                }
-            } 
         
+            for (j = 0; j <= ny_out-1; j++) { 
+                for (i = 0; i <= nx_out-1; i++) { 
+                
+                ii = i+1;
+                jj = j+1;
+                kk = k+1;
+
+                icount = icount + 1;
+                
+                Solution[icount] = 0.125*\
+                    (U1[icube][ii  ][jj  ][kk  ][0]+U1[icube][ii+1][jj  ][kk  ][0]+\
+                     U1[icube][ii  ][jj+1][kk  ][0]+U1[icube][ii  ][jj  ][kk+1][0]+\
+                     U1[icube][ii+1][jj+1][kk  ][0]+U1[icube][ii+1][jj  ][kk+1][0]+\
+                     U1[icube][ii  ][jj+1][kk+1][0]+U1[icube][ii+1][jj+1][kk+1][0]);
+
+                }
+            }
+        
+            for (j = 0; j <= ny_out-1; j++) { 
+                for (i = 0; i <= nx_out-1; i++) { 
+                
+                ii = i+1;
+                jj = j+1;
+                kk = k+1;
+
+                icount = icount + 1;
+                
+                Solution[icount] = 0.125*\
+                    (U1[icube][ii  ][jj  ][kk  ][1]+U1[icube][ii+1][jj  ][kk  ][1]+\
+                     U1[icube][ii  ][jj+1][kk  ][1]+U1[icube][ii  ][jj  ][kk+1][1]+\
+                     U1[icube][ii+1][jj+1][kk  ][1]+U1[icube][ii+1][jj  ][kk+1][1]+\
+                     U1[icube][ii  ][jj+1][kk+1][1]+U1[icube][ii+1][jj+1][kk+1][1]);
+
+                }
+            }
+        
+            for (j = 0; j <= ny_out-1; j++) { 
+                for (i = 0; i <= nx_out-1; i++) { 
+                
+                ii = i+1;
+                jj = j+1;
+                kk = k+1;
+
+                icount = icount + 1;
+                
+                Solution[icount] = 0.125*\
+                    (U1[icube][ii  ][jj  ][kk  ][2]+U1[icube][ii+1][jj  ][kk  ][2]+\
+                     U1[icube][ii  ][jj+1][kk  ][2]+U1[icube][ii  ][jj  ][kk+1][2]+\
+                     U1[icube][ii+1][jj+1][kk  ][2]+U1[icube][ii+1][jj  ][kk+1][2]+\
+                     U1[icube][ii  ][jj+1][kk+1][2]+U1[icube][ii+1][jj+1][kk+1][2]);
+
+
+                }
+            }
+        
+            for (j = 0; j <= ny_out-1; j++) { 
+                for (i = 0; i <= nx_out-1; i++) { 
+                
+                ii = i+1;
+                jj = j+1;
+                kk = k+1;
+
+                icount = icount + 1;
+                
+                Solution[icount] = 0.125*\
+                    (U1[icube][ii  ][jj  ][kk  ][4]+U1[icube][ii+1][jj  ][kk  ][4]+  \
+                     U1[icube][ii  ][jj+1][kk  ][4]+U1[icube][ii  ][jj  ][kk+1][4]+  \
+                     U1[icube][ii+1][jj+1][kk  ][4]+U1[icube][ii+1][jj  ][kk+1][4]+  \
+                     U1[icube][ii  ][jj+1][kk+1][4]+U1[icube][ii+1][jj+1][kk+1][4])- \
+                    (U1[icube][ii  ][jj  ][kk  ][3]+U1[icube][ii+1][jj  ][kk  ][3]+  \
+                     U1[icube][ii  ][jj+1][kk  ][3]+U1[icube][ii  ][jj  ][kk+1][3]+  \
+                     U1[icube][ii+1][jj+1][kk  ][3]+U1[icube][ii+1][jj  ][kk+1][3]+  \
+                     U1[icube][ii  ][jj+1][kk+1][3]+U1[icube][ii+1][jj+1][kk+1][3])* \
+                    (U1[icube][ii  ][jj  ][kk  ][3]+U1[icube][ii+1][jj  ][kk  ][3]+  \
+                     U1[icube][ii  ][jj+1][kk  ][3]+U1[icube][ii  ][jj  ][kk+1][3]+  \
+                     U1[icube][ii+1][jj+1][kk  ][3]+U1[icube][ii+1][jj  ][kk+1][3]+  \
+                     U1[icube][ii  ][jj+1][kk+1][3]+U1[icube][ii+1][jj+1][kk+1][3])/ \
+                    (U1[icube][ii  ][jj  ][kk  ][0]+U1[icube][ii+1][jj  ][kk  ][0]+  \
+                     U1[icube][ii  ][jj+1][kk  ][0]+U1[icube][ii  ][jj  ][kk+1][0]+  \
+                     U1[icube][ii+1][jj+1][kk  ][0]+U1[icube][ii+1][jj  ][kk+1][0]+  \
+                     U1[icube][ii  ][jj+1][kk+1][0]+U1[icube][ii+1][jj+1][kk+1][0])*0.5;
+                     
+                // ---- p/(K-1)+0.5*R*(U*U+V*V+W*W)-0.5*R*W*R*W/R ---- //
+
+
+                }
+            }
+       
+           
         }    // ==== if( (Xp <= zmax) && (Xp >= zmin) ) ==== //
         
     }
     
     
-    disp = ((MPI_Offset)ncube_out*3)*(MPI_Offset)sizeof(int)+1*(MPI_Offset)sizeof(int)+q_gdisp[myid]*(MPI_Offset)sizeof(float);
+    disp = ((MPI_Offset)ncube_out*2)*(MPI_Offset)sizeof(int)+1*(MPI_Offset)sizeof(int)+q_gdisp[myid]*(MPI_Offset)sizeof(float);
 
-    MPI_File_write_at_all(fh1, disp, Solution, ncube_local*nx_out*ny_out*nz_out*5+ncube_local*4, MPI_FLOAT, MPI_STATUS_IGNORE);
+    MPI_File_write_at_all(fh1, disp, Solution, ncube_local*nx_out*ny_out*4+ncube_local*4, MPI_FLOAT, MPI_STATUS_IGNORE);
 
 	MPI_File_close( &fh1 );
     
