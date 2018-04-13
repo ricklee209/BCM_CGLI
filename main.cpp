@@ -1657,7 +1657,8 @@ int main(int argc, char **argv)
                 
             #endif
             
-            BCM_Slice_output(myid, Ncube, 0.0, step, 1, "Slice1", rank_map, U1_, cube_size, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt);
+            // ========= slice_normal XYZ = 123 ========= //
+            BCM_Slice_output(myid, Ncube, 0.0, step, 3, "SliceI", rank_map, U1_, cube_size, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt);
             
 		}
 

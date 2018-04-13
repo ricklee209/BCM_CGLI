@@ -52,6 +52,8 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
 	MPI_Status istat[8];
 	MPI_Offset disp;
     
+    char data[100];
+    
     int nx_out = NcubeX+1;
 	int ny_out = NcubeY+1;
 	int nz_out = 1;
@@ -149,15 +151,17 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
     // --------------------------------------------------- //
     // -------------------- Grid file -------------------- //
     
+    sprintf(data,"BCMslice_%s"".x",slice_name);
+	
 	MPI_File fh0;
     
-    MPI_File_open( MPI_COMM_WORLD, slice_name,  MPI_MODE_RDWR | MPI_MODE_CREATE, MPI_INFO_NULL, &fh0 ) ; 
+    MPI_File_open( MPI_COMM_WORLD, data,  MPI_MODE_RDWR | MPI_MODE_CREATE, MPI_INFO_NULL, &fh0 ) ; 
 
     if (myid == idest) {
 
         FILE *fptr_xyz;
 
-        fptr_xyz = fopen(slice_name,"wb");
+        fptr_xyz = fopen(data,"wb");
 
         fwrite(&ncube_out, sizeof(int), 1,fptr_xyz);
 
@@ -237,9 +241,7 @@ double (*Zcnt)[Z_size] = new double[Ncube][Z_size]
     // ------------------------------------------------ //
     // -------------------- Q file -------------------- //
     
-    char data[100];
-    
-    sprintf(data,"qslice""%0.5d"".q",step);
+    sprintf(data,"qslice_%s_""%0.5d"".q",slice_name,step);
 	MPI_File fh1;
 
 	MPI_File_open( MPI_COMM_WORLD, data,  MPI_MODE_RDWR | MPI_MODE_CREATE, MPI_INFO_NULL, &fh1 ) ; 
