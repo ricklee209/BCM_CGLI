@@ -880,12 +880,51 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 			if (Rdir_eq[iicube] == 6) {
 
-				for (i = n_buffer; i <= nx; i++) {
+                
+                for (i = 0; i < n_buffer; i++) {
 					for (j = n_buffer; j <= ny; j++) {
 						for (k = 0; k < n_buffer; k++) {  
 
-							iL = (icube_send-1)*zone+(i-n_buffer)*NcubeY*n_buffer+(j-n_buffer)*n_buffer+k;
+							iL = (icube_send-1)*zone+i*NcubeY*n_buffer+(j-n_buffer)*n_buffer+k;
 							k0 = k;
+							
+							U1_[icube][i][j][k0][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i][j][k0][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i][j][k0][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i][j][k0][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i][j][k0][4] = recv_data_curr_eq[L5+iL];
+							
+							
+						}
+					}
+				}
+                
+                
+                for (i = nxx; i < nxx+n_buffer+1; i++) {
+					for (j = n_buffer; j <= ny; j++) {
+						for (k = 0; k < n_buffer; k++) {  
+
+							iL = (icube_send-1)*zone+(i-nxx)*NcubeY*n_buffer+(j-n_buffer)*n_buffer+k;
+                            k0 = k;
+							
+							U1_[icube][i][j][k0][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i][j][k0][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i][j][k0][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i][j][k0][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i][j][k0][4] = recv_data_curr_eq[L5+iL];
+							
+							
+						}
+					}
+				}
+                
+                
+                for (i = n_buffer; i <= nx; i++) {
+					for (j = 0; j < n_buffer; j++) {
+						for (k = 0; k < n_buffer; k++) {  
+
+							iL = (icube_send-1)*zone+(i-n_buffer)*n_buffer*n_buffer+j*n_buffer+k;
+                            k0 = k;
 							
 							U1_[icube][i][j][k0][0] = recv_data_curr_eq[L1+iL];
 							U1_[icube][i][j][k0][1] = recv_data_curr_eq[L2+iL];
@@ -896,7 +935,27 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 						}
 					}
 				}
+                
+                
+                for (i = n_buffer;i <= nx; i++) {
+					for (j = nyy; j < nyy+n_buffer+1; j++) {
+						for (k = 0; k < n_buffer; k++) {  
 
+							iL = (icube_send-1)*zone+(i-n_buffer)*n_buffer*n_buffer+(j-nyy)*n_buffer+k;
+                            k0 = k;
+							
+							U1_[icube][i][j][k0][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i][j][k0][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i][j][k0][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i][j][k0][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i][j][k0][4] = recv_data_curr_eq[L5+iL];
+							
+						}
+					}
+				}
+                
+                
+                
 			}    // ---- if (Rdir_eq[iicube] == 6)  ---- //
 
 // ------------------------------------- [Z+] direction ------------------------------------- //
@@ -906,11 +965,49 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 			else if (Rdir_eq[iicube] == 5) {
 
-				for (i = n_buffer; i <= nx; i++) {
+                for (i = 0; i < n_buffer; i++) {
 					for (j = n_buffer; j <= ny; j++) {
 						for (k = 0; k < n_buffer; k++) {  
+                
+							iL = (icube_send-1)*zone+i*NcubeY*n_buffer+(j-n_buffer)*n_buffer+k;
+							k0 = n_buffer+NcubeZ+k;
+							
+							
+							U1_[icube][i][j][k0][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i][j][k0][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i][j][k0][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i][j][k0][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i][j][k0][4] = recv_data_curr_eq[L5+iL];
+							
 
-							iL = (icube_send-1)*zone+(i-n_buffer)*NcubeY*n_buffer+(j-n_buffer)*n_buffer+k;
+						}
+					}
+				}
+                
+                for (i = nxx; i < nxx+n_buffer+1; i++) {
+					for (j = n_buffer; j <= ny; j++) {
+						for (k = 0; k < n_buffer; k++) {  
+               
+							iL = (icube_send-1)*zone+(i-nxx)*NcubeY*n_buffer+(j-n_buffer)*n_buffer+k;
+							k0 = n_buffer+NcubeZ+k;
+							
+							
+							U1_[icube][i][j][k0][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i][j][k0][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i][j][k0][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i][j][k0][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i][j][k0][4] = recv_data_curr_eq[L5+iL];
+							
+
+						}
+					}
+				}
+                
+                for (i = n_buffer; i <= nx; i++) {
+					for (j = 0; j < n_buffer; j++) {
+						for (k = 0; k < n_buffer; k++) {  
+               
+							iL = (icube_send-1)*zone+(i-n_buffer)*n_buffer*n_buffer+j*n_buffer+k;
 							k0 = n_buffer+NcubeZ+k;
 							
 							
@@ -923,6 +1020,26 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 						}
 					}
 				}
+                
+                for (i = n_buffer;i <= nx; i++) {
+					for (j = nyy; j < nyy+n_buffer+1; j++) {
+						for (k = 0; k < n_buffer; k++) {  
+               
+							iL = (icube_send-1)*zone+(i-n_buffer)*n_buffer*n_buffer+(j-nyy)*n_buffer+k;
+							k0 = n_buffer+NcubeZ+k;
+							
+							
+							U1_[icube][i][j][k0][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i][j][k0][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i][j][k0][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i][j][k0][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i][j][k0][4] = recv_data_curr_eq[L5+iL];
+							
+
+						}
+					}
+				}
+
 
 			}    // ---- else if (Rdir_eq[iicube] == 5)  ---- //
 
@@ -933,11 +1050,68 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 			else if (Rdir_eq[iicube] == 4) {
 
-				for (i = n_buffer; i <= nx; i++) {
+                
+                
+				for (i = 0; i < n_buffer; i++) {
 					for (j = 0; j < n_buffer; j++) {
 						for (k = n_buffer; k <= nz; k++) {  
 
-							iL = (icube_send-1)*zone+(i-n_buffer)*n_buffer*NcubeZ+j*NcubeZ+(k-n_buffer);
+							iL = (icube_send-1)*zone+i*n_buffer*NcubeZ+j*NcubeZ+k;
+							j0 = j;
+							
+							U1_[icube][i][j0][k][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i][j0][k][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i][j0][k][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i][j0][k][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i][j0][k][4] = recv_data_curr_eq[L5+iL];
+                            
+						}
+					}
+				}
+                
+                
+               for (i = nxx; i < nxx+n_buffer+1; i++) {
+					for (j = 0; j < n_buffer; j++) {
+						for (k = n_buffer; k <= nz; k++) {  
+
+							iL = (icube_send-1)*zone+(i-nxx)*n_buffer*NcubeZ+j*NcubeZ+k;
+							j0 = j;
+							
+							U1_[icube][i][j0][k][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i][j0][k][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i][j0][k][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i][j0][k][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i][j0][k][4] = recv_data_curr_eq[L5+iL];
+							
+						}
+					}
+				}
+                
+                
+                
+                for (i = n_buffer; i <= nx; i++) {
+					for (j = 0; j < n_buffer; j++) {
+						for (k = 0; k < n_buffer; k++) {  
+
+							iL = (icube_send-1)*zone+(i-n_buffer)*n_buffer*n_buffer+j*n_buffer+k;
+							j0 = j;
+							
+							U1_[icube][i][j0][k][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i][j0][k][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i][j0][k][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i][j0][k][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i][j0][k][4] = recv_data_curr_eq[L5+iL];
+							
+						}
+					}
+				}
+                
+                
+                for (i = nxx; i < nxx+n_buffer+1; i++) {
+					for (j = 0; j < n_buffer; j++) {
+						for (k = n_buffer; k <= nz; k++) {  
+
+							iL = (icube_send-1)*zone+(i-nxx)*n_buffer*NcubeZ+j*NcubeZ+k;
 							j0 = j;
 							
 							U1_[icube][i][j0][k][0] = recv_data_curr_eq[L1+iL];
@@ -960,11 +1134,67 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 			else if (Rdir_eq[iicube] == 3) {
 
-				for (i = n_buffer; i <= nx; i++) {
+                
+                for (i = 0; i < n_buffer; i++) {
 					for (j = 0; j < n_buffer; j++) {
 						for (k = n_buffer; k <= nz; k++) {  
 
-							iL = (icube_send-1)*zone+(i-n_buffer)*n_buffer*NcubeZ+j*NcubeZ+(k-n_buffer);
+							iL = (icube_send-1)*zone+i*n_buffer*NcubeZ+j*NcubeZ+k;
+							j0 = n_buffer+NcubeY+j;
+							
+							U1_[icube][i][j0][k][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i][j0][k][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i][j0][k][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i][j0][k][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i][j0][k][4] = recv_data_curr_eq[L5+iL];
+							
+						}
+					}
+				}
+                
+                
+               for (i = nxx; i < nxx+n_buffer+1; i++) {
+					for (j = 0; j < n_buffer; j++) {
+						for (k = n_buffer; k <= nz; k++) {  
+
+							iL = (icube_send-1)*zone+(i-nxx)*n_buffer*NcubeZ+j*NcubeZ+k;
+							j0 = n_buffer+NcubeY+j;
+							
+							U1_[icube][i][j0][k][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i][j0][k][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i][j0][k][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i][j0][k][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i][j0][k][4] = recv_data_curr_eq[L5+iL];
+							
+						}
+					}
+				}
+                
+                
+                
+                for (i = n_buffer; i <= nx; i++) {
+					for (j = 0; j < n_buffer; j++) {
+						for (k = 0; k < n_buffer; k++) {  
+
+							iL = (icube_send-1)*zone+(i-n_buffer)*n_buffer*n_buffer+j*n_buffer+k;
+							j0 = n_buffer+NcubeY+j;
+							
+							U1_[icube][i][j0][k][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i][j0][k][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i][j0][k][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i][j0][k][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i][j0][k][4] = recv_data_curr_eq[L5+iL];
+							
+						}
+					}
+				}
+                
+                
+                for (i = nxx; i < nxx+n_buffer+1; i++) {
+					for (j = 0; j < n_buffer; j++) {
+						for (k = n_buffer; k <= nz; k++) {  
+
+							iL = (icube_send-1)*zone+(i-nxx)*n_buffer*NcubeZ+j*NcubeZ+k;
 							j0 = n_buffer+NcubeY+j;
 							
 							U1_[icube][i][j0][k][0] = recv_data_curr_eq[L1+iL];
@@ -977,6 +1207,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
 
+
 			}    // ---- else if (Rdir_eq[iicube] == 3) ---- //
 
 
@@ -987,11 +1218,13 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 			else if (Rdir_eq[iicube] == 2) {
 
+                
+                
 				for (i = 0; i < n_buffer; i++) {
-					for (j = n_buffer; j <= ny; j++) {
+					for (j = 0; j < n_buffer; j++) {
 						for (k = n_buffer; k <= nz; k++) {  
 
-							iL = (icube_send-1)*zone+i*NcubeY*NcubeZ+(j-n_buffer)*NcubeZ+(k-n_buffer);
+							iL = (icube_send-1)*zone+i*n_buffer*NcubeZ+j*NcubeZ+(k-n_buffer);
 							i0 = i;
 							
 							U1_[icube][i0][j][k][0] = recv_data_curr_eq[L1+iL];
@@ -1003,7 +1236,61 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 						}
 					}
 				}
+                
+                
+                for (i = 0; i < n_buffer; i++) {
+					for (j = nyy; j < nyy+n_buffer+1; j++) {
+						for (k = n_buffer; k <= nz; k++) {  
 
+							iL = (icube_send-1)*zone+i*n_buffer*NcubeZ+(j-nyy)*NcubeZ+(k-n_buffer);
+							i0 = i;
+							
+							U1_[icube][i0][j][k][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i0][j][k][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i0][j][k][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i0][j][k][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i0][j][k][4] = recv_data_curr_eq[L5+iL];
+							
+						}
+					}
+				}
+                
+                
+                for (i = 0; i < n_buffer; i++) {
+					for (j = n_buffer; j <= ny; j++) {
+						for (k = 0; k < n_buffer; k++) {  
+
+							iL = (icube_send-1)*zone+i*NcubeY*n_buffer+(j-n_buffer)*n_buffer+k;
+							i0 = i;
+							
+							U1_[icube][i0][j][k][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i0][j][k][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i0][j][k][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i0][j][k][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i0][j][k][4] = recv_data_curr_eq[L5+iL];
+							
+						}
+					}
+				}
+                
+                for (i = 0; i < n_buffer; i++) {
+					for (j = n_buffer; j <= ny; j++) {
+						for (k = nzz; k < nzz+n_buffer+1; k++) {  
+
+							iL = (icube_send-1)*zone+i*NcubeY*n_buffer+(j-n_buffer)*n_buffer+k;
+							i0 = i;
+							
+							U1_[icube][i0][j][k][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i0][j][k][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i0][j][k][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i0][j][k][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i0][j][k][4] = recv_data_curr_eq[L5+iL];
+							
+						}
+					}
+				}
+                
+                
 			}    // ---- else if (Rdir_eq[iicube] == 2) ---- //
 
 
@@ -1014,11 +1301,64 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 			else {
 
-				for (i = 0; i < n_buffer; i++) {
-					for (j = n_buffer; j <= ny; j++) {
+                
+                for (i = 0; i < n_buffer; i++) {
+					for (j = 0; j < n_buffer; j++) {
 						for (k = n_buffer; k <= nz; k++) {  
 
-							iL = (icube_send-1)*zone+i*NcubeY*NcubeZ+(j-n_buffer)*NcubeZ+(k-n_buffer);
+							iL = (icube_send-1)*zone+i*n_buffer*NcubeZ+j*NcubeZ+(k-n_buffer);
+							i0 = n_buffer+NcubeX+i;
+							
+							U1_[icube][i0][j][k][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i0][j][k][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i0][j][k][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i0][j][k][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i0][j][k][4] = recv_data_curr_eq[L5+iL];
+						}
+					}
+				}
+                
+                
+                for (i = 0; i < n_buffer; i++) {
+					for (j = nyy; j < nyy+n_buffer+1; j++) {
+						for (k = n_buffer; k <= nz; k++) {  
+
+							iL = (icube_send-1)*zone+i*n_buffer*NcubeZ+(j-nyy)*NcubeZ+(k-n_buffer);
+							i0 = n_buffer+NcubeX+i;
+							
+							U1_[icube][i0][j][k][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i0][j][k][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i0][j][k][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i0][j][k][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i0][j][k][4] = recv_data_curr_eq[L5+iL];
+							
+						}
+					}
+				}
+                
+                
+                for (i = 0; i < n_buffer; i++) {
+					for (j = n_buffer; j <= ny; j++) {
+						for (k = 0; k < n_buffer; k++) {  
+
+							iL = (icube_send-1)*zone+i*NcubeY*n_buffer+(j-n_buffer)*n_buffer+k;
+							i0 = n_buffer+NcubeX+i;
+							
+							U1_[icube][i0][j][k][0] = recv_data_curr_eq[L1+iL];
+							U1_[icube][i0][j][k][1] = recv_data_curr_eq[L2+iL];
+							U1_[icube][i0][j][k][2] = recv_data_curr_eq[L3+iL];
+							U1_[icube][i0][j][k][3] = recv_data_curr_eq[L4+iL];
+							U1_[icube][i0][j][k][4] = recv_data_curr_eq[L5+iL];
+							
+						}
+					}
+				}
+                
+                for (i = 0; i < n_buffer; i++) {
+					for (j = n_buffer; j <= ny; j++) {
+						for (k = nzz; k < nzz+n_buffer+1; k++) {  
+
+							iL = (icube_send-1)*zone+i*NcubeY*n_buffer+(j-n_buffer)*n_buffer+k;
 							i0 = n_buffer+NcubeX+i;
 							
 							U1_[icube][i0][j][k][0] = recv_data_curr_eq[L1+iL];
@@ -1041,8 +1381,6 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 		
 	}    // ---- for (icpu_neig_eq = 0;  icpu_neig_eq < ncpu_eq; icpu_neig_eq++) ---- //
 
-	
-	
 
 	for (icpu_neig_eq = 0;  icpu_neig_eq < ncpu_eq; icpu_neig_eq++) {
 
