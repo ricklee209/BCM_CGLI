@@ -110,6 +110,67 @@ int (*wallcube) = new int[Ncube]
  );
 
 
+void BCM_Interface_EDGE
+(
+// ================================================================================ //
+int myid,
+int ncube,
+
+int mPI_Nadj,
+
+int ncpu_eq, 
+
+int max_nei_eq,
+
+int nadjX_eq, 
+int nadjY_eq, 
+int nadjZ_eq,
+
+
+int (*rank_map)[MPI_Ncube] = new int[2][MPI_Ncube],
+
+int (*MPI_cpu) = new int[MPI_Nadj],
+int (*MPI_cube) = new int[MPI_Nadj],
+
+int (*MPI_cpu_adj) = new int[MPI_Nadj],
+int (*MPI_cube_adj) = new int[MPI_Nadj],
+
+int (*MPI_direction) = new int[MPI_Nadj],
+int (*MPI_interface) = new int[MPI_Nadj],
+
+int (*neighbor_cpu_eq) = new int[Ncpu_eq],
+int (*Ncube_Ncpu_eq) = new int[Ncpu_eq], 
+
+int (*Scube_Ncpu_eq) = new int[Max_nei_eq+1],
+int (*Rcube_Ncpu_eq) = new int[Max_nei_eq+1],
+
+double (*send_data_curr_eq) = new double[5*NcubeX*NcubeY*n_buffer*Max_nei_eq+1],
+double (*recv_data_curr_eq) = new double[5*NcubeX*NcubeY*n_buffer*Max_nei_eq+1],
+
+double (*send_data_neig_eq) = new double[5*NcubeX*NcubeY*n_buffer*Max_nei_eq+1],
+double (*recv_data_neig_eq) = new double[5*NcubeX*NcubeY*n_buffer*Max_nei_eq+1],
+
+int (*Sdir_eq) = new int[Max_nei_eq+1],
+int (*Rdir_eq) = new int[Max_nei_eq+1],
+
+
+int (*ist_eq) = new int[Ncpu_eq],
+
+
+int (*csl) = new int[Ncube],
+
+int (*adj_number)[5][7] = new int[Ncube][5][7],
+
+int (*adjX_eq) = new int[Ncube],
+int (*adjY_eq) = new int[Ncube],
+int (*adjZ_eq) = new int[Ncube],
+
+
+double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][Z_size][Ndim]
+
+// ================================================================================ //
+);
+
 void BCM_Immersed_boundary
 (
 // ================================================================================ //

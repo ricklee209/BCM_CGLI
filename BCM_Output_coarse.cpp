@@ -53,7 +53,7 @@ double (*filter)[11][X_size][Y_size][Z_size][Ndim] = new double[Ncube][11][X_siz
 	MPI_Status istat[8];
 	MPI_Offset disp;
     
-    int CR_switch = 2;
+    int CR_switch = 1;
 
 	
 	int nx_out = NcubeX/CR_switch+1;
