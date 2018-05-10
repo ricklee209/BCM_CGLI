@@ -1,4 +1,4 @@
-OBJS = main.o BCM_Grid.o BCM_Immersed_boundary.o BCM_Initial_condition.o BCM_Interface_table.o BCM_Interface.o \
+OBJS = main.o BCM_Grid.o BCM_Immersed_boundary.o BCM_Initial_condition.o BCM_Interface_table.o BCM_Interface.o BCM_Interface_EDGE.o\
 BCM_FWS_Interface.o BCM_Reading_IBM.o \
 BCM_Ghostcell_minus.o BCM_Ghostcell_plus.o BCM_Ghostcell_minus_Tem.o BCM_Ghostcell_plus_Tem.o \
 BCM_X_boundary_condition.o BCM_Y_boundary_condition.o BCM_Z_boundary_condition.o \
@@ -31,6 +31,8 @@ BCM_Initial_condition.o: $(HEAD) Pre_selection.h
 BCM_Interface_table.o: $(HEAD)
 
 BCM_Interface.o: $(HEAD) 
+
+BCM_Interface_EDGE.o: $(HEAD) 
 
 BCM_FWS_Interface.o: $(HEAD) 
 
