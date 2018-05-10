@@ -53,11 +53,11 @@ int (*Ncube_Ncpu_eq) = new int[Ncpu_eq],
 int (*Scube_Ncpu_eq) = new int[Max_nei_eq+1],
 int (*Rcube_Ncpu_eq) = new int[Max_nei_eq+1],
 
-double (*send_data_curr_eq) = new double[5*NcubeX*NcubeY*n_buffer*Max_nei_eq+1],
-double (*recv_data_curr_eq) = new double[5*NcubeX*NcubeY*n_buffer*Max_nei_eq+1],
+double (*send_data_curr_eq) = new double[5*NcubeX*n_buffer*n_buffer*4*Max_nei_eq+1],
+double (*recv_data_curr_eq) = new double[5*NcubeX*n_buffer*n_buffer*4*Max_nei_eq+1],
 
-double (*send_data_neig_eq) = new double[5*NcubeX*NcubeY*n_buffer*Max_nei_eq+1],
-double (*recv_data_neig_eq) = new double[5*NcubeX*NcubeY*n_buffer*Max_nei_eq+1],
+double (*send_data_neig_eq) = new double[5*NcubeX*n_buffer*n_buffer*4*Max_nei_eq+1],
+double (*recv_data_neig_eq) = new double[5*NcubeX*n_buffer*n_buffer*4*Max_nei_eq+1],
 
 int (*Sdir_eq) = new int[Max_nei_eq+1],
 int (*Rdir_eq) = new int[Max_nei_eq+1],
@@ -106,6 +106,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 	int L1, L2, L3, L4, L5;
 
 	int zone = NcubeX*n_buffer*n_buffer*4;
+    
+    int subzone = NcubeX*n_buffer*n_buffer*5;
 
 	
 	int index;
@@ -172,6 +174,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+subzone;
                 
                 for (i = nxx; i < nxx+n_buffer+1; i++) {
 					for (j = n_buffer; j <= ny; j++) {
@@ -190,6 +193,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 						}
 					}
 				}
+                
+                iL = iL+2*subzone;
                 
                 
                 for (i = n_buffer; i <= nx; i++) {
@@ -210,6 +215,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+3*subzone;
                 
                 for (i = n_buffer;i <= nx; i++) {
 					for (j = nyy; j < nyy+n_buffer+1; j++) {
@@ -261,6 +267,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+subzone;
+                
                 for (i = nxx; i < nxx+n_buffer+1; i++) {
 					for (j = n_buffer; j <= ny; j++) {
 						for (k = 0; k < n_buffer; k++) {  
@@ -280,6 +288,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+2*subzone;
+                
                 for (i = n_buffer; i <= nx; i++) {
 					for (j = 0; j < n_buffer; j++) {
 						for (k = 0; k < n_buffer; k++) {  
@@ -298,6 +308,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 						}
 					}
 				}
+                
+                iL = iL+3*subzone;
                 
                 for (i = n_buffer;i <= nx; i++) {
 					for (j = nyy; j < nyy+n_buffer+1; j++) {
@@ -349,6 +361,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+subzone;
+                
                 
                for (i = nxx; i < nxx+n_buffer+1; i++) {
 					for (j = 0; j < n_buffer; j++) {
@@ -368,6 +382,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 				}
                 
                 
+                iL = iL+2*subzone;
+                
                 
                 for (i = n_buffer; i <= nx; i++) {
 					for (j = 0; j < n_buffer; j++) {
@@ -386,6 +402,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+3*subzone;
                 
                 for (i = nxx; i < nxx+n_buffer+1; i++) {
 					for (j = 0; j < n_buffer; j++) {
@@ -435,6 +452,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+subzone;
                 
                for (i = nxx; i < nxx+n_buffer+1; i++) {
 					for (j = 0; j < n_buffer; j++) {
@@ -453,7 +471,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
-                
+                iL = iL+2*subzone;
                 
                 for (i = n_buffer; i <= nx; i++) {
 					for (j = 0; j < n_buffer; j++) {
@@ -472,6 +490,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+3*subzone;
                 
                 for (i = nxx; i < nxx+n_buffer+1; i++) {
 					for (j = 0; j < n_buffer; j++) {
@@ -521,6 +540,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+subzone;
                 
                 for (i = 0; i < n_buffer; i++) {
 					for (j = nyy; j < nyy+n_buffer+1; j++) {
@@ -539,6 +559,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+2*subzone;
                 
                 for (i = 0; i < n_buffer; i++) {
 					for (j = n_buffer; j <= ny; j++) {
@@ -556,6 +577,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 						}
 					}
 				}
+                
+                iL = iL+3*subzone;
                 
                 for (i = 0; i < n_buffer; i++) {
 					for (j = n_buffer; j <= ny; j++) {
@@ -603,6 +626,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+subzone;
                 
                 for (i = 0; i < n_buffer; i++) {
 					for (j = nyy; j < nyy+n_buffer+1; j++) {
@@ -621,6 +645,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+2*subzone;
                 
                 for (i = 0; i < n_buffer; i++) {
 					for (j = n_buffer; j <= ny; j++) {
@@ -638,6 +663,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 						}
 					}
 				}
+                
+                iL = iL+3*subzone;
                 
                 for (i = 0; i < n_buffer; i++) {
 					for (j = n_buffer; j <= ny; j++) {
@@ -1130,6 +1157,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+subzone;
                 
                 for (i = nxx; i < nxx+n_buffer+1; i++) {
 					for (j = n_buffer; j <= ny; j++) {
@@ -1149,6 +1177,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+2*subzone;
                 
                 for (i = n_buffer; i <= nx; i++) {
 					for (j = 0; j < n_buffer; j++) {
@@ -1167,6 +1196,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+3*subzone;
                 
                 for (i = n_buffer;i <= nx; i++) {
 					for (j = nyy; j < nyy+n_buffer+1; j++) {
@@ -1215,6 +1245,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+subzone;
+                
                 for (i = nxx; i < nxx+n_buffer+1; i++) {
 					for (j = n_buffer; j <= ny; j++) {
 						for (k = 0; k < n_buffer; k++) {  
@@ -1234,6 +1266,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+2*subzone;
+                
                 for (i = n_buffer; i <= nx; i++) {
 					for (j = 0; j < n_buffer; j++) {
 						for (k = 0; k < n_buffer; k++) {  
@@ -1251,6 +1285,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 						}
 					}
 				}
+                
+                iL = iL+3*subzone;
                 
                 for (i = n_buffer;i <= nx; i++) {
 					for (j = nyy; j < nyy+n_buffer+1; j++) {
@@ -1300,6 +1336,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+subzone;
                 
                for (i = nxx; i < nxx+n_buffer+1; i++) {
 					for (j = 0; j < n_buffer; j++) {
@@ -1318,7 +1355,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
-                
+                iL = iL+2*subzone;
                 
                 for (i = n_buffer; i <= nx; i++) {
 					for (j = 0; j < n_buffer; j++) {
@@ -1337,6 +1374,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+3*subzone;
                 
                 for (i = nxx; i < nxx+n_buffer+1; i++) {
 					for (j = 0; j < n_buffer; j++) {
@@ -1383,6 +1421,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+subzone;
                 
                for (i = nxx; i < nxx+n_buffer+1; i++) {
 					for (j = 0; j < n_buffer; j++) {
@@ -1401,7 +1440,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
-                
+                iL = iL+2*subzone;
                 
                 for (i = n_buffer; i <= nx; i++) {
 					for (j = 0; j < n_buffer; j++) {
@@ -1420,6 +1459,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+3*subzone;
                 
                 for (i = nxx; i < nxx+n_buffer+1; i++) {
 					for (j = 0; j < n_buffer; j++) {
@@ -1468,6 +1508,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+subzone;
                 
                 for (i = 0; i < n_buffer; i++) {
 					for (j = nyy; j < nyy+n_buffer+1; j++) {
@@ -1486,6 +1527,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+2*subzone;
                 
                 for (i = 0; i < n_buffer; i++) {
 					for (j = n_buffer; j <= ny; j++) {
@@ -1503,6 +1545,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 						}
 					}
 				}
+                
+                iL = iL+3*subzone;
                 
                 for (i = 0; i < n_buffer; i++) {
 					for (j = n_buffer; j <= ny; j++) {
@@ -1549,6 +1593,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+subzone;
                 
                 for (i = 0; i < n_buffer; i++) {
 					for (j = nyy; j < nyy+n_buffer+1; j++) {
@@ -1567,6 +1612,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
+                iL = iL+2*subzone;
                 
                 for (i = 0; i < n_buffer; i++) {
 					for (j = n_buffer; j <= ny; j++) {
@@ -1584,6 +1630,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 						}
 					}
 				}
+                
+                iL = iL+3*subzone;
                 
                 for (i = 0; i < n_buffer; i++) {
 					for (j = n_buffer; j <= ny; j++) {
