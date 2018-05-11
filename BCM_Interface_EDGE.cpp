@@ -383,11 +383,11 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
-                for (i = nxx; i < nxx+n_buffer+1; i++) {
-					for (j = 0; j < n_buffer; j++) {
-						for (k = n_buffer; k <= nz; k++) {  
+                for (i = n_buffer; i <= nx; i++) {
+                    for (j = 0; j < n_buffer; j++) {
+                        for (k = nzz; k < nzz+n_buffer+1; k++) {  
 
-							iL = 3*subzone+(icube_send-1)*zone+(i-nxx)*n_buffer*NcubeZ+j*NcubeZ+(k-n_buffer);
+							iL = 3*subzone+(icube_send-1)*zone+(i-n_buffer)*n_buffer*n_buffer+j*n_buffer+(k-nzz);
 							j2 = NcubeY+j;
 							
 							send_data_curr_eq[L1+iL] = U1_[icube][i][j2][k][0];
@@ -465,11 +465,11 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
-                for (i = nxx; i < nxx+n_buffer+1; i++) {
-					for (j = 0; j < n_buffer; j++) {
-						for (k = n_buffer; k <= nz; k++) {  
+                for (i = n_buffer; i <= nx; i++) {
+                    for (j = 0; j < n_buffer; j++) {
+                        for (k = nzz; k < nzz+n_buffer+1; k++) {  
 
-							iL = 3*subzone+(icube_send-1)*zone+(i-nxx)*n_buffer*NcubeZ+j*NcubeZ+(k-n_buffer);
+							iL = 3*subzone+(icube_send-1)*zone+(i-n_buffer)*n_buffer*n_buffer+j*n_buffer+(k-nzz);
 							j2 = n_buffer+j;
 							
 							send_data_curr_eq[L1+iL] = U1_[icube][i][j2][k][0];
@@ -899,9 +899,9 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 			}
 		}
         
-        for (i = nxx; i < nxx+n_buffer+1; i++) {
-			for (j = 0; j < n_buffer; j++) {
-				for (k = n_buffer; k <= nz; k++) {  
+        for (i = n_buffer; i <= nx; i++) {
+            for (j = 0; j < n_buffer; j++) {
+                for (k = nzz; k < nzz+n_buffer+1; k++) {  
 
 					j0 = NcubeY+j;
 					j2 = j;
@@ -1319,11 +1319,11 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
-                for (i = nxx; i < nxx+n_buffer+1; i++) {
-					for (j = 0; j < n_buffer; j++) {
-						for (k = n_buffer; k <= nz; k++) {  
+                for (i = n_buffer; i <= nx; i++) {
+                    for (j = 0; j < n_buffer; j++) {
+                        for (k = nzz; k < nzz+n_buffer+1; k++) {  
 
-							iL = 3*subzone+(icube_send-1)*zone+(i-nxx)*n_buffer*NcubeZ+j*NcubeZ+(k-n_buffer);
+							iL = 3*subzone+(icube_send-1)*zone+(i-n_buffer)*n_buffer*n_buffer+j*n_buffer+(k-nzz);
 							j0 = j;
 							
 							U1_[icube][i][j0][k][0] = recv_data_curr_eq[L1+iL];
@@ -1398,11 +1398,11 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 					}
 				}
                 
-                for (i = nxx; i < nxx+n_buffer+1; i++) {
-					for (j = 0; j < n_buffer; j++) {
-						for (k = n_buffer; k <= nz; k++) {  
+               for (i = n_buffer; i <= nx; i++) {
+                    for (j = 0; j < n_buffer; j++) {
+                        for (k = nzz; k < nzz+n_buffer+1; k++) {  
 
-							iL = 3*subzone+(icube_send-1)*zone+(i-nxx)*n_buffer*NcubeZ+j*NcubeZ+(k-n_buffer);
+							iL = 3*subzone+(icube_send-1)*zone+(i-n_buffer)*n_buffer*n_buffer+j*n_buffer+(k-nzz);
 							j0 = n_buffer+NcubeY+j;
 							
 							U1_[icube][i][j0][k][0] = recv_data_curr_eq[L1+iL];
