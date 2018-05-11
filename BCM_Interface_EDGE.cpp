@@ -107,7 +107,7 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 	int zone = NcubeX*n_buffer*n_buffer*4;
     
-    int subzone = NcubeX*n_buffer*n_buffer*5;
+    int subzone = NcubeX*n_buffer*n_buffer;
 
 	
 	int index;
