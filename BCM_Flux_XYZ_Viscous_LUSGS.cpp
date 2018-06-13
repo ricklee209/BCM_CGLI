@@ -530,7 +530,7 @@ double (*er) = new double[10]
 
         for (i = 2; i <= nx; i++) {
             for (j = 2; j <= ny; j++) {
-                for (k = 2; k <= nz; k++) {
+                for (k = 2; k <= 2; k++) {
 
 
 
@@ -3669,7 +3669,7 @@ double (*er) = new double[10]
                     Rk1 = Fabs[icube][i][j][k][0]+Rp1+Rf1;
                     Rk2 = Fabs[icube][i][j][k][1]+Rp2+Rf2+vF2;
                     Rk3 = Fabs[icube][i][j][k][2]+Rp3+Rf3+vF3;
-                    Rk4 = Fabs[icube][i][j][k][3]+Rp4+Rf4+vF4;
+                    Rk4 = 0.0;
                     Rk5 = Fabs[icube][i][j][k][4]+Rp5+Rf5+vF5;
                     
 
@@ -3734,7 +3734,7 @@ double (*er) = new double[10]
                     Rku1[icube][i][j][k][0] = MR1;
                     Rku1[icube][i][j][k][1] = MR2;
                     Rku1[icube][i][j][k][2] = MR3;
-                    Rku1[icube][i][j][k][3] = MR4;
+                    Rku1[icube][i][j][k][3] = 0.0;
                     Rku1[icube][i][j][k][4] = MR5;
                     
 
@@ -3938,6 +3938,30 @@ double (*er) = new double[10]
     #pragma omp barrier
     
     
+  #pragma omp parallel for private(IF,i,j,k,rho,P,U,V,W,T,rhoold,Uold,Vold,Wold,VVold,Pold,Told)reduction(+:e1,e2,e3,e4,e5)
+      
+      for (icube = 1; icube < ncube; icube++) {  
+
+          for (i = n_buffer ; i < nxx; i++) {
+              for (j = n_buffer; j < nyy; j++) {
+                  for (k = 3; k <= nzzz; k++) {
+
+                      U1p1[icube][i][j][k][0] = U1p1[icube][i][j][2][0];
+                      U1p1[icube][i][j][k][1] = U1p1[icube][i][j][2][1];
+                      U1p1[icube][i][j][k][2] = U1p1[icube][i][j][2][2];
+                      U1p1[icube][i][j][k][3] = U1p1[icube][i][j][2][3];
+                      U1p1[icube][i][j][k][4] = U1p1[icube][i][j][2][4];
+
+                  }
+              }
+          }
+          
+          
+      }
+    
+    
+    
+    
     
     BCM_Interface(myid,ncube,
 
@@ -4037,7 +4061,7 @@ double (*er) = new double[10]
 
             for (i = n_buffer; i <= nx; i++) {
                 for (j = n_buffer; j <= ny; j++) {
-                    for (k = n_buffer; k <= nz; k++) {
+                    for (k = n_buffer; k <= 2; k++) {
 
                         IF = FWS[icube][i][j][k];
                         
@@ -4054,7 +4078,7 @@ double (*er) = new double[10]
                         beta = max(VV/C,e);
                         
                         Sx = sqrt(U*U*(beta-1)*(beta-1)+4*beta*C);
-                        Ux = 0.5*((beta+1)*fabs(U)+Sx) + 2*K*mu_L/Pr_L/rho/dx;
+                        Ux = 0.5*((beta+1)*fabs(U)+Sx);
                         
                         d11 = fabs(Ux);
                         d22 = d11;
@@ -4092,7 +4116,7 @@ double (*er) = new double[10]
                         beta = max(VV/C,e);
                         
                         Sy = sqrt(V*V*(beta-1)*(beta-1)+4*beta*C);
-                        Uy = 0.5*((beta+1)*fabs(V)+Sy) + 2*K*mu_L/Pr_L/rho/dy;
+                        Uy = 0.5*((beta+1)*fabs(V)+Sy);
                         
                         d11 = fabs(Uy);
                         d22 = d11;
@@ -4130,7 +4154,7 @@ double (*er) = new double[10]
                         beta = max(VV/C,e);
                         
                         Sz = sqrt(W*W*(beta-1)*(beta-1)+4*beta*C);
-                        Uz = 0.5*((beta+1)*fabs(W)+Sz) + 2*K*mu_L/Pr_L/rho/dz;
+                        Uz = 0.5*((beta+1)*fabs(W)+Sz);
                         
                         d11 = fabs(Uz);
                         d22 = d11;
@@ -4319,6 +4343,31 @@ double (*er) = new double[10]
 
         #pragma omp barrier
         
+          
+                
+        #pragma omp parallel for private(IF,i,j,k,rho,P,U,V,W,T,rhoold,Uold,Vold,Wold,VVold,Pold,Told)reduction(+:e1,e2,e3,e4,e5)
+            
+            for (icube = 1; icube < ncube; icube++) {  
+
+                for (i = n_buffer ; i < nxx; i++) {
+                    for (j = n_buffer; j < nyy; j++) {
+                        for (k = 3; k <= nzzz; k++) {
+
+                            U1p1[icube][i][j][k][0] = U1p1[icube][i][j][2][0];
+                            U1p1[icube][i][j][k][1] = U1p1[icube][i][j][2][1];
+                            U1p1[icube][i][j][k][2] = U1p1[icube][i][j][2][2];
+                            U1p1[icube][i][j][k][3] = U1p1[icube][i][j][2][3];
+                            U1p1[icube][i][j][k][4] = U1p1[icube][i][j][2][4];
+
+                        }
+                    }
+                }
+                
+                
+            }
+          
+          
+          
         // =================================  Lower part end  ================================= //
 
 
@@ -4365,7 +4414,7 @@ double (*er) = new double[10]
 
             for (i = nx; i >= n_buffer; i--) {
                 for (j = ny; j >= n_buffer; j--) {
-                    for (k = nz; k >= n_buffer; k--) {
+                    for (k = 2; k >= n_buffer; k--) {
                         
                         IF = FWS[icube][i][j][k];
                         
@@ -4382,7 +4431,7 @@ double (*er) = new double[10]
                         beta = max(VV/C,e);
                         
                         Sx = sqrt(U*U*(beta-1)*(beta-1)+4*beta*C);
-                        Ux = 0.5*((beta+1)*fabs(U)+Sx) + 2*K*mu_L/Pr_L/rho/dx;
+                        Ux = 0.5*((beta+1)*fabs(U)+Sx);
                         
                         d11 = fabs(Ux);
                         d22 = d11;
@@ -4425,7 +4474,7 @@ double (*er) = new double[10]
                         beta = max(VV/C,e);
                         
                         Sy = sqrt(V*V*(beta-1)*(beta-1)+4*beta*C);
-                        Uy = 0.5*((beta+1)*fabs(V)+Sy) + 2*K*mu_L/Pr_L/rho/dy;
+                        Uy = 0.5*((beta+1)*fabs(V)+Sy);
                         
                         d11 = fabs(Uy);
                         d22 = d11;
@@ -4469,7 +4518,7 @@ double (*er) = new double[10]
                         beta = max(VV/C,e);
                         
                         Sz = sqrt(W*W*(beta-1)*(beta-1)+4*beta*C);
-                        Uz = 0.5*((beta+1)*fabs(W)+Sz) + 2*K*mu_L/Pr_L/rho/dz;
+                        Uz = 0.5*((beta+1)*fabs(W)+Sz);
                         
                         d11 = fabs(Uz);
                         d22 = d11;
@@ -4663,6 +4712,32 @@ double (*er) = new double[10]
         }    // ---- for (icube = 1; icube < ncube; icube++) ---- //
 
         #pragma omp barrier
+          
+          
+          
+                  
+        #pragma omp parallel for private(IF,i,j,k,rho,P,U,V,W,T,rhoold,Uold,Vold,Wold,VVold,Pold,Told)reduction(+:e1,e2,e3,e4,e5)
+            
+            for (icube = 1; icube < ncube; icube++) {  
+
+                for (i = n_buffer ; i < nxx; i++) {
+                    for (j = n_buffer; j < nyy; j++) {
+                        for (k = 3; k <= nzzz; k++) {
+
+                            U1p2[icube][i][j][k][0] = U1p2[icube][i][j][2][0];
+                            U1p2[icube][i][j][k][1] = U1p2[icube][i][j][2][1];
+                            U1p2[icube][i][j][k][2] = U1p2[icube][i][j][2][2];
+                            U1p2[icube][i][j][k][3] = U1p2[icube][i][j][2][3];
+                            U1p2[icube][i][j][k][4] = U1p2[icube][i][j][2][4];
+
+                        }
+                    }
+                }
+                
+                
+            }
+          
+          
         
         
         if (isweep < nsweep) {
@@ -4732,7 +4807,7 @@ double (*er) = new double[10]
 
         for (i = n_buffer ; i < nxx; i++) {
             for (j = n_buffer; j < nyy; j++) {
-                for (k = n_buffer; k < nzz; k++) {
+                for (k = n_buffer; k <= 2; k++) {
 
                     IF = FWS[icube][i][j][k];
                     
@@ -4789,6 +4864,32 @@ double (*er) = new double[10]
     
     
 #pragma omp barrier
+    
+    
+    
+    
+#pragma omp parallel for private(IF,i,j,k,rho,P,U,V,W,T,rhoold,Uold,Vold,Wold,VVold,Pold,Told)reduction(+:e1,e2,e3,e4,e5)
+    
+    for (icube = 1; icube < ncube; icube++) {  
+
+        for (i = n_buffer ; i < nxx; i++) {
+            for (j = n_buffer; j < nyy; j++) {
+                for (k = 3; k <= nzzz; k++) {
+
+                    U1_[icube][i][j][k][0] = U1_[icube][i][j][2][0];
+                    U1_[icube][i][j][k][1] = U1_[icube][i][j][2][1];
+                    U1_[icube][i][j][k][2] = U1_[icube][i][j][2][2];
+                    U1_[icube][i][j][k][3] = U1_[icube][i][j][2][3];
+                    U1_[icube][i][j][k][4] = U1_[icube][i][j][2][4];
+
+                }
+            }
+        }
+        
+        
+    }
+    
+    
 
 
 #pragma omp parallel for private(IF,i,j,k,rho,P,U,V,W,VV)
