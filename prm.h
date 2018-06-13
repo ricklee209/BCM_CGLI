@@ -21,7 +21,7 @@ double lambda_L = mu_L*Cv*K/Pr_L;
 #define MAX 100000000
 #define MIN -100000000
 
-#define minimum 0.0000001
+#define minimum 1.0e-12
 
 double psi = 0.0001;
 
@@ -29,9 +29,9 @@ double psi = 0.0001;
 
 double rho0 = 1.1842;
 
-double U0 = 10.0;
+double U0 = 69.0;
 
-double Uin = 10.0;
+double Uin = 69.0;
 
 double V0 = 0.;
 

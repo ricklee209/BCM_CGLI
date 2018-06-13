@@ -10,7 +10,7 @@
 // ---- ROEAMTP=5 : Roe modified by X. Li ---- //
 
 
-#define ROE 5
+#define ROE 3 
 
 
 // ---- limiter : limiter function ---- //
@@ -36,7 +36,7 @@
 
 // ---- 0 : no output coarse result ---- //
 // ---- 1 : output coarse result ---- //
-#define CR 1
+#define CR 0
 
 
 // ---- RK3NODT : 3rd Runge-Kutta ---- //
@@ -44,8 +44,7 @@
 // ---- DPLUSGS ---- //
 // ---- LUSGS ---- //
 
-#define LUSGS 
-
+#define LUSGS
 
 // ---- DTau : DT includes deltaTau ---- //
 // ---- DTau_CFL : CFL_number for deltaTau ---- //
@@ -53,7 +52,7 @@
 // ---- NODTau : DT doesn't include deltaTau (Aeroacoustic) ---- //
 // ---- DTauCAA : Can run Aeroacoustic ---- //
 
-#define DTau
+#define DTauCAA 
 #define DTau_CFL 1000
 
 
@@ -78,22 +77,22 @@
 
 
 // ---- Limiter function ---- //
-#define rho_limit 0.8
-#define rholimit  1.8
+#define rho_limit 0.5
+#define rholimit  1.5
 
-#define U_limit   -40.0
-#define Ulimit    120.0
+#define U_limit   -100.0
+#define Ulimit    200.0
 
-#define V_limit   -40.0
-#define Vlimit    120.0
+#define V_limit   -100.0
+#define Vlimit    200.0
 
-#define W_limit   -40.0
-#define Wlimit    120.0
+#define W_limit   -100.0
+#define Wlimit    200.0
 
-#define P_limit   101300*0.8
-#define Plimit    101300*1.2
-
-
+#define P_limit   101300*0.5
+#define Plimit    101300*2.0
 
 
-#define Char_D 0.1
+
+
+#define Char_D 4.5e-5 
