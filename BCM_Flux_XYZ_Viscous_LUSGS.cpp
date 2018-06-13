@@ -539,7 +539,7 @@ double (*er) = new double[10]
                     u1 = U1_[icube][i][j][k][0];
                     u2 = U1_[icube][i][j][k][1];
                     u3 = U1_[icube][i][j][k][2];
-                    u4 = U1_[icube][i][j][k][3];
+                    u4 = 0.0;
                     u5 = U1_[icube][i][j][k][4];
 
 
@@ -557,20 +557,20 @@ double (*er) = new double[10]
                     uu1 = U1[icube][i][j][k][0];
                     uu2 = U1[icube][i][j][k][1];
                     uu3 = U1[icube][i][j][k][2];
-                    uu4 = U1[icube][i][j][k][3];
+                    uu4 = 0.0;
                     uu5 = U1[icube][i][j][k][4];
 
                     u1q = U1q[icube][i][j][k][0];
                     u2q = U1q[icube][i][j][k][1];
                     u3q = U1q[icube][i][j][k][2];
-                    u4q = U1q[icube][i][j][k][3];
+                    u4q = 0.0;
                     u5q = U1q[icube][i][j][k][4];
 
                     
                     Rp1 = -(3*u1-4*uu1+u1q)/(2*deltaT);
                     Rp2 = -(3*u2-4*uu2+u2q)/(2*deltaT);
                     Rp3 = -(3*u3-4*uu3+u3q)/(2*deltaT);
-                    Rp4 = -(3*u4-4*uu4+u4q)/(2*deltaT);
+                    Rp4 = 0.0;
                     Rp5 = -(3*u5-4*uu5+u5q)/(2*deltaT);
 
                     #endif 
@@ -605,7 +605,7 @@ double (*er) = new double[10]
                         u1_k3 = U1_[icube][i][j][k-3][0];
                         u2_k3 = U1_[icube][i][j][k-3][1];
                         u3_k3 = U1_[icube][i][j][k-3][2];
-                        u4_k3 = U1_[icube][i][j][k-3][3];
+                        u4_k3 = 0.0;
                         u5_k3 = U1_[icube][i][j][k-3][4];
                         #ifdef Kcomputer
                         //}
@@ -617,26 +617,26 @@ double (*er) = new double[10]
                     u1_k2 = U1_[icube][i][j][k-2][0];
                     u2_k2 = U1_[icube][i][j][k-2][1];
                     u3_k2 = U1_[icube][i][j][k-2][2];
-                    u4_k2 = U1_[icube][i][j][k-2][3];
+                    u4_k2 = 0.0;
                     u5_k2 = U1_[icube][i][j][k-2][4];
 
                     
                     u1_k1 = U1_[icube][i][j][k-1][0];
                     u2_k1 = U1_[icube][i][j][k-1][1];
                     u3_k1 = U1_[icube][i][j][k-1][2];
-                    u4_k1 = U1_[icube][i][j][k-1][3];
+                    u4_k1 = 0.0;
                     u5_k1 = U1_[icube][i][j][k-1][4];
 
                     u1k1 = U1_[icube][i][j][k+1][0];
                     u2k1 = U1_[icube][i][j][k+1][1];
                     u3k1 = U1_[icube][i][j][k+1][2];
-                    u4k1 = U1_[icube][i][j][k+1][3];
+                    u4k1 = 0.0;
                     u5k1 = U1_[icube][i][j][k+1][4];
 
                     u1k2 = U1_[icube][i][j][k+2][0]; 
                     u2k2 = U1_[icube][i][j][k+2][1]; 
                     u3k2 = U1_[icube][i][j][k+2][2]; 
-                    u4k2 = U1_[icube][i][j][k+2][3]; 
+                    u4k2 = 0.0;
                     u5k2 = U1_[icube][i][j][k+2][4]; 
 
 
@@ -653,7 +653,7 @@ double (*er) = new double[10]
                         u1k3 = U1_[icube][i][j][k+3][0];
                         u2k3 = U1_[icube][i][j][k+3][1];
                         u3k3 = U1_[icube][i][j][k+3][2];
-                        u4k3 = U1_[icube][i][j][k+3][3];
+                        u4k3 = 0.0;
                         u5k3 = U1_[icube][i][j][k+3][4];
 
                         #ifdef Kcomputer
@@ -1432,7 +1432,7 @@ double (*er) = new double[10]
                     u1_i1 = U1_[icube][i-1][j][k][0];
                     u2_i1 = U1_[icube][i-1][j][k][1];
                     u3_i1 = U1_[icube][i-1][j][k][2];
-                    u4_i1 = U1_[icube][i-1][j][k][3];
+                    u4_i1 = 0.0;
                     u5_i1 = U1_[icube][i-1][j][k][4];
                     
                     
@@ -1440,7 +1440,7 @@ double (*er) = new double[10]
                     u1_i2 = U1_[icube][i-2][j][k][0];
                     u2_i2 = U1_[icube][i-2][j][k][1];
                     u3_i2 = U1_[icube][i-2][j][k][2];
-                    u4_i2 = U1_[icube][i-2][j][k][3];
+                    u4_i2 = 0.0;
                     u5_i2 = U1_[icube][i-2][j][k][4];
 
                     #ifdef Kcomputer
@@ -1454,7 +1454,7 @@ double (*er) = new double[10]
                         u1_i3 = U1_[icube][i-3][j][k][0];
                         u2_i3 = U1_[icube][i-3][j][k][1];
                         u3_i3 = U1_[icube][i-3][j][k][2];
-                        u4_i3 = U1_[icube][i-3][j][k][3];
+                        u4_i3 = 0.0;
                         u5_i3 = U1_[icube][i-3][j][k][4];
 
                         #ifdef Kcomputer
@@ -1467,14 +1467,14 @@ double (*er) = new double[10]
                     u1i1 = U1_[icube][i+1][j][k][0];
                     u2i1 = U1_[icube][i+1][j][k][1];
                     u3i1 = U1_[icube][i+1][j][k][2];
-                    u4i1 = U1_[icube][i+1][j][k][3];
+                    u4i1 = 0.0;
                     u5i1 = U1_[icube][i+1][j][k][4];
 
                     IFi2 = FWS[icube][i+2][j][k];
                     u1i2 = U1_[icube][i+2][j][k][0];
                     u2i2 = U1_[icube][i+2][j][k][1];
                     u3i2 = U1_[icube][i+2][j][k][2];
-                    u4i2 = U1_[icube][i+2][j][k][3];
+                    u4i2 = 0.0;
                     u5i2 = U1_[icube][i+2][j][k][4];
 
                     #ifdef Kcomputer
@@ -1487,7 +1487,7 @@ double (*er) = new double[10]
                         u1i3 = U1_[icube][i+3][j][k][0];
                         u2i3 = U1_[icube][i+3][j][k][1];
                         u3i3 = U1_[icube][i+3][j][k][2];
-                        u4i3 = U1_[icube][i+3][j][k][3];
+                        u4i3 = 0.0;
                         u5i3 = U1_[icube][i+3][j][k][4];
 
                         #ifdef Kcomputer
@@ -2262,14 +2262,14 @@ double (*er) = new double[10]
                     u1_j1 = U1_[icube][i][j-1][k][0];
                     u2_j1 = U1_[icube][i][j-1][k][1];
                     u3_j1 = U1_[icube][i][j-1][k][2];
-                    u4_j1 = U1_[icube][i][j-1][k][3];
+                    u4_j1 = 0.0;
                     u5_j1 = U1_[icube][i][j-1][k][4];
 
                     IF_j2 = FWS[icube][i][j-2][k];
                     u1_j2 = U1_[icube][i][j-2][k][0];
                     u2_j2 = U1_[icube][i][j-2][k][1];
                     u3_j2 = U1_[icube][i][j-2][k][2];
-                    u4_j2 = U1_[icube][i][j-2][k][3];
+                    u4_j2 = 0.0;
                     u5_j2 = U1_[icube][i][j-2][k][4];
 
                     #ifdef Kcomputer
@@ -2283,7 +2283,7 @@ double (*er) = new double[10]
                         u1_j3 = U1_[icube][i][j-3][k][0];
                         u2_j3 = U1_[icube][i][j-3][k][1];
                         u3_j3 = U1_[icube][i][j-3][k][2];
-                        u4_j3 = U1_[icube][i][j-3][k][3];
+                        u4_j3 = 0.0;
                         u5_j3 = U1_[icube][i][j-3][k][4];
 
                         #ifdef Kcomputer
@@ -2296,14 +2296,14 @@ double (*er) = new double[10]
                     u1j1 = U1_[icube][i][j+1][k][0];
                     u2j1 = U1_[icube][i][j+1][k][1];
                     u3j1 = U1_[icube][i][j+1][k][2];
-                    u4j1 = U1_[icube][i][j+1][k][3];
+                    u4j1 = 0.0;
                     u5j1 = U1_[icube][i][j+1][k][4];
 
                     IFj2 = FWS[icube][i][j+2][k];
                     u1j2 = U1_[icube][i][j+2][k][0];
                     u2j2 = U1_[icube][i][j+2][k][1];
                     u3j2 = U1_[icube][i][j+2][k][2];
-                    u4j2 = U1_[icube][i][j+2][k][3];
+                    u4j2 = 0.0;
                     u5j2 = U1_[icube][i][j+2][k][4];
 
                     #ifdef Kcomputer
@@ -2317,7 +2317,7 @@ double (*er) = new double[10]
                         u1j3 = U1_[icube][i][j+3][k][0];
                         u2j3 = U1_[icube][i][j+3][k][1];
                         u3j3 = U1_[icube][i][j+3][k][2];
-                        u4j3 = U1_[icube][i][j+3][k][3];
+                        u4j3 = 0.0;
                         u5j3 = U1_[icube][i][j+3][k][4];
 
                         #ifdef Kcomputer
@@ -3089,7 +3089,7 @@ double (*er) = new double[10]
                     irhoj = U1_[icube][i-1][j+1][k][0];
                     iUj = U1_[icube][i-1][j+1][k][1]/irhoj;
                     iVj = U1_[icube][i-1][j+1][k][2]/irhoj;
-                    iWj = U1_[icube][i-1][j+1][k][3]/irhoj;
+                    iWj = 0.0;
                     iPj = (U1_[icube][i-1][j+1][k][4]-0.5*irhoj*(iUj*iUj+iVj*iVj+iWj*iWj))*(K-1);
                     iTj = iPj/(irhoj*R);
 
@@ -3097,7 +3097,7 @@ double (*er) = new double[10]
                     irhok = U1_[icube][i-1][j][k+1][0];
                     iUk = U1_[icube][i-1][j][k+1][1]/irhok;
                     iVk = U1_[icube][i-1][j][k+1][2]/irhok;
-                    iWk = U1_[icube][i-1][j][k+1][3]/irhok;
+                    iWk = 0.0;
                     iPk = (U1_[icube][i-1][j][k+1][4]-0.5*irhok*(iUk*iUk+iVk*iVk+iWk*iWk))*(K-1);
                     iTk = iPk/(irhok*R);
 
@@ -3105,7 +3105,7 @@ double (*er) = new double[10]
                     jrhoi = U1_[icube][i+1][j-1][k][0];
                     jUi = U1_[icube][i+1][j-1][k][1]/jrhoi;
                     jVi = U1_[icube][i+1][j-1][k][2]/jrhoi;
-                    jWi = U1_[icube][i+1][j-1][k][3]/jrhoi;
+                    jWi = 0.0;
                     jPi = (U1_[icube][i+1][j-1][k][4]-0.5*jrhoi*(jUi*jUi+jVi*jVi+jWi*jWi))*(K-1);
                     jTi = jPi/(jrhoi*R);
 
@@ -3122,7 +3122,7 @@ double (*er) = new double[10]
                     jrhok = U1_[icube][i][j-1][k+1][0];
                     jUk = U1_[icube][i][j-1][k+1][1]/jrhok;
                     jVk = U1_[icube][i][j-1][k+1][2]/jrhok;
-                    jWk = U1_[icube][i][j-1][k+1][3]/jrhok;
+                    jWk = 0.0;
                     jPk = (U1_[icube][i][j-1][k+1][4]-0.5*jrhok*(jUk*jUk+jVk*jVk+jWk*jWk))*(K-1);
                     jTk = jPk/(jrhok*R);
 
@@ -3131,7 +3131,7 @@ double (*er) = new double[10]
                     krhoj = U1_[icube][i][j+1][k-1][0];
                     kUj = U1_[icube][i][j+1][k-1][1]/krhoj;
                     kVj = U1_[icube][i][j+1][k-1][2]/krhoj;
-                    kWj = U1_[icube][i][j+1][k-1][3]/krhoj;
+                    kWj = 0.0;
                     kPj = (U1_[icube][i][j+1][k-1][4]-0.5*krhoj*(kUj*kUj+kVj*kVj+kWj*kWj))*(K-1);
                     kTj = kPj/(krhoj*R);
 
@@ -3140,7 +3140,7 @@ double (*er) = new double[10]
                     ijrho = U1_[icube][i-1][j-1][k][0];
                     ijU = U1_[icube][i-1][j-1][k][1]/ijrho;
                     ijV = U1_[icube][i-1][j-1][k][2]/ijrho;
-                    ijW = U1_[icube][i-1][j-1][k][3]/ijrho;
+                    ijW = 0.0;
                     ijP = (U1_[icube][i-1][j-1][k][4]-0.5*ijrho*(ijU*ijU+ijV*ijV+ijW*ijW))*(K-1);
                     ijT = ijP/(ijrho*R);
 
@@ -3149,7 +3149,7 @@ double (*er) = new double[10]
                     jkrho = U1_[icube][i][j-1][k-1][0];
                     jkU = U1_[icube][i][j-1][k-1][1]/jkrho;
                     jkV = U1_[icube][i][j-1][k-1][2]/jkrho;
-                    jkW = U1_[icube][i][j-1][k-1][3]/jkrho;
+                    jkW = 0.0;
                     jkP = (U1_[icube][i][j-1][k-1][4]-0.5*jkrho*(jkU*jkU+jkV*jkV+jkW*jkW))*(K-1);
                     jkT = jkP/(jkrho*R);
 
@@ -3158,7 +3158,7 @@ double (*er) = new double[10]
                     ikrho = U1_[icube][i-1][j][k-1][0];
                     ikU = U1_[icube][i-1][j][k-1][1]/ikrho;
                     ikV = U1_[icube][i-1][j][k-1][2]/ikrho;
-                    ikW = U1_[icube][i-1][j][k-1][3]/ikrho;
+                    ikW = 0.0;
                     ikP = (U1_[icube][i-1][j][k-1][4]-0.5*ikrho*(ikU*ikU+ikV*ikV+ikW*ikW))*(K-1);
                     ikT = ikP/(ikrho*R);
 
@@ -3167,7 +3167,7 @@ double (*er) = new double[10]
                     rhoij = U1_[icube][i+1][j+1][k][0];
                     Uij = U1_[icube][i+1][j+1][k][1]/rhoij;
                     Vij = U1_[icube][i+1][j+1][k][2]/rhoij;
-                    Wij = U1_[icube][i+1][j+1][k][3]/rhoij;
+                    Wij = 0.0;
                     Pij = (U1_[icube][i+1][j+1][k][4]-0.5*rhoij*(Uij*Uij+Vij*Vij+Wij*Wij))*(K-1);
                     Tij = Pij/(rhoij*R);
 
@@ -3176,7 +3176,7 @@ double (*er) = new double[10]
                     rhoik = U1_[icube][i+1][j][k+1][0];
                     Uik = U1_[icube][i+1][j][k+1][1]/rhoik;
                     Vik = U1_[icube][i+1][j][k+1][2]/rhoik;
-                    Wik = U1_[icube][i+1][j][k+1][3]/rhoik;
+                    Wik = 0.0;
                     Pik = (U1_[icube][i+1][j][k+1][4]-0.5*rhoik*(Uik*Uik+Vik*Vik+Wik*Wik))*(K-1);
                     Tik = Pik/(rhoik*R);
 
@@ -3185,7 +3185,7 @@ double (*er) = new double[10]
                     rhojk = U1_[icube][i][j+1][k+1][0];
                     Ujk = U1_[icube][i][j+1][k+1][1]/rhojk;
                     Vjk = U1_[icube][i][j+1][k+1][2]/rhojk;
-                    Wjk = U1_[icube][i][j+1][k+1][3]/rhojk;
+                    Wjk = 0.0;
                     Pjk = (U1_[icube][i][j+1][k+1][4]-0.5*rhojk*(Ujk*Ujk+Vjk*Vjk+Wjk*Wjk))*(K-1);
                     Tjk = Pjk/(rhojk*R);
 
@@ -4748,7 +4748,7 @@ double (*er) = new double[10]
                     P = Pold + U1p2[icube][i][j][k][0];
                     U = Uold + U1p2[icube][i][j][k][1];
                     V = Vold + U1p2[icube][i][j][k][2];
-                    W = Wold + U1p2[icube][i][j][k][3];
+                    W = 0.0;
                     T = Told + U1p2[icube][i][j][k][4];
                     rho = P/T;
 
