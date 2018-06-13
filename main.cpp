@@ -1242,14 +1242,6 @@ int main(int argc, char **argv)
 				// BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
 
 
-				for (int ig = 1; ig <= 1; ig++) {
-
-					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
-
-					BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
-					
-				}
-
 
 				BCM_Interface(myid,Ncube, 
 
@@ -1280,22 +1272,32 @@ int main(int argc, char **argv)
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
 				
-                
-                BCM_Interface_EDGE(myid,Ncube, 
-                    MPI_Nadj,
-                    Ncpu_eq, 
-                    Max_nei_eq,
-                    nadjX_eq, nadjY_eq, nadjZ_eq,
-                    rank_map,
-                    MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
-                    neighbor_cpu_eq, Ncube_Ncpu_eq, 
-                    Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
-                    ist_eq,
-                    csl, 
-                    adj_number, 
-                    adjX_eq, adjY_eq, adjZ_eq,
-                    U1_);
-                    
+          
+          BCM_Interface_EDGE(myid,Ncube, 
+              MPI_Nadj,
+              Ncpu_eq, 
+              Max_nei_eq,
+              nadjX_eq, nadjY_eq, nadjZ_eq,
+              rank_map,
+              MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+              neighbor_cpu_eq, Ncube_Ncpu_eq, 
+              Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+              ist_eq,
+              csl, 
+              adj_number, 
+              adjX_eq, adjY_eq, adjZ_eq,
+              U1_);
+            
+              
+          for (int ig = 1; ig <= 1; ig++) {
+
+            BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
+
+            BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
+            
+          }
+
+              
                             
 				#ifdef ILES
 
