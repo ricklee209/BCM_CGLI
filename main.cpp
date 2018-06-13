@@ -43,20 +43,20 @@ int main(int argc, char **argv)
 #include "Pre_selection.h"
 
 
-	int statistic_step = 50000;    // ---- periodic step ---- //
+	int statistic_step = 5000;    // ---- periodic step ---- //
 
 	int start_step = 100000000;    // ---- how many steps to reach the quasi steady ---- //
 
-	int dp_step = 50000;    // ---- how many steps for periodically outputing the dp ---- //
+	int dp_step = 5000;    // ---- how many steps for periodically outputing the dp ---- //
 
-	int iteration_end_step = 5;
-	int output_step = 1;
-	int count = 1;	
+	int iteration_end_step = 40;
+	int output_step = 20;
+	int count = 2000;	
 	int step;
 
-	double deltaT = 0.1;
+	double deltaT = 2.0e-7;
 	double deltaTau = deltaT/200.0;
-	double e = 1;
+	double e = 1.0;
 	double Th = 309.03531204896;
 
 
@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 
 	int switch_IBM = 1;     // ---- 1 run IBM ---- //
 
-	int switch_output = 1;  // ---- 1 output grid file ---- //
+	int switch_output = 0;  // ---- 1 output grid file ---- //
 
 
 	int NBC,NBC_plus, NBC_minus, Ntemp, gicube, gi, gj, gk, mp_switch;
@@ -707,7 +707,7 @@ int main(int argc, char **argv)
 		U1_, 
 		U1,  
 		U1q);
-
+        
 	
 	if ( switch_IBM == 1 ) {
 
@@ -868,27 +868,28 @@ int main(int argc, char **argv)
 		adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
 		adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 		U1_);
-        
 
-    BCM_Interface_EDGE(myid,Ncube, 
-        MPI_Nadj,
-        Ncpu_eq, 
-        Max_nei_eq,
-        nadjX_eq, nadjY_eq, nadjZ_eq,
-        rank_map,
-        MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
-        neighbor_cpu_eq, Ncube_Ncpu_eq, 
-        Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
-        ist_eq,
-        csl, 
-        adj_number, 
-        adjX_eq, adjY_eq, adjZ_eq,
-        U1_);
+
+    // BCM_Interface_EDGE(myid,Ncube, 
+        // MPI_Nadj,
+        // Ncpu_eq, 
+        // Max_nei_eq,
+        // nadjX_eq, nadjY_eq, nadjZ_eq,
+        // rank_map,
+        // MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+        // neighbor_cpu_eq, Ncube_Ncpu_eq, 
+        // Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+        // ist_eq,
+        // csl, 
+        // adj_number, 
+        // adjX_eq, adjY_eq, adjZ_eq,
+        // U1_);
 
 
 	// ---------------------------------------------------------- //
 	// ---------------------------------------------------------- //
 
+    
 
 	char Number_of_BC[1024] = "Number of Boundary Cells";
 
@@ -1070,23 +1071,21 @@ int main(int argc, char **argv)
 		adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
 		adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 		U1_);
-        
 
-    BCM_Interface_EDGE(myid,Ncube, 
-        MPI_Nadj,
-        Ncpu_eq, 
-        Max_nei_eq,
-        nadjX_eq, nadjY_eq, nadjZ_eq,
-        rank_map,
-        MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
-        neighbor_cpu_eq, Ncube_Ncpu_eq, 
-        Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
-        ist_eq,
-        csl, 
-        adj_number, 
-        adjX_eq, adjY_eq, adjZ_eq,
-        U1_);
-
+    // BCM_Interface_EDGE(myid,Ncube, 
+        // MPI_Nadj,
+        // Ncpu_eq, 
+        // Max_nei_eq,
+        // nadjX_eq, nadjY_eq, nadjZ_eq,
+        // rank_map,
+        // MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+        // neighbor_cpu_eq, Ncube_Ncpu_eq, 
+        // Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+        // ist_eq,
+        // csl, 
+        // adj_number, 
+        // adjX_eq, adjY_eq, adjZ_eq,
+        // U1_);
 
 	BCM_FWS_Interface(myid,Ncube, 
 		MPI_Nadj,
@@ -1103,6 +1102,7 @@ int main(int argc, char **argv)
 		adjX_eq, adjY_eq, adjZ_eq,
 		FWS);
 
+        
 /*
 
 #pragma omp parallel for private(Ntemp,gicube,gi,gj,gk)
@@ -1213,10 +1213,33 @@ int main(int argc, char **argv)
     // ---------------------------------------- //
     
     
+    
+    
+	// for (icube = 1; icube < Ncube; icube++) { 
+// #pragma omp parallel for private(j,k)
+
+		// for (i = 0; i <= nxxx; i++) {
+			// for (j = 0; j <= nyyy; j++) {
+				// for (k = 0; k <= nzzz; k++) {  
+
+
+					// FWS[icube][i][j][k] = 1;
+
+
+				// }
+			// }
+		// }
+	// }
+
+    
+    
+    
+    
 // =============================================== //
 	for (step = 1 ; step <= count; step++) {       //
 // =============================================== //
 
+    // deltaT = max(0.995*deltaT,1.0e-8);
 
 
 // ============================================================================ //
@@ -1230,19 +1253,28 @@ int main(int argc, char **argv)
 											  gXmax,gXmin,gYmax,gYmin,gZmax,gZmin,gdXmax,gdYmax,gdZmax,Xcube,Ycube,Zcube,
 											  Xbc_l, Xbc_u, Ybc_l, Ybc_u,Zbc_l, Zbc_u, cube_size, U1_, Fabs, CFL_tau);
 				
-                // BCM_Y_boundary_condition(NYbc_l, NYbc_u, Ybc_l, Ybc_u, U1_);
+                // // BCM_Y_boundary_condition(NYbc_l, NYbc_u, Ybc_l, Ybc_u, U1_);
 				
-				// BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
+				// // BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
                 
                 
-				// BCM_Abs_Y_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NYbc_l, NYbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
+				// // BCM_Abs_Y_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NYbc_l, NYbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
 
-				// BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
+				// // BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
 				
-				// BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
+				// // BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
+
+                // // BCM_Abs_XY_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, NYbc_l, NYbc_u, 
+											  // // gXmax,gXmin,gYmax,gYmin,gdXmax,gdYmax,Xcube,Ycube,
+											  // // Xbc_l, Xbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
+                                              
+                BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
+
+                // MPI_Barrier(comm);
 
 
 
+                
 				BCM_Interface(myid,Ncube, 
 
 					MPI_Nadj,
@@ -1271,44 +1303,45 @@ int main(int argc, char **argv)
 					adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
-				
-          
-          BCM_Interface_EDGE(myid,Ncube, 
-              MPI_Nadj,
-              Ncpu_eq, 
-              Max_nei_eq,
-              nadjX_eq, nadjY_eq, nadjZ_eq,
-              rank_map,
-              MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
-              neighbor_cpu_eq, Ncube_Ncpu_eq, 
-              Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
-              ist_eq,
-              csl, 
-              adj_number, 
-              adjX_eq, adjY_eq, adjZ_eq,
-              U1_);
-            
-              
-          for (int ig = 1; ig <= 1; ig++) {
-
-            BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
-
-            BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
-            
-          }
-
-              
-                            
-				#ifdef ILES
-
-					if ( (step%10 == 0)  && (iteration == 1) ) {
-                        
-                        BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
-                        if(myid == 0) printf("\n Automatic Dissipation Adjustment model \n");
                 
-                    }
+				// BCM_Interface_EDGE(myid,Ncube, 
+                    // MPI_Nadj,
+                    // Ncpu_eq, 
+                    // Max_nei_eq,
+                    // nadjX_eq, nadjY_eq, nadjZ_eq,
+                    // rank_map,
+                    // MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+                    // neighbor_cpu_eq, Ncube_Ncpu_eq, 
+                    // Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+                    // ist_eq,
+                    // csl, 
+                    // adj_number, 
+                    // adjX_eq, adjY_eq, adjZ_eq,
+                    // U1_);
+                
+                
+                
+				for (int ig = 1; ig <= 1; ig++) {
+
+					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
+
+					BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
+					
+				}
+
+                
+                      
+                      
+				// #ifdef ILES
+
+					// if ( (step%10 == 0)  && (iteration == 1) ) {
+                        
+                        // BCM_ADM_filter(myid, Ncube, cube_size, U1_, Roe_dis, filter);
+                        // if(myid == 0) printf("\n Automatic Dissipation Adjustment model \n");
+                
+                    // }
                     
-				#endif
+				// #endif
 
 				
                 #if defined(LUSGS)
@@ -1411,25 +1444,25 @@ int main(int argc, char **argv)
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
 
-                BCM_Interface_EDGE(myid,Ncube, 
-                    MPI_Nadj,
-                    Ncpu_eq, 
-                    Max_nei_eq,
-                    nadjX_eq, nadjY_eq, nadjZ_eq,
-                    rank_map,
-                    MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
-                    neighbor_cpu_eq, Ncube_Ncpu_eq, 
-                    Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
-                    ist_eq,
-                    csl, 
-                    adj_number, 
-                    adjX_eq, adjY_eq, adjZ_eq,
-                    U1_);
-
-
+            // BCM_Interface_EDGE(myid,Ncube, 
+                    // MPI_Nadj,
+                    // Ncpu_eq, 
+                    // Max_nei_eq,
+                    // nadjX_eq, nadjY_eq, nadjZ_eq,
+                    // rank_map,
+                    // MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+                    // neighbor_cpu_eq, Ncube_Ncpu_eq, 
+                    // Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+                    // ist_eq,
+                    // csl, 
+                    // adj_number, 
+                    // adjX_eq, adjY_eq, adjZ_eq,
+                    // U1_);
+                    
+                    
 			# else
 
-
+                
 
 	// ------------------------------------------------------------------------------------------ //
 	// -------------------------------- Runge-Kutta-Modification -------------------------------- //
@@ -1481,17 +1514,17 @@ int main(int argc, char **argv)
 				//BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
 
 
-				BCM_Abs_Y_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NYbc_l, NYbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
+				// BCM_Abs_Y_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NYbc_l, NYbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
 
-				BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
+				// BCM_Abs_Z_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NZbc_l, NZbc_u, Zbc_l, Zbc_u, cube_size, U1_, Fabs);
 				
-				BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
+				// BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
 
-				// BCM_Abs_XY_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, NYbc_l, NYbc_u, 
-											  // gXmax,gXmin,gYmax,gYmin,gdXmax,gdYmax,Xcube,Ycube,
-											  // Xbc_l, Xbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
+				BCM_Abs_XY_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, NYbc_l, NYbc_u, 
+											  gXmax,gXmin,gYmax,gYmin,gdXmax,gdYmax,Xcube,Ycube,
+											  Xbc_l, Xbc_u, Ybc_l, Ybc_u, cube_size, U1_, Fabs);
                                               
-                // BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
+                BCM_Z_boundary_condition(NZbc_l, NZbc_u, Zbc_l, Zbc_u, U1_);
 
 
 				for (int ig = 1; ig <= 10; ig++) {
@@ -1538,21 +1571,22 @@ int main(int argc, char **argv)
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
 				
-                BCM_Interface_EDGE(myid,Ncube, 
-                    MPI_Nadj,
-                    Ncpu_eq, 
-                    Max_nei_eq,
-                    nadjX_eq, nadjY_eq, nadjZ_eq,
-                    rank_map,
-                    MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
-                    neighbor_cpu_eq, Ncube_Ncpu_eq, 
-                    Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
-                    ist_eq,
-                    csl, 
-                    adj_number, 
-                    adjX_eq, adjY_eq, adjZ_eq,
-                    U1_);
-				
+                // BCM_Interface_EDGE(myid,Ncube, 
+                    // MPI_Nadj,
+                    // Ncpu_eq, 
+                    // Max_nei_eq,
+                    // nadjX_eq, nadjY_eq, nadjZ_eq,
+                    // rank_map,
+                    // MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+                    // neighbor_cpu_eq, Ncube_Ncpu_eq, 
+                    // Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+                    // ist_eq,
+                    // csl, 
+                    // adj_number, 
+                    // adjX_eq, adjY_eq, adjZ_eq,
+                    // U1_);
+                    
+                    
 				#ifdef ILES
 
 					if ( (step%10 == 0)  && (iteration == 1) ) {
@@ -1603,22 +1637,23 @@ int main(int argc, char **argv)
 					adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
-                
-                BCM_Interface_EDGE(myid,Ncube, 
-                    MPI_Nadj,
-                    Ncpu_eq, 
-                    Max_nei_eq,
-                    nadjX_eq, nadjY_eq, nadjZ_eq,
-                    rank_map,
-                    MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
-                    neighbor_cpu_eq, Ncube_Ncpu_eq, 
-                    Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
-                    ist_eq,
-                    csl, 
-                    adj_number, 
-                    adjX_eq, adjY_eq, adjZ_eq,
-                    U1_);
 
+                // BCM_Interface_EDGE(myid,Ncube, 
+                    // MPI_Nadj,
+                    // Ncpu_eq, 
+                    // Max_nei_eq,
+                    // nadjX_eq, nadjY_eq, nadjZ_eq,
+                    // rank_map,
+                    // MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+                    // neighbor_cpu_eq, Ncube_Ncpu_eq, 
+                    // Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+                    // ist_eq,
+                    // csl, 
+                    // adj_number, 
+                    // adjX_eq, adjY_eq, adjZ_eq,
+                    // U1_);
+                    
+                    
 		// ------------------------------------------ //
 			}    //---- Runge-Kutaa end ---- //       //
 		// ------------------------------------------ //
@@ -1649,7 +1684,7 @@ int main(int argc, char **argv)
 
 
 // ==================================================================================================================== //
-			if ((er[1]<0.01 & er[2]<0.01 & er[3]<0.01 & er[4]<0.01 & er[5]<0.01) | iteration == iteration_end_step) {   //
+			if ((er[1]<-0.0001 & er[2]<0.0001 & er[3]<0.0001 & er[4]<0.0001 & er[5]<0.0001) | iteration == iteration_end_step) {   //
 // ==================================================================================================================== //
 
 
@@ -1738,6 +1773,49 @@ int main(int argc, char **argv)
 		*/
 
 		if ( step%output_step == 0 ) {
+            
+            
+            // // =========== Modification =========== //
+    // double XX,YY;
+    // double RR = 2.25e-5;
+    
+    // #pragma omp parallel for private(i,j,k,XX,YY)
+    
+    // for (icube = 1; icube < Ncube; icube++) {  
+
+        // for (i = 0; i <= nxxx; i++) {
+            // for (j = 0; j <= nyyy; j++) {
+                // for (k = 0; k <= nzzz; k++) {  
+
+                    
+                    // XX = Xcnt[icube][i];
+                    // YY = Ycnt[icube][j];
+                    
+                    // if( sqrt(XX*XX+YY*YY) < RR ) {
+                        
+                        // //printf("%.10f\t%.10f\t%.10f\n",XX,YY,sqrt(XX*XX+YY*YY));
+                    
+                        // U1[icube][i][j][k][0] = rho0; 
+                        // U1[icube][i][j][k][1] = 0; 
+                        // U1[icube][i][j][k][2] = 0; 
+                        // U1[icube][i][j][k][3] = 1; 
+                        // U1[icube][i][j][k][4] = P0/(K-1);
+                        
+                        // U1_[icube][i][j][k][0] = rho0; 
+                        // U1_[icube][i][j][k][1] = 0; 
+                        // U1_[icube][i][j][k][2] = 0; 
+                        // U1_[icube][i][j][k][3] = 1; 
+                        // U1_[icube][i][j][k][4] = P0/(K-1);
+                        
+                        
+                        
+                    // }
+                    
+                // }
+            // }
+        // }
+
+    // }
 
 			//BCM_Nusselt_Sphere(myid, Ncube, Th, csl, Xcnt, Ycnt, Zcnt, FWS, U1);
 
@@ -1750,7 +1828,7 @@ int main(int argc, char **argv)
             #endif
             
             // ========= slice_normal XYZ = 123 ========= //
-            BCM_Slice_output(myid, Ncube, 0.0, step, 3, "SliceI", rank_map, U1_, cube_size, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt);
+            // BCM_Slice_output(myid, Ncube, 0.0, step, 3, "SliceI", rank_map, U1_, cube_size, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt);
             
 		}
 

@@ -44,8 +44,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 		iicube = Zbc_l[icube];
 
-			for (i = 0; i <= nxxx; i++) {
-				for (j = 0; j <= nyyy; j++) {  
+			for (i = 2; i <= nx; i++) {
+				for (j = 2; j <= ny; j++) {  
 
 					U1_[iicube][i][j][1][0] = U1_[iicube][i][j][2][0];
 					U1_[iicube][i][j][1][1] = U1_[iicube][i][j][2][1];
@@ -71,8 +71,8 @@ double (*U1_)[X_size][Y_size][Z_size][Ndim] = new double[Ncube][X_size][Y_size][
 
 		iicube = Zbc_u[icube];
 
-			for (i = 0; i <= nxxx; i++) {
-				for (j = 0; j <= nyyy; j++) {  
+			for (i = 2; i <= nx; i++) {
+				for (j = 2; j <= ny; j++) {  
 
 					U1_[iicube][i][j][nzz][0] = U1_[iicube][i][j][nz][0];
 					U1_[iicube][i][j][nzz][1] = U1_[iicube][i][j][nz][1];

@@ -104,14 +104,14 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
     double U1,U2,U3,U4,U5;
     
     
-    n_abs_xm = 0.4;
-    n_abs_xp = 0.4;
+    n_abs_xm = 4.0;
+    n_abs_xp = 4.0;
     
-    n_abs_ym = 0.4;
-    n_abs_yp = 0.4;
+    n_abs_ym = 4.0;
+    n_abs_yp = 4.0;
     
-    n_abs_zm = 0.4;
-    n_abs_zp = 0.4;
+    n_abs_zm = 0.0;
+    n_abs_zp = 0.0;
     
     
     xV_in_1 = 0.0;
@@ -158,7 +158,7 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
     lenght_absYp = gdYmax * (n_abs_yp*NcubeY-1.0);
     lenght_absZp = gdZmax * (n_abs_zp*NcubeZ-1.0);
     
-    SML = 1.0e-8;
+    SML = 1.0e-12;
     
     abs1 = gXmin + lenght_absXm + 0.5*gdXmax + SML;
     abs2 = gXmax - lenght_absXp - 0.5*gdXmax - SML;
@@ -174,7 +174,7 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
     
     
     
-    
+      
       for (icube = 1; icube <= nXbc_l; icube++) {  
 		
             iicube = Xbc_l[icube];
@@ -229,13 +229,13 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
                     U1_[iicube][nxx][j][k][0] = U1_[iicube][nx][j][k][0];
                     U1_[iicube][nxx][j][k][1] = U1_[iicube][nx][j][k][1];
                     U1_[iicube][nxx][j][k][2] = U1_[iicube][nx][j][k][2];
-                    U1_[iicube][nxx][j][k][3] = U1_[iicube][nx][j][k][3];
+                    U1_[iicube][nxx][j][k][3] = 0.0;
                     U1_[iicube][nxx][j][k][4] = U1_[iicube][nx][j][k][4];
 
                     U1_[iicube][nxxx][j][k][0] = U1_[iicube][nx][j][k][0];
                     U1_[iicube][nxxx][j][k][1] = U1_[iicube][nx][j][k][1];
                     U1_[iicube][nxxx][j][k][2] = U1_[iicube][nx][j][k][2];
-                    U1_[iicube][nxxx][j][k][3] = U1_[iicube][nx][j][k][3];
+                    U1_[iicube][nxxx][j][k][3] = 0.0;
                     U1_[iicube][nxxx][j][k][4] = U1_[iicube][nx][j][k][4];
 
                 }
@@ -252,19 +252,19 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
 
             iicube = Ybc_l[icube];
 
-                for (i = 0; i <= nxxx; i++) {
+                for (i = 2; i <= nx; i++) {
                     for (k = 2; k <= nz; k++) {  
 
                         U1_[iicube][i][1][k][0] = U1_[iicube][i][2][k][0];
                         U1_[iicube][i][1][k][1] = U1_[iicube][i][2][k][1];
                         U1_[iicube][i][1][k][2] = U1_[iicube][i][2][k][2];
-                        U1_[iicube][i][1][k][3] = U1_[iicube][i][2][k][3];
+                        U1_[iicube][i][1][k][3] = 0.0;
                         U1_[iicube][i][1][k][4] = U1_[iicube][i][2][k][4];
 
                         U1_[iicube][i][0][k][0] = U1_[iicube][i][2][k][0];
                         U1_[iicube][i][0][k][1] = U1_[iicube][i][2][k][1];
                         U1_[iicube][i][0][k][2] = U1_[iicube][i][2][k][2];
-                        U1_[iicube][i][0][k][3] = U1_[iicube][i][2][k][3];
+                        U1_[iicube][i][0][k][3] = 0.0;
                         U1_[iicube][i][0][k][4] = U1_[iicube][i][2][k][4];
 
                     }
@@ -282,19 +282,19 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
 
 		iicube = Ybc_u[icube];
 
-		for (i = 0; i <= nxxx; i++) {
+		for (i = 2; i <= nx; i++) {
 			for (k = 2; k <= nz; k++) {  
 
 				U1_[iicube][i][nyy][k][0] = U1_[iicube][i][ny][k][0];
 				U1_[iicube][i][nyy][k][1] = U1_[iicube][i][ny][k][1];
 				U1_[iicube][i][nyy][k][2] = U1_[iicube][i][ny][k][2];
-				U1_[iicube][i][nyy][k][3] = U1_[iicube][i][ny][k][3];
+				U1_[iicube][i][nyy][k][3] = 0.0;
 				U1_[iicube][i][nyy][k][4] = U1_[iicube][i][ny][k][4];
 
 				U1_[iicube][i][nyyy][k][0] = U1_[iicube][i][ny][k][0];
 				U1_[iicube][i][nyyy][k][1] = U1_[iicube][i][ny][k][1];
 				U1_[iicube][i][nyyy][k][2] = U1_[iicube][i][ny][k][2];
-				U1_[iicube][i][nyyy][k][3] = U1_[iicube][i][ny][k][3];
+				U1_[iicube][i][nyyy][k][3] = 0.0;
 				U1_[iicube][i][nyyy][k][4] = U1_[iicube][i][ny][k][4];
 
 			}
@@ -304,10 +304,6 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
 
     #pragma omp barrier       
 
-    
-    
-    
-    
     
 	#pragma omp parallel for private(\
     dx,dy,dz,xmin,ymin,zmin,\
@@ -436,45 +432,45 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
                     
                     
                     
-                    C_plan = 0.5*sqrt(W*W*(beta-1)*(beta-1)+4*beta*C);
+                    // C_plan = 0.5*sqrt(W*W*(beta-1)*(beta-1)+4*beta*C);
                     
-                    if( ZZ < abs5 ) {
+                    // if( ZZ < abs5 ) {
                         
-                        zV_in_1 = ((abs5-ZZ)/lenght_absZm)*((abs5-ZZ)/lenght_absZm)*((abs5-ZZ)/lenght_absZm);
-                        zSigma_in = zV_in_1*zSigma_in_0/Char_D;
+                        // zV_in_1 = ((abs5-ZZ)/lenght_absZm)*((abs5-ZZ)/lenght_absZm)*((abs5-ZZ)/lenght_absZm);
+                        // zSigma_in = zV_in_1*zSigma_in_0/Char_D;
                         
-                        zV_in_1 = zV_in_1*zV_in_0*C_plan;
+                        // zV_in_1 = zV_in_1*zV_in_0*C_plan;
                         
-                        zV_out_1 = 0.0;
-                        zSigma_out = 0.0;
+                        // zV_out_1 = 0.0;
+                        // zSigma_out = 0.0;
                         
-                        CFL_tau[icube][i][j][k] = -DTau_CFL;
+                        // CFL_tau[icube][i][j][k] = -DTau_CFL;
                         
-                        // if Z is slip or no slip zV_in_1 et al. should be set to 0//
+                        // // if Z is slip or no slip zV_in_1 et al. should be set to 0//
                         
 					    
-						} 
-					else if( ZZ > abs6  ) {
+						// } 
+					// else if( ZZ > abs6  ) {
                     
-                        zV_out_1 = ((ZZ-abs6)/lenght_absZp)*((ZZ-abs6)/lenght_absZp)*((ZZ-abs6)/lenght_absZp);
-                        zSigma_out = zV_out_1*zSigma_out_0/Char_D;
+                        // zV_out_1 = ((ZZ-abs6)/lenght_absZp)*((ZZ-abs6)/lenght_absZp)*((ZZ-abs6)/lenght_absZp);
+                        // zSigma_out = zV_out_1*zSigma_out_0/Char_D;
                         
-                        zV_out_1 = zV_out_1*zV_out_0*C_plan;
+                        // zV_out_1 = zV_out_1*zV_out_0*C_plan;
                         
-                        zV_in_1 = 0.0;
-                        zSigma_in = 0.0;
+                        // zV_in_1 = 0.0;
+                        // zSigma_in = 0.0;
                         
-                        CFL_tau[icube][i][j][k] = -DTau_CFL;
+                        // CFL_tau[icube][i][j][k] = -DTau_CFL;
                     
-                    } else {
+                    // } else {
                         
-                        zV_in_1 = 0.0;
-                        zSigma_in = 0.0;
+                        // zV_in_1 = 0.0;
+                        // zSigma_in = 0.0;
                     
-                        zV_out_1 = 0.0;
-                        zSigma_out = 0.0;
+                        // zV_out_1 = 0.0;
+                        // zSigma_out = 0.0;
                         
-                    }
+                    // }
                     
                     
                     sr1 = sr2 = sr3 = sr4 = sr5 = 0.0;
@@ -500,11 +496,15 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
                     sl4 = sl4 + yV_in_1*( rho*W- U1_[icube][i][j+1][k][3])/dy + ySigma_in*U4;
                     sl5 = sl5 + yV_in_1*( E    - U1_[icube][i][j+1][k][4])/dy + ySigma_in*U5;
                     
-                    sl1 = sl1 + zV_in_1*( rho  - U1_[icube][i][j][k+1][0])/dz + zSigma_in*U1; 
-                    sl2 = sl2 + zV_in_1*( rho*U- U1_[icube][i][j][k+1][1])/dz + zSigma_in*U2;
-                    sl3 = sl3 + zV_in_1*( rho*V- U1_[icube][i][j][k+1][2])/dz + zSigma_in*U3;
-                    sl4 = sl4 + zV_in_1*( rho*W- U1_[icube][i][j][k+1][3])/dz + zSigma_in*U4;
-                    sl5 = sl5 + zV_in_1*( E    - U1_[icube][i][j][k+1][4])/dz + zSigma_in*U5;
+                    
+                    
+                    
+                    
+                    // sl1 = sl1 + zV_in_1*( rho  - U1_[icube][i][j][k+1][0])/dz + zSigma_in*U1; 
+                    // sl2 = sl2 + zV_in_1*( rho*U- U1_[icube][i][j][k+1][1])/dz + zSigma_in*U2;
+                    // sl3 = sl3 + zV_in_1*( rho*V- U1_[icube][i][j][k+1][2])/dz + zSigma_in*U3;
+                    // sl4 = sl4 + zV_in_1*( rho*W- U1_[icube][i][j][k+1][3])/dz + zSigma_in*U4;
+                    // sl5 = sl5 + zV_in_1*( E    - U1_[icube][i][j][k+1][4])/dz + zSigma_in*U5;
                     
                     
                     
@@ -521,17 +521,17 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
                     sr4 = sr4 + yV_out_1*( rho*W- U1_[icube][i][j-1][k][3])/dy + ySigma_out*U4;
                     sr5 = sr5 + yV_out_1*( E    - U1_[icube][i][j-1][k][4])/dy + ySigma_out*U5;
                     
-                    sr1 = sr1 + zV_out_1*( rho  - U1_[icube][i][j][k-1][0])/dz + zSigma_out*U1; 
-                    sr2 = sr2 + zV_out_1*( rho*U- U1_[icube][i][j][k-1][1])/dz + zSigma_out*U2;
-                    sr3 = sr3 + zV_out_1*( rho*V- U1_[icube][i][j][k-1][2])/dz + zSigma_out*U3;
-                    sr4 = sr4 + zV_out_1*( rho*W- U1_[icube][i][j][k-1][3])/dz + zSigma_out*U4;
-                    sr5 = sr5 + zV_out_1*( E    - U1_[icube][i][j][k-1][4])/dz + zSigma_out*U5;
+                    // sr1 = sr1 + zV_out_1*( rho  - U1_[icube][i][j][k-1][0])/dz + zSigma_out*U1; 
+                    // sr2 = sr2 + zV_out_1*( rho*U- U1_[icube][i][j][k-1][1])/dz + zSigma_out*U2;
+                    // sr3 = sr3 + zV_out_1*( rho*V- U1_[icube][i][j][k-1][2])/dz + zSigma_out*U3;
+                    // sr4 = sr4 + zV_out_1*( rho*W- U1_[icube][i][j][k-1][3])/dz + zSigma_out*U4;
+                    // sr5 = sr5 + zV_out_1*( E    - U1_[icube][i][j][k-1][4])/dz + zSigma_out*U5;
                     
                     
                     Fabs[icube][i][j][k][0] = -sr1-sl1;
                     Fabs[icube][i][j][k][1] = -sr2-sl2;
                     Fabs[icube][i][j][k][2] = -sr3-sl3;
-                    Fabs[icube][i][j][k][3] = -sr4-sl4;
+                    Fabs[icube][i][j][k][3] = 0.0;
                     Fabs[icube][i][j][k][4] = -sr5-sl5;
                     
 
@@ -540,7 +540,6 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
          }
 
       }
-      
       
       
 
