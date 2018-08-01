@@ -63,7 +63,7 @@ double (*U4_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_s
 
 	int num_variable_output = 4; // output four values //
     
-    // U_mean, T_mean, U_intensity, T_intensity //
+    // U_mean, P_mean, U_intensity, P-P_int //
 
 	int itemp = 0;
     
@@ -121,8 +121,8 @@ double (*U4_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_s
 					P = (U1[icube][i][j][k][4]-0.5*rho*VV)*(K-1);
                     T = P/rho/R;
 					
-					U3_sum[icube][i][j][k] = U3_sum[icube][i][j][k]+T;
-                    U4_sum[icube][i][j][k] = U4_sum[icube][i][j][k]+T*T;
+					U3_sum[icube][i][j][k] = U3_sum[icube][i][j][k]+P;
+                    U4_sum[icube][i][j][k] = P;
 
 				}
 			}
@@ -137,14 +137,9 @@ double (*U4_sum)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_s
 
 					T_mean[icube][i][j][k] = U3_sum[icube][i][j][k]/itemp;
                     
-					T_int[icube][i][j][k] = sqrt(fabs(U4_sum[icube][i][j][k]/itemp - T_mean[icube][i][j][k]*T_mean[icube][i][j][k]));
-
-                    // H = (U4_sum[icube][i][j][k]/itemp - T_mean[icube][i][j][k]*T_mean[icube][i][j][k]);
-                    
-                    // if(T_mean[icube][i][j][k] < 298.0591)
-                    // printf("%f\t%f\t%f\n",T_mean[icube][i][j][k],U3_sum[icube][i][j][k],itemp*1.0);
-                    
-				}
+					T_int[icube][i][j][k] = U4_sum[icube][i][j][k]-T_mean[icube][i][j][k];
+                
+                }
 			}
 		}
 	}
