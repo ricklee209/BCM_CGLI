@@ -77,4 +77,25 @@
 #define No_endian_transfer
 
 
+
+
+// ---- Limiter function ---- //
+#define rho_limit 0.8
+#define rholimit  1.8
+
+#define U_limit   -40.0
+#define Ulimit    120.0
+
+#define V_limit   -40.0
+#define Vlimit    120.0
+
+#define W_limit   -40.0
+#define Wlimit    120.0
+
+#define P_limit   101300*0.8
+#define Plimit    101300*1.2
+
+
+
+
 #define Char_D 0.1

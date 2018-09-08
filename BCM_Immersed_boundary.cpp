@@ -904,6 +904,7 @@ void BCM_Immersed_boundary
 
 		if (icount < 3) {
 
+      // FWS[icube][i][j][k] = IFLUID;                                  
 			continue;
 
 		}
@@ -995,7 +996,7 @@ void BCM_Immersed_boundary
 			s2 = orig[1]-BIy;
 			s3 = orig[2]-BIz;
 
-			tmin = sqrt(s1*s1+s2*s2+s3*s3)+0.0000001;
+			tmin = sqrt(s1*s1+s2*s2+s3*s3)+minimum;
 
 			if (dotp >= 0) {
 

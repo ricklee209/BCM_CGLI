@@ -52,6 +52,7 @@ int main(int argc, char **argv)
 	int iteration_end_step = 10;
 	int output_step = 5;
 	int count = 1000;	
+
 	int step;
 
 	double deltaT = 0.1;
@@ -868,6 +869,22 @@ int main(int argc, char **argv)
 		adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
 		adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 		U1_);
+        
+
+    BCM_Interface_EDGE(myid,Ncube, 
+        MPI_Nadj,
+        Ncpu_eq, 
+        Max_nei_eq,
+        nadjX_eq, nadjY_eq, nadjZ_eq,
+        rank_map,
+        MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+        neighbor_cpu_eq, Ncube_Ncpu_eq, 
+        Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+        ist_eq,
+        csl, 
+        adj_number, 
+        adjX_eq, adjY_eq, adjZ_eq,
+        U1_);
 
 
 	// ---------------------------------------------------------- //
@@ -1054,6 +1071,22 @@ int main(int argc, char **argv)
 		adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
 		adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 		U1_);
+        
+
+    BCM_Interface_EDGE(myid,Ncube, 
+        MPI_Nadj,
+        Ncpu_eq, 
+        Max_nei_eq,
+        nadjX_eq, nadjY_eq, nadjZ_eq,
+        rank_map,
+        MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+        neighbor_cpu_eq, Ncube_Ncpu_eq, 
+        Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+        ist_eq,
+        csl, 
+        adj_number, 
+        adjX_eq, adjY_eq, adjZ_eq,
+        U1_);
 
 
 	BCM_FWS_Interface(myid,Ncube, 
@@ -1218,6 +1251,7 @@ int main(int argc, char **argv)
 					
 				}
 
+        
 
 				BCM_Interface(myid,Ncube, 
 
@@ -1248,7 +1282,33 @@ int main(int argc, char **argv)
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
 				
-				
+          
+          // BCM_Interface_EDGE(myid,Ncube, 
+              // MPI_Nadj,
+              // Ncpu_eq, 
+              // Max_nei_eq,
+              // nadjX_eq, nadjY_eq, nadjZ_eq,
+              // rank_map,
+              // MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+              // neighbor_cpu_eq, Ncube_Ncpu_eq, 
+              // Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+              // ist_eq,
+              // csl, 
+              // adj_number, 
+              // adjX_eq, adjY_eq, adjZ_eq,
+              // U1_);
+            
+              
+          for (int ig = 1; ig <= 1; ig++) {
+
+            BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
+
+            BCM_Ghostcell_plus(myid, &NBC_plus, Th, weight_plus, GCindex_plus, IPsur_plus, Nor_D_plus, Nvec_plus, FWS, U1_);
+            
+          }
+
+              
+                            
 				#ifdef ILES
 
 					if ( (step%10 == 0)  && (iteration == 1) ) {
@@ -1361,6 +1421,20 @@ int main(int argc, char **argv)
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
 
+                // BCM_Interface_EDGE(myid,Ncube, 
+                    // MPI_Nadj,
+                    // Ncpu_eq, 
+                    // Max_nei_eq,
+                    // nadjX_eq, nadjY_eq, nadjZ_eq,
+                    // rank_map,
+                    // MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+                    // neighbor_cpu_eq, Ncube_Ncpu_eq, 
+                    // Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+                    // ist_eq,
+                    // csl, 
+                    // adj_number, 
+                    // adjX_eq, adjY_eq, adjZ_eq,
+                    // U1_);
 
 
 			# else
@@ -1474,6 +1548,20 @@ int main(int argc, char **argv)
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
 				
+                // BCM_Interface_EDGE(myid,Ncube, 
+                    // MPI_Nadj,
+                    // Ncpu_eq, 
+                    // Max_nei_eq,
+                    // nadjX_eq, nadjY_eq, nadjZ_eq,
+                    // rank_map,
+                    // MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+                    // neighbor_cpu_eq, Ncube_Ncpu_eq, 
+                    // Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+                    // ist_eq,
+                    // csl, 
+                    // adj_number, 
+                    // adjX_eq, adjY_eq, adjZ_eq,
+                    // U1_);
 				
 				#ifdef ILES
 
@@ -1525,7 +1613,21 @@ int main(int argc, char **argv)
 					adjY_bs_plus, adjY_sb_plus, adjY_bs_minus, adjY_sb_minus,
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
-
+                
+                // BCM_Interface_EDGE(myid,Ncube, 
+                    // MPI_Nadj,
+                    // Ncpu_eq, 
+                    // Max_nei_eq,
+                    // nadjX_eq, nadjY_eq, nadjZ_eq,
+                    // rank_map,
+                    // MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+                    // neighbor_cpu_eq, Ncube_Ncpu_eq, 
+                    // Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+                    // ist_eq,
+                    // csl, 
+                    // adj_number, 
+                    // adjX_eq, adjY_eq, adjZ_eq,
+                    // U1_);
 
 		// ------------------------------------------ //
 			}    //---- Runge-Kutaa end ---- //       //
@@ -1657,7 +1759,9 @@ int main(int argc, char **argv)
                 
             #endif
             
-
+            // ========= slice_normal XYZ = 123 ========= //
+            BCM_Slice_output(myid, Ncube, 0.0, step, 3, "SliceI", rank_map, U1_, cube_size, Xcube, Ycube, Zcube, Xcnt, Ycnt, Zcnt);
+            
 		}
 
 

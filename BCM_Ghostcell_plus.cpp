@@ -329,15 +329,6 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
         
         #else
         
-            VV = U*U+V*V+W*W;
-
-            U1_[gicube][gi][gj][gk][0] = rho;
-            U1_[gicube][gi][gj][gk][1] = 0.5*rho*U;
-            U1_[gicube][gi][gj][gk][2] = 0.5*rho*V;
-            U1_[gicube][gi][gj][gk][3] = 0.5*rho*W;
-            U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*0.25*VV;
-            
-            
             
             
             if ( gi==(i  ) & gj==(j  ) & gk==(k  ) ) { 
@@ -371,7 +362,7 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 
               }
               
-            if ( gi==(i+1) & gj==(j  ) & gk==(k  ) ) { 
+            else if ( gi==(i+1) & gj==(j  ) & gk==(k  ) ) { 
               
                 if( 1.0-wc2 <  er_p) {
                   
@@ -402,7 +393,7 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 
               }
               
-            if ( gi==(i  ) & gj==(j+1) & gk==(k  ) ) { 
+            else if ( gi==(i  ) & gj==(j+1) & gk==(k  ) ) { 
               
                 if( 1.0-wc3 <  er_p) {
                   
@@ -433,7 +424,7 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 
               }
               
-            if ( gi==(i  ) & gj==(j  ) & gk==(k+1) ) { 
+            else if ( gi==(i  ) & gj==(j  ) & gk==(k+1) ) { 
               
                 if( 1.0-wc4 <  er_p) {
                   
@@ -465,7 +456,7 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
               
               }
               
-            if ( gi==(i+1) & gj==(j+1) & gk==(k  ) ) { 
+            else if ( gi==(i+1) & gj==(j+1) & gk==(k  ) ) { 
               
                 if( 1.0-wc5 <  er_p) {
                   
@@ -495,7 +486,7 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 
               }
               
-            if ( gi==(i+1) & gj==(j  ) & gk==(k+1) ) { 
+            else if ( gi==(i+1) & gj==(j  ) & gk==(k+1) ) { 
               
                 if( 1.0-wc6 <  er_p) {
                   
@@ -525,7 +516,7 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 
               }
               
-            if ( gi==(i  ) & gj==(j+1) & gk==(k+1) ) { 
+            else if ( gi==(i  ) & gj==(j+1) & gk==(k+1) ) { 
               
                 if( 1.0-wc7 <  er_p) {
                   
@@ -554,7 +545,7 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 
               }
               
-            if ( gi==(i+1) & gj==(j+1) & gk==(k+1) ) {
+            else if ( gi==(i+1) & gj==(j+1) & gk==(k+1) ) {
               
                 if( 1.0-wc8 <  er_p) {
                   
@@ -584,12 +575,24 @@ double Uini, Nd, mu_in, mu_out, U_tau, Tau_w;
 
               }
         
+            else {
+              
+              VV = U*U+V*V+W*W;
+
+              U1_[gicube][gi][gj][gk][0] = rho;
+              U1_[gicube][gi][gj][gk][1] = 0.5*rho*U;
+              U1_[gicube][gi][gj][gk][2] = 0.5*rho*V;
+              U1_[gicube][gi][gj][gk][3] = 0.5*rho*W;
+              U1_[gicube][gi][gj][gk][4] = P/(K-1)+0.5*rho*0.25*VV;
+              
+            }
+        
         #endif
+        
+		
 		
 		
 	}
-
-
 
 
 }

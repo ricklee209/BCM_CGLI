@@ -167,6 +167,148 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
     abs5 = gZmin + lenght_absZm + 0.5*gdZmax + SML;
     abs6 = gZmax - lenght_absZp - 0.5*gdZmax - SML;
     
+    
+    
+    
+    
+    
+    
+    
+    
+      for (icube = 1; icube <= nXbc_l; icube++) {  
+		
+            iicube = Xbc_l[icube];
+            
+            dx = dy = dz = cube_size[iicube]/NcubeX;
+            
+            for (j = 2; j <= ny; j++) {
+                for (k = 2; k <= nz; k++) {  
+                
+                    rho = U1_[iicube][2][j][k][0];
+                    U = U1_[iicube][2][j][k][1]/rho;
+                    V = U1_[iicube][2][j][k][2]/rho;
+                    W = U1_[iicube][2][j][k][3]/rho;
+                    VV = U*U+V*V+W*W;
+                    P = (U1_[iicube][2][j][k][4]-0.5*rho*VV)*(K-1);
+
+                    U = U0;
+                    V = V0;
+                    W = W0;
+                    
+                    rho = rho0;
+                    VV = U*U+V*V+W*W;
+                    
+                    U1_[iicube][1][j][k][0] = rho;
+                    U1_[iicube][1][j][k][1] = rho*U;
+                    U1_[iicube][1][j][k][2] = rho*V;
+                    U1_[iicube][1][j][k][3] = rho*W;
+                    U1_[iicube][1][j][k][4] = P/(K-1)+0.5*rho*VV;
+                    
+                    
+
+                    U1_[iicube][0][j][k][0] = rho;
+                    U1_[iicube][0][j][k][1] = rho*U;
+                    U1_[iicube][0][j][k][2] = rho*V;
+                    U1_[iicube][0][j][k][3] = rho*W;
+                    U1_[iicube][0][j][k][4] = P/(K-1)+0.5*rho*VV;
+
+                }
+            }
+        }	
+        
+        
+        
+        #pragma omp parallel for private(iicube,j,k)
+        for (icube = 1; icube <= nXbc_u; icube++) {  
+
+            iicube = Xbc_u[icube];
+            
+            for (j = 2; j <= ny; j++) {
+                for (k = 2; k <= nz; k++) {  
+
+                    U1_[iicube][nxx][j][k][0] = U1_[iicube][nx][j][k][0];
+                    U1_[iicube][nxx][j][k][1] = U1_[iicube][nx][j][k][1];
+                    U1_[iicube][nxx][j][k][2] = U1_[iicube][nx][j][k][2];
+                    U1_[iicube][nxx][j][k][3] = U1_[iicube][nx][j][k][3];
+                    U1_[iicube][nxx][j][k][4] = U1_[iicube][nx][j][k][4];
+
+                    U1_[iicube][nxxx][j][k][0] = U1_[iicube][nx][j][k][0];
+                    U1_[iicube][nxxx][j][k][1] = U1_[iicube][nx][j][k][1];
+                    U1_[iicube][nxxx][j][k][2] = U1_[iicube][nx][j][k][2];
+                    U1_[iicube][nxxx][j][k][3] = U1_[iicube][nx][j][k][3];
+                    U1_[iicube][nxxx][j][k][4] = U1_[iicube][nx][j][k][4];
+
+                }
+            }
+
+        }
+
+        #pragma omp barrier        
+          
+        
+        #pragma omp parallel for private(iicube,i,k)
+        
+        for (icube = 1; icube <= nYbc_l; icube++) {  
+
+            iicube = Ybc_l[icube];
+
+                for (i = 0; i <= nxxx; i++) {
+                    for (k = 2; k <= nz; k++) {  
+
+                        U1_[iicube][i][1][k][0] = U1_[iicube][i][2][k][0];
+                        U1_[iicube][i][1][k][1] = U1_[iicube][i][2][k][1];
+                        U1_[iicube][i][1][k][2] = U1_[iicube][i][2][k][2];
+                        U1_[iicube][i][1][k][3] = U1_[iicube][i][2][k][3];
+                        U1_[iicube][i][1][k][4] = U1_[iicube][i][2][k][4];
+
+                        U1_[iicube][i][0][k][0] = U1_[iicube][i][2][k][0];
+                        U1_[iicube][i][0][k][1] = U1_[iicube][i][2][k][1];
+                        U1_[iicube][i][0][k][2] = U1_[iicube][i][2][k][2];
+                        U1_[iicube][i][0][k][3] = U1_[iicube][i][2][k][3];
+                        U1_[iicube][i][0][k][4] = U1_[iicube][i][2][k][4];
+
+                    }
+                }
+
+        }		
+
+        #pragma omp barrier        
+        
+    
+    #pragma omp parallel for private(iicube,i,k)
+
+        
+	for (icube = 1; icube <= nYbc_u; icube++) {  
+
+		iicube = Ybc_u[icube];
+
+		for (i = 0; i <= nxxx; i++) {
+			for (k = 2; k <= nz; k++) {  
+
+				U1_[iicube][i][nyy][k][0] = U1_[iicube][i][ny][k][0];
+				U1_[iicube][i][nyy][k][1] = U1_[iicube][i][ny][k][1];
+				U1_[iicube][i][nyy][k][2] = U1_[iicube][i][ny][k][2];
+				U1_[iicube][i][nyy][k][3] = U1_[iicube][i][ny][k][3];
+				U1_[iicube][i][nyy][k][4] = U1_[iicube][i][ny][k][4];
+
+				U1_[iicube][i][nyyy][k][0] = U1_[iicube][i][ny][k][0];
+				U1_[iicube][i][nyyy][k][1] = U1_[iicube][i][ny][k][1];
+				U1_[iicube][i][nyyy][k][2] = U1_[iicube][i][ny][k][2];
+				U1_[iicube][i][nyyy][k][3] = U1_[iicube][i][ny][k][3];
+				U1_[iicube][i][nyyy][k][4] = U1_[iicube][i][ny][k][4];
+
+			}
+		}
+		
+	}
+
+    #pragma omp barrier       
+
+    
+    
+    
+    
+    
 	#pragma omp parallel for private(\
     dx,dy,dz,xmin,ymin,zmin,\
 	i,j,k,\
@@ -401,134 +543,5 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
       
       
       
-      for (icube = 1; icube <= nXbc_l; icube++) {  
-		
-            iicube = Xbc_l[icube];
-            
-            dx = dy = dz = cube_size[iicube]/NcubeX;
-            
-            for (j = 2; j <= ny; j++) {
-                for (k = 2; k <= nz; k++) {  
-                
-                    rho = U1_[iicube][2][j][k][0];
-                    U = U1_[iicube][2][j][k][1]/rho;
-                    V = U1_[iicube][2][j][k][2]/rho;
-                    W = U1_[iicube][2][j][k][3]/rho;
-                    VV = U*U+V*V+W*W;
-                    P = (U1_[iicube][2][j][k][4]-0.5*rho*VV)*(K-1);
-
-                    U = U0;
-                    V = V0;
-                    W = W0;
-                    
-                    rho = rho0;
-                    VV = U*U+V*V+W*W;
-                    
-                    U1_[iicube][1][j][k][0] = rho;
-                    U1_[iicube][1][j][k][1] = rho*U;
-                    U1_[iicube][1][j][k][2] = rho*V;
-                    U1_[iicube][1][j][k][3] = rho*W;
-                    U1_[iicube][1][j][k][4] = P/(K-1)+0.5*rho*VV;
-                    
-                    
-
-                    U1_[iicube][0][j][k][0] = rho;
-                    U1_[iicube][0][j][k][1] = rho*U;
-                    U1_[iicube][0][j][k][2] = rho*V;
-                    U1_[iicube][0][j][k][3] = rho*W;
-                    U1_[iicube][0][j][k][4] = P/(K-1)+0.5*rho*VV;
-
-                }
-            }
-        }	
-        
-        
-        
-        #pragma omp parallel for private(iicube,j,k)
-        for (icube = 1; icube <= nXbc_u; icube++) {  
-
-            iicube = Xbc_u[icube];
-            
-            for (j = 2; j <= ny; j++) {
-                for (k = 2; k <= nz; k++) {  
-
-                    U1_[iicube][nxx][j][k][0] = U1_[iicube][nx][j][k][0];
-                    U1_[iicube][nxx][j][k][1] = U1_[iicube][nx][j][k][1];
-                    U1_[iicube][nxx][j][k][2] = U1_[iicube][nx][j][k][2];
-                    U1_[iicube][nxx][j][k][3] = U1_[iicube][nx][j][k][3];
-                    U1_[iicube][nxx][j][k][4] = U1_[iicube][nx][j][k][4];
-
-                    U1_[iicube][nxxx][j][k][0] = U1_[iicube][nx][j][k][0];
-                    U1_[iicube][nxxx][j][k][1] = U1_[iicube][nx][j][k][1];
-                    U1_[iicube][nxxx][j][k][2] = U1_[iicube][nx][j][k][2];
-                    U1_[iicube][nxxx][j][k][3] = U1_[iicube][nx][j][k][3];
-                    U1_[iicube][nxxx][j][k][4] = U1_[iicube][nx][j][k][4];
-
-                }
-            }
-
-        }
-
-        #pragma omp barrier        
-          
-        
-        #pragma omp parallel for private(iicube,i,k)
-        
-        for (icube = 1; icube <= nYbc_l; icube++) {  
-
-            iicube = Ybc_l[icube];
-
-                for (i = 0; i <= nxxx; i++) {
-                    for (k = 2; k <= nz; k++) {  
-
-                        U1_[iicube][i][1][k][0] = U1_[iicube][i][2][k][0];
-                        U1_[iicube][i][1][k][1] = U1_[iicube][i][2][k][1];
-                        U1_[iicube][i][1][k][2] = U1_[iicube][i][2][k][2];
-                        U1_[iicube][i][1][k][3] = U1_[iicube][i][2][k][3];
-                        U1_[iicube][i][1][k][4] = U1_[iicube][i][2][k][4];
-
-                        U1_[iicube][i][0][k][0] = U1_[iicube][i][2][k][0];
-                        U1_[iicube][i][0][k][1] = U1_[iicube][i][2][k][1];
-                        U1_[iicube][i][0][k][2] = U1_[iicube][i][2][k][2];
-                        U1_[iicube][i][0][k][3] = U1_[iicube][i][2][k][3];
-                        U1_[iicube][i][0][k][4] = U1_[iicube][i][2][k][4];
-
-                    }
-                }
-
-        }		
-
-        #pragma omp barrier        
-        
-    
-    #pragma omp parallel for private(iicube,i,k)
-
-        
-	for (icube = 1; icube <= nYbc_u; icube++) {  
-
-		iicube = Ybc_u[icube];
-
-		for (i = 0; i <= nxxx; i++) {
-			for (k = 2; k <= nz; k++) {  
-
-				U1_[iicube][i][nyy][k][0] = U1_[iicube][i][ny][k][0];
-				U1_[iicube][i][nyy][k][1] = U1_[iicube][i][ny][k][1];
-				U1_[iicube][i][nyy][k][2] = U1_[iicube][i][ny][k][2];
-				U1_[iicube][i][nyy][k][3] = U1_[iicube][i][ny][k][3];
-				U1_[iicube][i][nyy][k][4] = U1_[iicube][i][ny][k][4];
-
-				U1_[iicube][i][nyyy][k][0] = U1_[iicube][i][ny][k][0];
-				U1_[iicube][i][nyyy][k][1] = U1_[iicube][i][ny][k][1];
-				U1_[iicube][i][nyyy][k][2] = U1_[iicube][i][ny][k][2];
-				U1_[iicube][i][nyyy][k][3] = U1_[iicube][i][ny][k][3];
-				U1_[iicube][i][nyyy][k][4] = U1_[iicube][i][ny][k][4];
-
-			}
-		}
-		
-	}
-
-    #pragma omp barrier       
-
 
 }
