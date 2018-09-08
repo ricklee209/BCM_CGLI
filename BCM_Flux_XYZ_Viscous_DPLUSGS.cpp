@@ -577,10 +577,14 @@ double (*er) = new double[10]
 
 
 
-                    #ifdef ILES
-                    Cdiss = Roe_dis[icube][i][j][k];
-                    #else
                     Cdiss = 1.0;
+
+                    #ifdef ILES
+                      Cdiss = Roe_dis[icube][i][j][k];
+                    #endif 
+                    
+                    #ifdef NOUPD
+                      Cdiss = 0.0;
                     #endif 
 
 
@@ -1138,21 +1142,32 @@ double (*er) = new double[10]
 
 
                     /* artificial viscosity */
-                    #if ROE == 5 
-                    
-                    Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
-                    Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
-                    Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
-                    Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_)+deltaP;
-                    Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*W;
-                    
+                    #if ROE == 0
+                      
+                      S = sqrt(C);
+                        
+                      /* artificial viscosity */
+                      Fav1 = 1.0/S*(P_-UN_P);
+                      Fav2 =   U/S*(P_-UN_P);
+                      Fav3 =   V/S*(P_-UN_P);
+                      Fav4 =   W/S*(P_-UN_P);
+                      Fav5 =   H/S*(P_-UN_P);
+                      
+                    #elif ROE == 5 
+                      
+                      Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
+                      Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
+                      Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
+                      Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_)+deltaP;
+                      Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*W;
+                      
                     #else
-                    
-                    Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
-                    Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
-                    Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
-                    Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
-                    Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
+                      
+                      Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
+                      Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
+                      Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
+                      Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
+                      Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
 
                     #endif
 
@@ -1365,22 +1380,33 @@ double (*er) = new double[10]
 
                     #endif                                                                      
                     /* artificial viscosity */
-
-                    #if ROE == 5 
-                    
-                    Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
-                    Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
-                    Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
-                    Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_)+deltaP;
-                    Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*W;
-                    
+                      
+                    #if ROE == 0
+                      
+                      S = sqrt(C);
+                        
+                      /* artificial viscosity */
+                      Fav1 = 1.0/S*(P_-UN_P);
+                      Fav2 =   U/S*(P_-UN_P);
+                      Fav3 =   V/S*(P_-UN_P);
+                      Fav4 =   W/S*(P_-UN_P);
+                      Fav5 =   H/S*(P_-UN_P);
+                      
+                    #elif ROE == 5 
+                       
+                      Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
+                      Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
+                      Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
+                      Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_)+deltaP;
+                      Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*W;
+                      
                     #else
-                    
-                    Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
-                    Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
-                    Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
-                    Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
-                    Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
+                      
+                      Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
+                      Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
+                      Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
+                      Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
+                      Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
 
                     #endif
                     /* inviscid fluxes */
@@ -1965,7 +1991,19 @@ double (*er) = new double[10]
                     #endif
                     /* artificial viscosity */
                     
-                    #if ROE == 5 
+                   #if ROE == 0
+                      
+                      S = sqrt(C);
+                        
+                      /* artificial viscosity */
+                      Fav1 = 1.0/S*(P_-UN_P);
+                      Fav2 =   U/S*(P_-UN_P);
+                      Fav3 =   V/S*(P_-UN_P);
+                      Fav4 =   W/S*(P_-UN_P);
+                      Fav5 =   H/S*(P_-UN_P);
+                      
+                    #elif ROE == 5 
+                      
                     
                     Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
                     Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_)+deltaP;
@@ -2192,7 +2230,19 @@ double (*er) = new double[10]
                     #endif
 
                     /* artificial viscosity */
-                    #if ROE == 5 
+                    #if ROE == 0
+                      
+                      S = sqrt(C);
+                        
+                      /* artificial viscosity */
+                      Fav1 = 1.0/S*(P_-UN_P);
+                      Fav2 =   U/S*(P_-UN_P);
+                      Fav3 =   V/S*(P_-UN_P);
+                      Fav4 =   W/S*(P_-UN_P);
+                      Fav5 =   H/S*(P_-UN_P);
+                      
+                    #elif ROE == 5 
+                      
                     
                     Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
                     Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_)+deltaP;
@@ -2784,7 +2834,19 @@ double (*er) = new double[10]
 
                     /* artificial viscosity */
                     
-                    #if ROE == 5 
+                    #if ROE == 0
+                      
+                      S = sqrt(C);
+                        
+                      /* artificial viscosity */
+                      Fav1 = 1.0/S*(P_-UN_P);
+                      Fav2 =   U/S*(P_-UN_P);
+                      Fav3 =   V/S*(P_-UN_P);
+                      Fav4 =   W/S*(P_-UN_P);
+                      Fav5 =   H/S*(P_-UN_P);
+                      
+                    #elif ROE == 5 
+                      
                     
                     Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
                     Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
@@ -3005,7 +3067,19 @@ double (*er) = new double[10]
 
                     /* artificial viscosity */
                     
-                    #if ROE == 5 
+                    #if ROE == 0
+                      
+                      S = sqrt(C);
+                        
+                      /* artificial viscosity */
+                      Fav1 = 1.0/S*(P_-UN_P);
+                      Fav2 =   U/S*(P_-UN_P);
+                      Fav3 =   V/S*(P_-UN_P);
+                      Fav4 =   W/S*(P_-UN_P);
+                      Fav5 =   H/S*(P_-UN_P);
+                      
+                    #elif ROE == 5 
+                      
                     
                     Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
                     Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);

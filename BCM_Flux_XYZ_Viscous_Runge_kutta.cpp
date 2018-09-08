@@ -390,12 +390,15 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 					#endif 
 
 
+          Cdiss = 1.0;
 
-					#ifdef ILES
-					  Cdiss = Roe_dis[icube][i][j][k];
-					#else
-					  Cdiss = 1.0;
-					#endif 
+          #ifdef ILES
+            Cdiss = Roe_dis[icube][i][j][k];
+          #endif 
+          
+          #ifdef NOUPD
+            Cdiss = 0.0;
+          #endif 
 
 
 
@@ -952,7 +955,18 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
 
                     /* artificial viscosity */
-                    #if ROE == 5 
+                    #if ROE == 0
+                      
+                      S = sqrt(C);
+                        
+                      /* artificial viscosity */
+                      Fav1 = 1.0/S*(P_-UN_P);
+                      Fav2 =   U/S*(P_-UN_P);
+                      Fav3 =   V/S*(P_-UN_P);
+                      Fav4 =   W/S*(P_-UN_P);
+                      Fav5 =   H/S*(P_-UN_P);
+                      
+                    #elif ROE == 5 
                     
                     Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
                     Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
@@ -1180,7 +1194,18 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
                     #endif                                                                      
                     /* artificial viscosity */
 
-                    #if ROE == 5 
+                    #if ROE == 0
+                      
+                      S = sqrt(C);
+                        
+                      /* artificial viscosity */
+                      Fav1 = 1.0/S*(P_-UN_P);
+                      Fav2 =   U/S*(P_-UN_P);
+                      Fav3 =   V/S*(P_-UN_P);
+                      Fav4 =   W/S*(P_-UN_P);
+                      Fav5 =   H/S*(P_-UN_P);
+                      
+                    #elif ROE == 5 
                     
                     Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
                     Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
@@ -1779,7 +1804,18 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
                     #endif
                     /* artificial viscosity */
                     
-                    #if ROE == 5 
+                    #if ROE == 0
+                      
+                      S = sqrt(C);
+                        
+                      /* artificial viscosity */
+                      Fav1 = 1.0/S*(P_-UN_P);
+                      Fav2 =   U/S*(P_-UN_P);
+                      Fav3 =   V/S*(P_-UN_P);
+                      Fav4 =   W/S*(P_-UN_P);
+                      Fav5 =   H/S*(P_-UN_P);
+                      
+                    #elif ROE == 5 
                     
                     Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
                     Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_)+deltaP;
@@ -2006,7 +2042,18 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
                     #endif
 
                     /* artificial viscosity */
-                    #if ROE == 5 
+                    #if ROE == 0
+                      
+                      S = sqrt(C);
+                        
+                      /* artificial viscosity */
+                      Fav1 = 1.0/S*(P_-UN_P);
+                      Fav2 =   U/S*(P_-UN_P);
+                      Fav3 =   V/S*(P_-UN_P);
+                      Fav4 =   W/S*(P_-UN_P);
+                      Fav5 =   H/S*(P_-UN_P);
+                      
+                    #elif ROE == 5 
                     
                     Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
                     Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_)+deltaP;
@@ -2598,7 +2645,18 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
                     /* artificial viscosity */
                     
-                    #if ROE == 5 
+                    #if ROE == 0
+                      
+                      S = sqrt(C);
+                        
+                      /* artificial viscosity */
+                      Fav1 = 1.0/S*(P_-UN_P);
+                      Fav2 =   U/S*(P_-UN_P);
+                      Fav3 =   V/S*(P_-UN_P);
+                      Fav4 =   W/S*(P_-UN_P);
+                      Fav5 =   H/S*(P_-UN_P);
+                      
+                    #elif ROE == 5 
                     
                     Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
                     Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
@@ -2819,7 +2877,18 @@ void BCM_Flux_XYZ_Viscous_Runge_kutta
 
                     /* artificial viscosity */
                     
-                    #if ROE == 5 
+                    #if ROE == 0
+                      
+                      S = sqrt(C);
+                        
+                      /* artificial viscosity */
+                      Fav1 = 1.0/S*(P_-UN_P);
+                      Fav2 =   U/S*(P_-UN_P);
+                      Fav3 =   V/S*(P_-UN_P);
+                      Fav4 =   W/S*(P_-UN_P);
+                      Fav5 =   H/S*(P_-UN_P);
+                      
+                    #elif ROE == 5 
                     
                     Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
                     Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
