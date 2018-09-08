@@ -1,3 +1,4 @@
+// ---- PROE=0 : CGLI Roe scheme ---- //
 
 // ---- PROE=1 : Weiss and Smith Roe scheme ---- //
 
@@ -10,7 +11,7 @@
 // ---- ROEAMTP=5 : Roe modified by X. Li ---- //
 
 
-#define ROE 5
+#define ROE 0
 
 
 // ---- limiter : limiter function ---- //
@@ -59,7 +60,8 @@
 
 // ---- ILES : implicit turbulence model ---- //
 // ---- DNS : implicit turbulence model ---- //
-
+// ---- NOUPD : No UpWinding term ---- //
+  
 #define DNS 
 
 

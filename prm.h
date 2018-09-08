@@ -16,7 +16,7 @@ double lambda_L = mu_L*Cv*K/Pr_L;
 
 /**** computational parameters ****/
 
-#define Ep 1.
+#define Ep 1.0
 
 #define MAX 100000000
 #define MIN -100000000

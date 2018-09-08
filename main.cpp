@@ -50,13 +50,13 @@ int main(int argc, char **argv)
 	int dp_step = 50000;    // ---- how many steps for periodically outputing the dp ---- //
 
 	int iteration_end_step = 10;
-	int output_step = 1;
-	int count = 2;	
+	int output_step = 5;
+	int count = 1000;	
 	int step;
 
 	double deltaT = 0.1;
 	double deltaTau = deltaT/200.0;
-	double e = 1;
+	double e = 1.0;
 	double Th = 309.03531204896;
 
 
@@ -1210,7 +1210,7 @@ int main(int argc, char **argv)
 				// BCM_Abs_X_boundary_condition(myid, Ncube, deltaT, deltaTau, e, NXbc_l, NXbc_u, Xbc_l, Xbc_u, cube_size, U1_, Fabs);
 
 
-				for (int ig = 1; ig <= 10; ig++) {
+				for (int ig = 1; ig <= 1; ig++) {
 
 					BCM_Ghostcell_minus(myid, &NBC_minus, Th, weight_minus, GCindex_minus, IPsur_minus, Nor_D_minus, Nvec_minus, FWS, U1_);
 
