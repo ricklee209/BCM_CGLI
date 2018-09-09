@@ -1152,7 +1152,7 @@ double (*er) = new double[10]
                       Fav1 = 1.0/S*(P_-UN_P);
                       Fav2 =   U/S*(P_-UN_P);
                       Fav3 =   V/S*(P_-UN_P);
-                      Fav4 =   W/S*(P_-UN_P);
+                      Fav4 =   W/S*(P_-UN_P)+sqrt(VV)*rho*(W_-UN_W);
                       Fav5 =   H/S*(P_-UN_P);
                       
                       // if(fabs(P_-UN_P)>1.0)
@@ -1403,7 +1403,7 @@ double (*er) = new double[10]
                       Fav1 = 1.0/S*(P_-UN_P);
                       Fav2 =   U/S*(P_-UN_P);
                       Fav3 =   V/S*(P_-UN_P);
-                      Fav4 =   W/S*(P_-UN_P);
+                      Fav4 =   W/S*(P_-UN_P)+sqrt(VV)*rho*(W_-UN_W);
                       Fav5 =   H/S*(P_-UN_P);
                       
                     #elif ROE == 5 
@@ -2015,7 +2015,7 @@ double (*er) = new double[10]
                         
                       /* artificial viscosity */
                       Fav1 = 1.0/S*(P_-UN_P);
-                      Fav2 =   U/S*(P_-UN_P);
+                      Fav2 =   U/S*(P_-UN_P)+sqrt(VV)*rho*(U_-UN_U);
                       Fav3 =   V/S*(P_-UN_P);
                       Fav4 =   W/S*(P_-UN_P);
                       Fav5 =   H/S*(P_-UN_P);
@@ -2254,7 +2254,7 @@ double (*er) = new double[10]
                         
                       /* artificial viscosity */
                       Fav1 = 1.0/S*(P_-UN_P);
-                      Fav2 =   U/S*(P_-UN_P);
+                      Fav2 =   U/S*(P_-UN_P)+sqrt(VV)*rho*(U_-UN_U);
                       Fav3 =   V/S*(P_-UN_P);
                       Fav4 =   W/S*(P_-UN_P);
                       Fav5 =   H/S*(P_-UN_P);
@@ -2858,7 +2858,7 @@ double (*er) = new double[10]
                       /* artificial viscosity */
                       Fav1 = 1.0/S*(P_-UN_P);
                       Fav2 =   U/S*(P_-UN_P);
-                      Fav3 =   V/S*(P_-UN_P);
+                      Fav3 =   V/S*(P_-UN_P)+sqrt(VV)*rho*(V_-UN_V);
                       Fav4 =   W/S*(P_-UN_P);
                       Fav5 =   H/S*(P_-UN_P);
                       
@@ -3091,7 +3091,7 @@ double (*er) = new double[10]
                       /* artificial viscosity */
                       Fav1 = 1.0/S*(P_-UN_P);
                       Fav2 =   U/S*(P_-UN_P);
-                      Fav3 =   V/S*(P_-UN_P);
+                      Fav3 =   V/S*(P_-UN_P)+sqrt(VV)*rho*(V_-UN_V);
                       Fav4 =   W/S*(P_-UN_P);
                       Fav5 =   H/S*(P_-UN_P);
                       
