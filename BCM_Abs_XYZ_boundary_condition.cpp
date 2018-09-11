@@ -137,14 +137,14 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
 	xV_out_0 = 1.25;
 	xSigma_out_0 = 0.4;
 	
-	yV_in_0 = 1.25;
+	yV_in_0 = 0.0;
 	ySigma_in_0 = 0.4;
-	yV_out_0 = 1.25;
+	yV_out_0 = 0.0;
 	ySigma_out_0 = 0.4;
     
-    zV_in_0 = 1.25;
+    zV_in_0 = 0.0;
 	zSigma_in_0 = 0.4;
-	zV_out_0 = 1.25;
+	zV_out_0 = 0.0;
 	zSigma_out_0 = 0.4;
 
     E0 = P0/(K-1.0)+0.5*rho0*U0*U0;
@@ -395,7 +395,7 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
                     }
 
 					
-                    C_plan = 0.5*sqrt(V*V*(beta-1)*(beta-1)+4*beta*C);
+                    // C_plan = 0.5*sqrt(V*V*(beta-1)*(beta-1)+4*beta*C);
                     
                     if( YY < abs3 ) {
                         
@@ -436,7 +436,7 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
                     
                     
                     
-                    C_plan = 0.5*sqrt(W*W*(beta-1)*(beta-1)+4*beta*C);
+                    // C_plan = 0.5*sqrt(W*W*(beta-1)*(beta-1)+4*beta*C);
                     
                     if( ZZ < abs5 ) {
                         
