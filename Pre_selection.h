@@ -54,7 +54,7 @@
 // ---- NODTau : DT doesn't include deltaTau (Aeroacoustic) ---- //
 // ---- DTauCAA : Can run Aeroacoustic ---- //
 
-#define DTau
+#define NODTau
 #define DTau_CFL 1000
 
 
@@ -62,7 +62,7 @@
 // ---- DNS : implicit turbulence model ---- //
 // ---- NOUPD : No UpWinding term ---- //
   
-#define DNS 
+#define NOUPD 
 
 
 // ---- Wall_model : Wall model ---- //

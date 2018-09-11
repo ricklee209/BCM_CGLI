@@ -1283,20 +1283,20 @@ int main(int argc, char **argv)
 					U1_);
 				
           
-          // BCM_Interface_EDGE(myid,Ncube, 
-              // MPI_Nadj,
-              // Ncpu_eq, 
-              // Max_nei_eq,
-              // nadjX_eq, nadjY_eq, nadjZ_eq,
-              // rank_map,
-              // MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
-              // neighbor_cpu_eq, Ncube_Ncpu_eq, 
-              // Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
-              // ist_eq,
-              // csl, 
-              // adj_number, 
-              // adjX_eq, adjY_eq, adjZ_eq,
-              // U1_);
+          BCM_Interface_EDGE(myid,Ncube, 
+              MPI_Nadj,
+              Ncpu_eq, 
+              Max_nei_eq,
+              nadjX_eq, nadjY_eq, nadjZ_eq,
+              rank_map,
+              MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+              neighbor_cpu_eq, Ncube_Ncpu_eq, 
+              Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+              ist_eq,
+              csl, 
+              adj_number, 
+              adjX_eq, adjY_eq, adjZ_eq,
+              U1_);
             
               
           for (int ig = 1; ig <= 1; ig++) {
@@ -1421,20 +1421,20 @@ int main(int argc, char **argv)
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
 
-                // BCM_Interface_EDGE(myid,Ncube, 
-                    // MPI_Nadj,
-                    // Ncpu_eq, 
-                    // Max_nei_eq,
-                    // nadjX_eq, nadjY_eq, nadjZ_eq,
-                    // rank_map,
-                    // MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
-                    // neighbor_cpu_eq, Ncube_Ncpu_eq, 
-                    // Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
-                    // ist_eq,
-                    // csl, 
-                    // adj_number, 
-                    // adjX_eq, adjY_eq, adjZ_eq,
-                    // U1_);
+                BCM_Interface_EDGE(myid,Ncube, 
+                    MPI_Nadj,
+                    Ncpu_eq, 
+                    Max_nei_eq,
+                    nadjX_eq, nadjY_eq, nadjZ_eq,
+                    rank_map,
+                    MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+                    neighbor_cpu_eq, Ncube_Ncpu_eq, 
+                    Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+                    ist_eq,
+                    csl, 
+                    adj_number, 
+                    adjX_eq, adjY_eq, adjZ_eq,
+                    U1_);
 
 
 			# else
@@ -1548,20 +1548,20 @@ int main(int argc, char **argv)
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
 				
-                // BCM_Interface_EDGE(myid,Ncube, 
-                    // MPI_Nadj,
-                    // Ncpu_eq, 
-                    // Max_nei_eq,
-                    // nadjX_eq, nadjY_eq, nadjZ_eq,
-                    // rank_map,
-                    // MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
-                    // neighbor_cpu_eq, Ncube_Ncpu_eq, 
-                    // Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
-                    // ist_eq,
-                    // csl, 
-                    // adj_number, 
-                    // adjX_eq, adjY_eq, adjZ_eq,
-                    // U1_);
+                BCM_Interface_EDGE(myid,Ncube, 
+                    MPI_Nadj,
+                    Ncpu_eq, 
+                    Max_nei_eq,
+                    nadjX_eq, nadjY_eq, nadjZ_eq,
+                    rank_map,
+                    MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+                    neighbor_cpu_eq, Ncube_Ncpu_eq, 
+                    Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+                    ist_eq,
+                    csl, 
+                    adj_number, 
+                    adjX_eq, adjY_eq, adjZ_eq,
+                    U1_);
 				
 				#ifdef ILES
 
@@ -1614,20 +1614,20 @@ int main(int argc, char **argv)
 					adjZ_bs_plus, adjZ_sb_plus, adjZ_bs_minus, adjZ_sb_minus,
 					U1_);
                 
-                // BCM_Interface_EDGE(myid,Ncube, 
-                    // MPI_Nadj,
-                    // Ncpu_eq, 
-                    // Max_nei_eq,
-                    // nadjX_eq, nadjY_eq, nadjZ_eq,
-                    // rank_map,
-                    // MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
-                    // neighbor_cpu_eq, Ncube_Ncpu_eq, 
-                    // Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
-                    // ist_eq,
-                    // csl, 
-                    // adj_number, 
-                    // adjX_eq, adjY_eq, adjZ_eq,
-                    // U1_);
+                BCM_Interface_EDGE(myid,Ncube, 
+                    MPI_Nadj,
+                    Ncpu_eq, 
+                    Max_nei_eq,
+                    nadjX_eq, nadjY_eq, nadjZ_eq,
+                    rank_map,
+                    MPI_cpu, MPI_cube, MPI_cpu_adj, MPI_cube_adj, MPI_direction, MPI_interface,
+                    neighbor_cpu_eq, Ncube_Ncpu_eq, 
+                    Scube_Ncpu_eq, Rcube_Ncpu_eq, send_data_curr_eq, recv_data_curr_eq, send_data_neig_eq, recv_data_neig_eq, Sdir_eq, Rdir_eq, 
+                    ist_eq,
+                    csl, 
+                    adj_number, 
+                    adjX_eq, adjY_eq, adjZ_eq,
+                    U1_);
 
 		// ------------------------------------------ //
 			}    //---- Runge-Kutaa end ---- //       //
