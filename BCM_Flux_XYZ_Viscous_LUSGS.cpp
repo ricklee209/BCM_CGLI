@@ -1065,7 +1065,7 @@ double (*er) = new double[10]
 
                     deltaU = (S-fabs(W))*temp1+temp2;
 
-                    deltaP = W/S*(P_-UN_P)+(C_p-fabs(W))*rho*(W_-UN_W);
+                    deltaP = W/S*(P_-UN_P)+(C_p-beta*fabs(W))*rho*(W_-UN_W);
 
                     #elif ROE == 4
 
@@ -1315,7 +1315,7 @@ double (*er) = new double[10]
 
                     deltaU = (S-fabs(W))*temp1+temp2;
 
-                    deltaP = W/S*(P_-UN_P)+(C_p-fabs(W))*rho*(W_-UN_W);
+                    deltaP = W/S*(P_-UN_P)+(C_p-beta*fabs(W))*rho*(W_-UN_W);
 
                     #elif ROE == 4
 
@@ -1935,7 +1935,7 @@ double (*er) = new double[10]
 
                     deltaU = (S-fabs(U))*temp1+temp2;
 
-                    deltaP = U/S*(P_-UN_P)+(C_p-fabs(U))*rho*(U_-UN_U);
+                    deltaP = U/S*(P_-UN_P)+(C_p-beta*fabs(U))*rho*(U_-UN_U);
 
                     #elif ROE == 4
 
@@ -2176,7 +2176,7 @@ double (*er) = new double[10]
 
                     deltaU = (S-fabs(U))*temp1+temp2;
 
-                    deltaP = U/S*(P_-UN_P)+(C_p-fabs(U))*rho*(U_-UN_U);
+                    deltaP = U/S*(P_-UN_P)+(C_p-beta*fabs(U))*rho*(U_-UN_U);
                     
                     #elif ROE == 4
 
@@ -2777,7 +2777,7 @@ double (*er) = new double[10]
 
                     deltaU = (S-fabs(V))*temp1+temp2;
 
-                    deltaP = V/S*(P_-UN_P)+(C_p-fabs(V))*rho*(V_-UN_V);
+                    deltaP = V/S*(P_-UN_P)+(C_p-beta*fabs(V))*rho*(V_-UN_V);
 
                     #elif ROE == 4
                     
@@ -3011,7 +3011,7 @@ double (*er) = new double[10]
 
                     deltaU = (S-fabs(V))*temp1+temp2;
 
-                    deltaP = V/S*(P_-UN_P)+(C_p-fabs(V))*rho*(V_-UN_V);
+                    deltaP = V/S*(P_-UN_P)+(C_p-beta*fabs(V))*rho*(V_-UN_V);
 
                     #elif ROE == 4
                     
