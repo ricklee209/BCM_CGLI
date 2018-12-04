@@ -973,24 +973,7 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 
 					/* flux varibale */
 
-					#if ROE != 4
 					
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-					
-						temp4 = temp5+temp6;
-
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
-
-					#endif
-
 
 
 					#if ROE == 1 
@@ -1012,6 +995,47 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 						deltaP = temp/S*(P_-UN_P)+(S-fabs(W)+temp3)*rho*(W_-UN_W);
 
 					#elif ROE == 2
+                    
+                        beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+
+						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+
+						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+
+						UN_U = temp1;
+						UN_V = temp2;
+						UN_W = temp3;
+
+						temp5 = sqrt(UN_rho);
+						temp6 = sqrt(rho_);
+					
+						temp4 = temp5+temp6;
+
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*UN_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
+                        
+                        
+                        /* jump dU */
+                        dU1 = MR1-ML1;
+                        dU2 = MR1*U_-ML1*UN_U;
+                        dU3 = MR1*V_-ML1*UN_V;
+                        dU4 = MR1*W_-ML1*UN_W;
+                        dU5 = P_/(K-1)+0.5*MR1*(U_*U_+V_*V_+W_*W_)\
+                              -( UN_P/(K-1)+0.5*ML1*(UN_U*UN_U+UN_V*UN_V+UN_W*UN_W) );
+
+                        
+                        
+                        
 					
 						beta = max(VV/C,e);    // ---- theda ---- //
 					
@@ -1163,24 +1187,6 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 					/* flux varibale */
 
 					
-					#if ROE != 4 
-
-					
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-						temp4 = temp5+temp6;
-
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
-
-					
-					#endif
 
 
 
@@ -1205,6 +1211,49 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 						deltaP = temp/S*(P_-UN_P)+(S-fabs(W)+temp3)*rho*(W_-UN_W);
 
 					#elif ROE == 2
+                    
+                    
+                        beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+
+						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+
+						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+
+						UN_U = temp1;
+						UN_V = temp2;
+						UN_W = temp3;
+
+						temp5 = sqrt(UN_rho);
+						temp6 = sqrt(rho_);
+					
+						temp4 = temp5+temp6;
+
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*UN_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
+                        
+                        
+                        
+                        /* jump dU */
+                        dU1 = MR1i-ML1i;
+                        dU2 = MR1i*U_-ML1i*UN_U;
+                        dU3 = MR1i*V_-ML1i*UN_V;
+                        dU4 = MR1i*W_-ML1i*UN_W;
+                        dU5 = P_/(K-1)+0.5*MR1i*(U_*U_+V_*V_+W_*W_)\
+                              -( UN_P/(K-1)+0.5*ML1i*(UN_U*UN_U+UN_V*UN_V+UN_W*UN_W) );
+
+                        
+                    
+                    
 
 						
 						beta = max(VV/C,e);    // ---- theda ---- //
@@ -1724,25 +1773,6 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 
 					/* flux varibale */
 
-					#if ROE != 4 
-
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-					
-						temp4 = temp5+temp6;
-
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
-
-					#endif
-
-
 
 
 					#if ROE == 1
@@ -1767,6 +1797,52 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 
 					
 					#elif ROE == 2
+                    
+                    
+						beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+
+						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+
+						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+
+						UN_U = temp1;
+						UN_V = temp2;
+						UN_W = temp3;
+
+						temp5 = sqrt(UN_rho);
+						temp6 = sqrt(rho_);
+					
+						temp4 = temp5+temp6;
+
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*UN_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;                    
+                    
+                        
+                        
+                        /* jump dU */
+                        dU1 = MR1-ML1;
+                        dU2 = MR1*U_-ML1*UN_U;
+                        dU3 = MR1*V_-ML1*UN_V;
+                        dU4 = MR1*W_-ML1*UN_W;
+                        dU5 = P_/(K-1)+0.5*MR1*(U_*U_+V_*V_+W_*W_)\
+                              -( UN_P/(K-1)+0.5*ML1*(UN_U*UN_U+UN_V*UN_V+UN_W*UN_W) );
+
+                              
+                        
+                    
+                    
+                    
+                    
 						
 						beta = max(VV/C,e);    // ---- theda ---- //
 					
@@ -1916,24 +1992,6 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 
 					/* flux varibale */
 					
-					#if ROE != 4
-
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-					
-						temp4 = temp5+temp6;
-
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
-
-					#endif
-
 
 
 
@@ -1954,6 +2012,50 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 						deltaP = temp/S*(P_-UN_P)+(S-fabs(U)+temp3)*rho*(U_-UN_U);
 
 					#elif ROE == 2
+                    
+                    
+                    	beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+
+						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+
+						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+
+						UN_U = temp1;
+						UN_V = temp2;
+						UN_W = temp3;
+
+						temp5 = sqrt(UN_rho);
+						temp6 = sqrt(rho_);
+					
+						temp4 = temp5+temp6;
+
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*UN_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
+                        
+                        
+                        
+                        /* jump dU */
+                        dU1 = MR1i-ML1i;
+                        dU2 = MR1i*U_-ML1i*UN_U;
+                        dU3 = MR1i*V_-ML1i*UN_V;
+                        dU4 = MR1i*W_-ML1i*UN_W;
+                        dU5 = P_/(K-1)+0.5*MR1i*(U_*U_+V_*V_+W_*W_)\
+                              -( UN_P/(K-1)+0.5*ML1i*(UN_U*UN_U+UN_V*UN_V+UN_W*UN_W) );
+
+                        
+                    
+                    
+                    
 						
 						beta = max(VV/C,e);    // ---- theda ---- //
 					
@@ -2474,23 +2576,6 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 
 					/* flux varibale */
 
-					#if ROE != 4
-
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-					
-						temp4 = temp5+temp6;
-
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
-
-					#endif
 
 
 					#if ROE == 1 
@@ -2511,6 +2596,51 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 						deltaP = temp/S*(P_-UN_P)+(S-fabs(V)+temp3)*rho*(V_-UN_V);
 
 					#elif ROE == 2
+                    
+						beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+
+						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+
+						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+
+						UN_U = temp1;
+						UN_V = temp2;
+						UN_W = temp3;
+
+						temp5 = sqrt(UN_rho);
+						temp6 = sqrt(rho_);
+					
+						temp4 = temp5+temp6;
+
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*UN_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;                    
+                    
+                        
+                        /* jump dU */
+                        dU1 = MR1-ML1;
+                        dU2 = MR1*U_-ML1*UN_U;
+                        dU3 = MR1*V_-ML1*UN_V;
+                        dU4 = MR1*W_-ML1*UN_W;
+                        dU5 = P_/(K-1)+0.5*MR1*(U_*U_+V_*V_+W_*W_)\
+                              -( UN_P/(K-1)+0.5*ML1*(UN_U*UN_U+UN_V*UN_V+UN_W*UN_W) );
+
+                             
+                        
+                    
+                    
+                    
+                    
+                    
 						
 						beta = max(VV/C,e);    // ---- theda ---- //
 						temp = 0.5*(1+beta)*V;    // ---- U' ---- //
@@ -2654,24 +2784,6 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 
 					/* flux varibale */
 
-					#if ROE != 4
-
-						temp5 = sqrt(UN_rho);
-						temp6 = sqrt(rho_);
-					
-						temp4 = temp5+temp6;
-
-						rho = sqrt(UN_rho*rho_);
-						U = (temp5*UN_U+temp6*U_)/temp4;
-						V = (temp5*UN_V+temp6*V_)/temp4;
-						W = (temp5*UN_W+temp6*W_)/temp4;
-						VV = U*U+V*V+W*W;
-						H = (temp5*UN_H+temp6*H_)/temp4;
-						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
-						P = rho*C/K;
-
-					#endif
-
 
 
 
@@ -2694,6 +2806,50 @@ void BCM_Flux_XYZ_Viscous_DPLUSGS
 						deltaP = temp/S*(P_-UN_P)+(S-fabs(V)+temp3)*rho*(V_-UN_V);
 
 					#elif ROE == 2
+                    
+                    
+                    
+						beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+
+						temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+						temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+						temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+
+						U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+						V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+						W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+
+						UN_U = temp1;
+						UN_V = temp2;
+						UN_W = temp3;
+
+						temp5 = sqrt(UN_rho);
+						temp6 = sqrt(rho_);
+					
+						temp4 = temp5+temp6;
+
+						rho = sqrt(UN_rho*rho_);
+						U = (temp5*UN_U+temp6*U_)/temp4;
+						V = (temp5*UN_V+temp6*V_)/temp4;
+						W = (temp5*UN_W+temp6*W_)/temp4;
+						VV = U*U+V*V+W*W;
+						H = (temp5*UN_H+temp6*H_)/temp4;
+						C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+						P = rho*C/K;
+                        
+                        
+                        
+                        /* jump dU */
+                        dU1 = MR1i-ML1i;
+                        dU2 = MR1i*U_-ML1i*UN_U;
+                        dU3 = MR1i*V_-ML1i*UN_V;
+                        dU4 = MR1i*W_-ML1i*UN_W;
+                        dU5 = P_/(K-1)+0.5*MR1i*(U_*U_+V_*V_+W_*W_)\
+                              -( UN_P/(K-1)+0.5*ML1i*(UN_U*UN_U+UN_V*UN_V+UN_W*UN_W) );
+
+
+
+
 					
 						beta = max(VV/C,e);    // ---- theda ---- //
 						temp = 0.5*(1+beta)*V;    // ---- U' ---- //
