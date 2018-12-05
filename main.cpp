@@ -76,7 +76,8 @@ int main(int argc, char **argv)
 	double E3 = 0;
 	double E4 = 0;
 	double E5 = 0;
-
+  
+  
 #include "BCM.h"
 #include "Resolution.h"
 
@@ -1706,10 +1707,18 @@ int main(int argc, char **argv)
 					#ifdef NODT
 						printf("%d\t%4.8f\t%4.8f\t%4.8f\t%4.8f\t%4.8f\n",step,-er[6],-er[7],-er[8],er[9],er[1]);
 					#else
-                        printf("\n>>>>=======================================================<<<<\n");
-                        printf("step\t Nusselt\t\t Cd\t\t Cl\n");
-						printf("%d\t%4.12f\t%4.12f\t%4.12f\n",step,-er[6],-er[7],-er[8]);
-                        printf(">>>>=======================================================<<<<\n\n");
+            
+            FILE *fptr_eval;
+            char eval_name[100];
+            sprintf(eval_name,"Evaluation.dat");   
+            fptr_eval = fopen(eval_name,"a"); 
+            
+            if(step == 1) fprintf(fptr_eval,"time\t Nusselt\t\t Cd\t\t Cl\n");
+            
+            fprintf(fptr_eval,"%4.12f\t%4.12f\t%4.12f\t%4.12f\n",step*deltaT,-er[6],-er[7],-er[8]);
+            
+            fclose(fptr_eval);	
+     
 					#endif
 
 				}
@@ -1840,9 +1849,9 @@ int main(int argc, char **argv)
 // =============================================== //
 
 
-	if(myid == 0) printf("\n--------------- Normal End ---------------\n");
+  if(myid == 0) printf("\n--------------- Normal End ---------------\n");
 
-
+  
 	delete []MPI_cube;
 	delete []MPI_cpu;
 	delete []MPI_cube_adj;
