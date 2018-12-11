@@ -344,7 +344,7 @@ double (*CFL_tau)[X_size][Y_size][Z_size] = new double[Ncube][X_size][Y_size][Z_
                     C = K*P/rho;
 
                     /* preconditioning */
-                    beta = max(VV/C,e);
+                    beta = 1.0;
 
                     XX = xmin + (i - n_buffer)*dx;
                     YY = ymin + (j - n_buffer)*dy;
