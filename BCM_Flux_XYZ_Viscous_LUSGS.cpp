@@ -1106,29 +1106,38 @@ double (*er) = new double[10]
                     
                     #elif ROE == 5
                     
-                    S = sqrt(C);
+                    
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+                    
+                    /* jump dU */
+                    dU1 = beta*dU1;
+                    dU2 = beta*dU2;
+                    dU3 = beta*dU3;
+                    dU4 = beta*dU4;
+                    dU5 = beta*dU5;
 
-                    theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                  
+                    temp = 0.5*(1+beta)*W;    // ---- U' ---- //
 
-                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
-                    
-                    deltaP = W/S*(P_-UN_P)+temp*(S-fabs(W))*rho*(W_-UN_W);
-                    
-                    
-                    // ==== deltaU_P + deltaU_RL ==== //            
-                    temp1 = (P_-UN_P)/rho/C;
+                    S = 0.5*sqrt(4*beta*C+W*W*(1-beta)*(1-beta));   // ---- C' ---- //
 
-                    deltaU = ( 1.0-pow(temp,8) )*(S-fabs(W))*temp1;
 
-                    temp2 = 0.5*W/S*(W_-UN_W);
-                    
-                    
-                    // ==== KEASI ==== //
-                    beta = sqrt(abs(W)/C);
-                    
-                    temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
-                    
-                    temp = max( 0.5*fabs(W_+UN_W)+(1.0-pow(temp3,8))*0.5*(W_-UN_W), 0.0 );
+                    theda_p = VV/C;
+                    U_p = 0.5*(1+theda_p)*W;
+                    C_p = 0.5*sqrt(4*C*theda_p+W*W*(1-theda_p)*(1-theda_p));
+
+                    temp1 = (P_-UN_P)/rho/beta/C;
+
+                    temp2 = U_p/S*(W_-UN_W);
+
+                    temp3 = 0.5*(1-beta)*W*temp/S;
+
+                    temp4 = 0.5*(1-theda_p)*W*U_p/S;
+
+                    deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
+
+                    deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(W)+temp4)*rho*(W_-UN_W);
 
                     
                     #elif ROE == 6
@@ -1202,26 +1211,13 @@ double (*er) = new double[10]
 
                     /* artificial viscosity */
                     
-                    #if ROE == 5 
-                    
-                    Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
-                    Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
-                    Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
-                    Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_)+deltaP;
-                    Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*W;
-                    
-                    #else
-                        
                     Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
-					Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
-					Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
-					Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
+                    Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
+                    Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
+                    Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
+                    Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
 
-                    #endif
-
-                    
-
+          
                     /* inviscid fluxes */
 
                     inFz1 = 0.5*((UN_rho*UN_W+rho_*W_-Ep*Fav1));
@@ -1405,29 +1401,38 @@ double (*er) = new double[10]
 
                     #elif ROE == 5
                     
-                    S = sqrt(C);
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+                    
+                    /* jump dU */
+                    dU1 = beta*dU1;
+                    dU2 = beta*dU2;
+                    dU3 = beta*dU3;
+                    dU4 = beta*dU4;
+                    dU5 = beta*dU5;
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                  
+                    temp = 0.5*(1+beta)*W;    // ---- U' ---- //
 
-                    theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
+                    S = 0.5*sqrt(4*beta*C+W*W*(1-beta)*(1-beta));   // ---- C' ---- //
 
-                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
-                    
-                    deltaP = W/S*(P_-UN_P)+temp*(S-fabs(W))*rho*(W_-UN_W);
-                    
-                    
-                    // ==== deltaU_P + deltaU_RL ==== //            
-                    temp1 = (P_-UN_P)/rho/C;
 
-                    deltaU = ( 1.0-pow(temp,8) )*(S-fabs(W))*temp1;
+                    theda_p = VV/C;
+                    U_p = 0.5*(1+theda_p)*W;
+                    C_p = 0.5*sqrt(4*C*theda_p+W*W*(1-theda_p)*(1-theda_p));
 
-                    temp2 = 0.5*W/S*(W_-UN_W);
-                    
-                    
-                    // ==== KEASI ==== //
-                    beta = sqrt(abs(W)/C);
-                    
-                    temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
-                    
-                    temp = max( 0.5*fabs(W_+UN_W)+(1.0-pow(temp3,8))*0.5*(W_-UN_W), 0.0 );
+                    temp1 = (P_-UN_P)/rho/beta/C;
+
+                    temp2 = U_p/S*(W_-UN_W);
+
+                    temp3 = 0.5*(1-beta)*W*temp/S;
+
+                    temp4 = 0.5*(1-theda_p)*W*U_p/S;
+
+                    deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
+
+                    deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(W)+temp4)*rho*(W_-UN_W);
+                  
 
                     
                     #elif ROE == 6
@@ -1504,25 +1509,12 @@ double (*er) = new double[10]
 
                     /* artificial viscosity */
                     
-                    #if ROE == 5 
-                    
-                    Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
-                    Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
-                    Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
-                    Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_)+deltaP;
-                    Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*W;
-                    
-                    #else
-                        
                     Fav1 = Cdiss*fabs(W)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
-					Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
-					Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
-					Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
+                    Fav2 = Cdiss*fabs(W)*dU2+deltaU*rho*U;
+                    Fav3 = Cdiss*fabs(W)*dU3+deltaU*rho*V;
+                    Fav4 = Cdiss*fabs(W)*dU4+deltaU*rho*W+deltaP;
+                    Fav5 = Cdiss*fabs(W)*dU5+deltaU*rho*H+deltaP*W;
 
-                    #endif
-                    
-                    
 
                     /* inviscid fluxes */
 
@@ -2079,30 +2071,41 @@ double (*er) = new double[10]
 
                     #elif ROE == 5
                     
-                    S = sqrt(C);
+                     beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+                    
+                    /* jump dU */
+                    dU1 = beta*dU1;
+                    dU2 = beta*dU2;
+                    dU3 = beta*dU3;
+                    dU4 = beta*dU4;
+                    dU5 = beta*dU5;
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                  
+                    temp = 0.5*(1+beta)*U;    // ---- U' ---- //
 
-                    theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
+                    S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
 
-                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
-                    
-                    deltaP = U/S*(P_-UN_P)+temp*(S-fabs(U))*rho*(U_-UN_U);
-                    
-                    
-                    // ==== deltaU_P + deltaU_RL ==== //            
-                    temp1 = (P_-UN_P)/rho/C;
+                    theda_p = VV/C;
 
-                    deltaU = ( 1.0-pow(temp,8) )*(S-fabs(U))*temp1;
+                    U_p = 0.5*(1+theda_p)*U;
+                    C_p = 0.5*sqrt(4*C*theda_p+U*U*(1-theda_p)*(1-theda_p));
 
-                    temp2 = 0.5*U/S*(U_-UN_U);
-                    
-                    
-                    // ==== KEASI ==== //
-                    beta = sqrt(abs(U)/C);
-                    
-                    temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
-                    
-                    temp = max( 0.5*fabs(U_+UN_U)+(1.0-pow(temp3,8))*0.5*(U_-UN_U), 0.0 );
+                    temp1 = (P_-UN_P)/rho/beta/C;
 
+                    temp2 = U_p/S*(U_-UN_U);
+
+                    temp3 = 0.5*(1-beta)*U*temp/S;
+
+
+                  
+                    temp4 = 0.5*(1-theda_p)*U*U_p/S;
+
+                    deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
+
+                    deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(U)+temp4)*rho*(U_-UN_U);
+
+                    
                     
                     #elif ROE == 6
                     
@@ -2175,24 +2178,12 @@ double (*er) = new double[10]
 
                     /* artificial viscosity */
                     
-                    #if ROE == 5 
-                    
-                    Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
-                    Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_)+deltaP;
-                    Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
-                    Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_);
-                    Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*U;
-                    
-                    #else
                         
                     Fav1 = Cdiss*fabs(U)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(U)*dU2+deltaU*rho*U+deltaP;
-					Fav3 = Cdiss*fabs(U)*dU3+deltaU*rho*V;
-					Fav4 = Cdiss*fabs(U)*dU4+deltaU*rho*W;
-					Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
-					
-
-                    #endif
+                    Fav2 = Cdiss*fabs(U)*dU2+deltaU*rho*U+deltaP;
+                    Fav3 = Cdiss*fabs(U)*dU3+deltaU*rho*V;
+                    Fav4 = Cdiss*fabs(U)*dU4+deltaU*rho*W;
+                    Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
                     
                     
                     /* inviscid fluxes */
@@ -2373,31 +2364,46 @@ double (*er) = new double[10]
                     deltaU = (S-fabs(U))*temp1+temp2;
 
                     deltaP = U/S*(P_-UN_P)+(S-fabs(U))*rho*(U_-UN_U);
+                    
                     #elif ROE == 5
                     
-                    S = sqrt(C);
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+                    
+                    /* jump dU */
+                    dU1 = beta*dU1;
+                    dU2 = beta*dU2;
+                    dU3 = beta*dU3;
+                    dU4 = beta*dU4;
+                    dU5 = beta*dU5;
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                  
+                    temp = 0.5*(1+beta)*U;    // ---- U' ---- //
 
-                    theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
+                    S = 0.5*sqrt(4*beta*C+U*U*(1-beta)*(1-beta));   // ---- C' ---- //
 
-                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
-                    
-                    deltaP = U/S*(P_-UN_P)+temp*(S-fabs(U))*rho*(U_-UN_U);
-                    
-                    
-                    // ==== deltaU_P + deltaU_RL ==== //            
-                    temp1 = (P_-UN_P)/rho/C;
 
-                    deltaU = ( 1.0-pow(temp,8) )*(S-fabs(U))*temp1;
+                    theda_p = VV/C;
 
-                    temp2 = 0.5*U/S*(U_-UN_U);
-                    
-                    
-                    // ==== KEASI ==== //
-                    beta = sqrt(abs(U)/C);
-                    
-                    temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
-                    
-                    temp = max( 0.5*fabs(U_+UN_U)+(1.0-pow(temp3,8))*0.5*(U_-UN_U), 0.0 );
+
+
+                    U_p = 0.5*(1+theda_p)*U;
+                    C_p = 0.5*sqrt(4*C*theda_p+U*U*(1-theda_p)*(1-theda_p));
+
+                    temp1 = (P_-UN_P)/rho/beta/C;
+
+                    temp2 = U_p/S*(U_-UN_U);
+
+                    temp3 = 0.5*(1-beta)*U*temp/S;
+
+
+                  
+                    temp4 = 0.5*(1-theda_p)*U*U_p/S;
+
+                    deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
+
+                    deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(U)+temp4)*rho*(U_-UN_U);
+
                     
                     
                     #elif ROE == 6
@@ -2472,24 +2478,13 @@ double (*er) = new double[10]
 
                     /* artificial viscosity */
                     
-                    #if ROE == 5 
-                    
-                    Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
-                    Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_)+deltaP;
-                    Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_);
-                    Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_);
-                    Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*U;
-                    
-                    #else
                         
                     Fav1 = Cdiss*fabs(U)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(U)*dU2+deltaU*rho*U+deltaP;
-					Fav3 = Cdiss*fabs(U)*dU3+deltaU*rho*V;
-					Fav4 = Cdiss*fabs(U)*dU4+deltaU*rho*W;
-					Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
-					
-
-                    #endif
+                    Fav2 = Cdiss*fabs(U)*dU2+deltaU*rho*U+deltaP;
+                    Fav3 = Cdiss*fabs(U)*dU3+deltaU*rho*V;
+                    Fav4 = Cdiss*fabs(U)*dU4+deltaU*rho*W;
+                    Fav5 = Cdiss*fabs(U)*dU5+deltaU*rho*H+deltaP*U;
+                    
 
                     /* inviscid fluxes */
                     inFx1i = 0.5*((UN_rho*UN_U+rho_*U_)-Ep*Fav1);
@@ -3035,29 +3030,36 @@ double (*er) = new double[10]
                     
                     #elif ROE == 5
                     
-                    S = sqrt(C);
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+                    
+                    /* jump dU */
+                    dU1 = beta*dU1;
+                    dU2 = beta*dU2;
+                    dU3 = beta*dU3;
+                    dU4 = beta*dU4;
+                    dU5 = beta*dU5;
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                    temp = 0.5*(1+beta)*V;    // ---- U' ---- //
+                    S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
 
-                    theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
 
-                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
-                    
-                    deltaP = V/S*(P_-UN_P)+temp*(S-fabs(V))*rho*(V_-UN_V);
-                    
-                    
-                    // ==== deltaU_P + deltaU_RL ==== //            
-                    temp1 = (P_-UN_P)/rho/C;
+                    theda_p = VV/C;
+                    U_p = 0.5*(1+theda_p)*V;
+                    C_p = 0.5*sqrt(4*C*theda_p+V*V*(1-theda_p)*(1-theda_p));
 
-                    deltaU = ( 1.0-pow(temp,8) )*(S-fabs(V))*temp1;
+                    temp1 = (P_-UN_P)/rho/beta/C;
 
-                    temp2 = 0.5*V/S*(V_-UN_V);
-                    
-                    
-                    // ==== KEASI ==== //
-                    beta = sqrt(abs(V)/C);
-                    
-                    temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
-                    
-                    temp = max( 0.5*fabs(V_+UN_V)+(1.0-pow(temp3,8))*0.5*(V_-UN_V), 0.0 );
+                    temp2 = U_p/S*(V_-UN_V);
+
+                    temp3 = 0.5*(1-beta)*V*temp/S;
+
+                    temp4 = 0.5*(1-theda_p)*V*U_p/S;
+
+                    deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
+
+                    deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(V)+temp4)*rho*(V_-UN_V);
+
 
                     
                     #elif ROE == 6
@@ -3123,24 +3125,14 @@ double (*er) = new double[10]
 
                     /* artificial viscosity */
                     
-                    #if ROE == 5 
-                    
-                    Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
-                    Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
-                    Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_)+deltaP;
-                    Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_);
-                    Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*V;
-                    
-                    #else
+         
                         
                     Fav1 = Cdiss*fabs(V)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(V)*dU2+deltaU*rho*U;
-					Fav3 = Cdiss*fabs(V)*dU3+deltaU*rho*V+deltaP;
-					Fav4 = Cdiss*fabs(V)*dU4+deltaU*rho*W;
-					Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
-					
-
-                    #endif
+                    Fav2 = Cdiss*fabs(V)*dU2+deltaU*rho*U;
+                    Fav3 = Cdiss*fabs(V)*dU3+deltaU*rho*V+deltaP;
+                    Fav4 = Cdiss*fabs(V)*dU4+deltaU*rho*W;
+                    Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
+                    
                     
                     /* inviscid fluxes */
                     inFy1 = 0.5*((UN_rho*UN_V+rho_*V_-Ep*Fav1));
@@ -3316,49 +3308,38 @@ double (*er) = new double[10]
                     
                     #elif ROE == 5
                     
-                    S = sqrt(C);
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+                    
+                    /* jump dU */
+                    dU1 = beta*dU1;
+                    dU2 = beta*dU2;
+                    dU3 = beta*dU3;
+                    dU4 = beta*dU4;
+                    dU5 = beta*dU5;
+                    
+                    beta = max(VV/C,e);    // ---- theda ---- //
+                    temp = 0.5*(1+beta)*V;    // ---- U' ---- //
+                    S = 0.5*sqrt(4*beta*C+V*V*(1-beta)*(1-beta));   // ---- C' ---- //
 
-                    theda_p = 0.5*(sqrt(VV_/C_)+sqrt(UN_VV/UN_C));
+                    theda_p = VV/C;
+                    U_p = 0.5*(1+theda_p)*V;
+                    C_p = 0.5*sqrt(4*C*theda_p+V*V*(1-theda_p)*(1-theda_p));
 
-                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
-                    
-                    deltaP = V/S*(P_-UN_P)+temp*(S-fabs(V))*rho*(V_-UN_V);
-                    
-                    
-                    // ==== deltaU_P + deltaU_RL ==== //            
-                    temp1 = (P_-UN_P)/rho/C;
+                    temp1 = (P_-UN_P)/rho/beta/C;
 
-                    deltaU = ( 1.0-pow(temp,8) )*(S-fabs(V))*temp1;
+                    temp2 = U_p/S*(V_-UN_V);
 
-                    temp2 = 0.5*V/S*(V_-UN_V);
-                    
-                    
-                    // ==== KEASI ==== //
-                    beta = sqrt(abs(V)/C);
-                    
-                    temp3 = beta*sqrt(4.0+(1.0-beta*beta)*(1.0-beta*beta))/(1.0+beta*beta);
-                    
-                    temp = max( 0.5*fabs(V_+UN_V)+(1.0-pow(temp3,8))*0.5*(V_-UN_V), 0.0 );
+                    temp3 = 0.5*(1-beta)*V*temp/S;
 
+                    temp4 = 0.5*(1-theda_p)*V*U_p/S;
 
-                    #endif
+                    deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
 
-                    /* artificial viscosity */
-                    
-                    #if ROE == 5 
-                    
-                    Fav1 = Cdiss*temp*dU1+deltaU*rho  +temp2*(UN_rho+rho_);
-                    Fav2 = Cdiss*temp*dU2+deltaU*rho*U+temp2*(UN_rho*UN_U+rho_*U_);
-                    Fav3 = Cdiss*temp*dU3+deltaU*rho*V+temp2*(UN_rho*UN_V+rho_*V_)+deltaP;
-                    Fav4 = Cdiss*temp*dU4+deltaU*rho*W+temp2*(UN_rho*UN_W+rho_*W_);
-                    Fav5 = Cdiss*temp*dU5+deltaU*rho*H+temp2*(UN_rho*UN_H+rho_*H_)+deltaP*V;
-                    
-                    
+                    deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(V)+temp4)*rho*(V_-UN_V);
                     
                     #elif ROE == 6
                     
                     
-                            
                     beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
 
                     temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
@@ -3417,17 +3398,18 @@ double (*er) = new double[10]
 
                     deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(V)+temp4)*rho*(V_-UN_V);
 
-                    #else
-                        
-                    Fav1 = Cdiss*fabs(V)*dU1+deltaU*rho;
-					Fav2 = Cdiss*fabs(V)*dU2+deltaU*rho*U;
-					Fav3 = Cdiss*fabs(V)*dU3+deltaU*rho*V+deltaP;
-					Fav4 = Cdiss*fabs(V)*dU4+deltaU*rho*W;
-					Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
-					
+
 
                     #endif
+
+                    /* artificial viscosity */
                     
+                        
+                    Fav1 = Cdiss*fabs(V)*dU1+deltaU*rho;
+                    Fav2 = Cdiss*fabs(V)*dU2+deltaU*rho*U;
+                    Fav3 = Cdiss*fabs(V)*dU3+deltaU*rho*V+deltaP;
+                    Fav4 = Cdiss*fabs(V)*dU4+deltaU*rho*W;
+                    Fav5 = Cdiss*fabs(V)*dU5+deltaU*rho*H+deltaP*V;
                     
                     
                     /* inviscid fluxes */
