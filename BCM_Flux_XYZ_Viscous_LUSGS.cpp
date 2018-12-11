@@ -1201,6 +1201,65 @@ double (*er) = new double[10]
                     deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
 
                     deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(W)+temp4)*rho*(W_-UN_W);
+                    
+                    
+                    
+                    #elif ROE == 7
+                
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+
+                    temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+                    temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+                    temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+
+                    U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+                    V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+                    W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+
+                    UN_U = temp1;
+                    UN_V = temp2;
+                    UN_W = temp3;
+
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                  
+                    temp4 = temp5+temp6;
+
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;
+                                
+                    
+                    /* jump dU */
+                    dU1 = MR1-ML1;
+                    dU2 = MR1*U_-ML1*UN_U;
+                    dU3 = MR1*V_-ML1*UN_V;
+                    dU4 = MR1*W_-ML1*UN_W;
+                    dU5 = P_/(K-1)+0.5*MR1*(U_*U_+V_*V_+W_*W_)\
+                          -( UN_P/(K-1)+0.5*ML1*(UN_U*UN_U+UN_V*UN_V+UN_W*UN_W) );
+
+                    S = sqrt(C);
+
+                    theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
+
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+
+                    beta = max(temp, 1e-8);
+                    
+                    C_p = beta*S;
+
+                    temp1 = (P_-UN_P)/rho/C;
+
+                    temp2 = W/S*beta*(W_-UN_W);
+
+                    deltaU = (S-fabs(W))*temp1+temp2;
+
+                    deltaP = W/S*(P_-UN_P)+(C_p-beta*fabs(W))*rho*(W_-UN_W);
 
                     #endif
 
@@ -1497,6 +1556,67 @@ double (*er) = new double[10]
                     deltaU = (S-temp3-beta*fabs(W))*temp1+temp2;
 
                     deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(W)+temp4)*rho*(W_-UN_W);
+                    
+                    
+                    #elif ROE == 7
+                
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+
+                    temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+                    temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+                    temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+
+                    U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+                    V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+                    W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+
+                    UN_U = temp1;
+                    UN_V = temp2;
+                    UN_W = temp3;
+
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                  
+                    temp4 = temp5+temp6;
+
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;
+                            
+                    
+                    /* jump dU */
+                    dU1 = MR1i-ML1i;
+                    dU2 = MR1i*U_-ML1i*UN_U;
+                    dU3 = MR1i*V_-ML1i*UN_V;
+                    dU4 = MR1i*W_-ML1i*UN_W;
+                    dU5 = P_/(K-1)+0.5*MR1i*(U_*U_+V_*V_+W_*W_)\
+                          -( UN_P/(K-1)+0.5*ML1i*(UN_U*UN_U+UN_V*UN_V+UN_W*UN_W) );
+
+                    
+                    S = sqrt(C);
+
+                    theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
+                    
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+
+                    beta = max(temp, 1e-8);
+                    
+                    C_p = beta*S;
+
+                    temp1 = (P_-UN_P)/rho/C;
+
+                    temp2 = W/S*beta*(W_-UN_W);
+
+                    deltaU = (S-fabs(W))*temp1+temp2;
+
+                    deltaP = W/S*(P_-UN_P)+(C_p-beta*fabs(W))*rho*(W_-UN_W);
+
+
                   
                     
 
@@ -2172,6 +2292,68 @@ double (*er) = new double[10]
                     deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
 
                     deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(U)+temp4)*rho*(U_-UN_U);
+                    
+                    
+                    #elif ROE == 7
+                    
+                            
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+
+                    temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+                    temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+                    temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+
+                    U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+                    V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+                    W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+
+                    UN_U = temp1;
+                    UN_V = temp2;
+                    UN_W = temp3;
+
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                  
+                    temp4 = temp5+temp6;
+
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;                    
+                            
+                        
+                    
+                    /* jump dU */
+                    dU1 = MR1-ML1;
+                    dU2 = MR1*U_-ML1*UN_U;
+                    dU3 = MR1*V_-ML1*UN_V;
+                    dU4 = MR1*W_-ML1*UN_W;
+                    dU5 = P_/(K-1)+0.5*MR1*(U_*U_+V_*V_+W_*W_)\
+                          -( UN_P/(K-1)+0.5*ML1*(UN_U*UN_U+UN_V*UN_V+UN_W*UN_W) );
+
+
+                    S = sqrt(C);
+
+                    theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
+                    
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+
+                    beta = max(temp, 1e-8);
+                    
+                    C_p = beta*S;
+
+                    temp1 = (P_-UN_P)/rho/C;
+
+                    temp2 = U/S*beta*(U_-UN_U);
+
+                    deltaU = (S-fabs(U))*temp1+temp2;
+
+                    deltaP = U/S*(P_-UN_P)+(C_p-beta*fabs(U))*rho*(U_-UN_U);
+
 
                     
                     #endif
@@ -2472,6 +2654,66 @@ double (*er) = new double[10]
                     deltaU = (S-temp3-beta*fabs(U))*temp1+temp2;
 
                     deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(U)+temp4)*rho*(U_-UN_U);
+                    
+                    
+                    #elif ROE == 7
+                    
+                            
+                     beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+
+                    temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+                    temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+                    temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+
+                    U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+                    V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+                    W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+
+                    UN_U = temp1;
+                    UN_V = temp2;
+                    UN_W = temp3;
+
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                  
+                    temp4 = temp5+temp6;
+
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;
+                                
+                    /* jump dU */
+                    dU1 = MR1i-ML1i;
+                    dU2 = MR1i*U_-ML1i*UN_U;
+                    dU3 = MR1i*V_-ML1i*UN_V;
+                    dU4 = MR1i*W_-ML1i*UN_W;
+                    dU5 = P_/(K-1)+0.5*MR1i*(U_*U_+V_*V_+W_*W_)\
+                          -( UN_P/(K-1)+0.5*ML1i*(UN_U*UN_U+UN_V*UN_V+UN_W*UN_W) );
+
+
+                    S = sqrt(C);
+
+                    theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
+                    
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+
+                    beta = max(temp, 1e-8);
+                    
+                    C_p = beta*S;
+
+                    temp1 = (P_-UN_P)/rho/C;
+
+                    temp2 = U/S*beta*(U_-UN_U);
+
+                    deltaU = (S-fabs(U))*temp1+temp2;
+
+                    deltaP = U/S*(P_-UN_P)+(C_p-beta*fabs(U))*rho*(U_-UN_U);
+
 
 
                     #endif
@@ -3120,6 +3362,64 @@ double (*er) = new double[10]
                     deltaU = (S-temp3-beta*fabs(V))*temp1+temp2;
 
                     deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(V)+temp4)*rho*(V_-UN_V);
+                    
+                    
+                    #elif ROE == 7
+                            
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+
+                    temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+                    temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+                    temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+
+                    U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+                    V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+                    W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+
+                    UN_U = temp1;
+                    UN_V = temp2;
+                    UN_W = temp3;
+
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                  
+                    temp4 = temp5+temp6;
+
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;                    
+                    
+                    /* jump dU */
+                    dU1 = MR1-ML1;
+                    dU2 = MR1*U_-ML1*UN_U;
+                    dU3 = MR1*V_-ML1*UN_V;
+                    dU4 = MR1*W_-ML1*UN_W;
+                    dU5 = P_/(K-1)+0.5*MR1*(U_*U_+V_*V_+W_*W_)\
+                          -( UN_P/(K-1)+0.5*ML1*(UN_U*UN_U+UN_V*UN_V+UN_W*UN_W) );
+
+                        
+                    S = sqrt(C);
+
+                    theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
+                    
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+
+                    beta = max(temp, 1e-8);
+                    
+                    C_p = beta*S;
+
+                    temp1 = (P_-UN_P)/rho/C;
+
+                    temp2 = V/S*beta*(V_-UN_V);
+
+                    deltaU = (S-fabs(V))*temp1+temp2;
+
+                    deltaP = V/S*(P_-UN_P)+(C_p-beta*fabs(V))*rho*(V_-UN_V);
 
                     #endif
 
@@ -3398,6 +3698,63 @@ double (*er) = new double[10]
 
                     deltaP = U_p/S*(P_-UN_P)+(C_p-fabs(V)+temp4)*rho*(V_-UN_V);
 
+                    
+                    
+                    #elif ROE == 7
+                            
+                    beta = sqrt(max(VV_/C_,UN_VV/UN_C));    // ---- theda ---- //
+
+                    temp1 = 0.5*(UN_U+U_)+0.5*beta*(UN_U-U_);
+                    temp2 = 0.5*(UN_V+V_)+0.5*beta*(UN_V-V_);
+                    temp3 = 0.5*(UN_W+W_)+0.5*beta*(UN_W-W_);
+
+                    U_ = 0.5*(U_+UN_U)+0.5*beta*(U_-UN_U);
+                    V_ = 0.5*(V_+UN_V)+0.5*beta*(V_-UN_V);
+                    W_ = 0.5*(W_+UN_W)+0.5*beta*(W_-UN_W);
+
+                    UN_U = temp1;
+                    UN_V = temp2;
+                    UN_W = temp3;
+
+                    temp5 = sqrt(UN_rho);
+                    temp6 = sqrt(rho_);
+                  
+                    temp4 = temp5+temp6;
+
+                    rho = sqrt(UN_rho*rho_);
+                    U = (temp5*UN_U+temp6*U_)/temp4;
+                    V = (temp5*UN_V+temp6*V_)/temp4;
+                    W = (temp5*UN_W+temp6*W_)/temp4;
+                    VV = U*U+V*V+W*W;
+                    H = (temp5*UN_H+temp6*H_)/temp4;
+                    C = (H-0.5*VV)*(K-1);    // ---- C*C ---- //
+                    P = rho*C/K;                    
+                    
+                    /* jump dU */
+                    dU1 = MR1i-ML1i;
+                    dU2 = MR1i*U_-ML1i*UN_U;
+                    dU3 = MR1i*V_-ML1i*UN_V;
+                    dU4 = MR1i*W_-ML1i*UN_W;
+                    dU5 = P_/(K-1)+0.5*MR1i*(U_*U_+V_*V_+W_*W_)\
+                          -( UN_P/(K-1)+0.5*ML1i*(UN_U*UN_U+UN_V*UN_V+UN_W*UN_W) );
+
+                    S = sqrt(C);
+
+                    theda_p = (fabs(U)+fabs(V)+fabs(W))/S;
+                    
+                    temp = theda_p*sqrt(4.0+(1.0-theda_p*theda_p)*(1.0-theda_p*theda_p))/(1.0+theda_p*theda_p);
+
+                    beta = max(temp, 1e-8);
+                    
+                    C_p = beta*S;
+
+                    temp1 = (P_-UN_P)/rho/C;
+
+                    temp2 = V/S*beta*(V_-UN_V);
+
+                    deltaU = (S-fabs(V))*temp1+temp2;
+
+                    deltaP = V/S*(P_-UN_P)+(C_p-beta*fabs(V))*rho*(V_-UN_V);
 
 
                     #endif

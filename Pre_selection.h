@@ -7,10 +7,14 @@
 
 // ---- TDROE=4 : Roe modified by B. Thornber ---- //
 
-// ---- ROEAMTP=5 : Roe modified by X. Li ---- //
+// ---- ROEMAP=5 : Roe modified by X. Li + Mach number scale ---- //
+
+// ---- ROEM5LMAP=6 : M5LM + APROE ---- //
+
+// ---- ROEMMLM=7 : Roe modified by F. Rieper + Mach number scale ---- //
 
 
-#define ROE 3 
+#define ROE 7
 
 
 // ---- limiter : limiter function ---- //
