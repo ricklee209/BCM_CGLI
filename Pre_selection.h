@@ -11,7 +11,7 @@
 
 // ---- ROEM5LMAP=6 : M5LM + APROE ---- //
 
-// ---- ROEMMLM=7 : Roe modified by F. Rieper + Mach number scale ---- //
+// ---- ROEMMLM=7 : M5LM + LMROE ---- //
 
 
 #define ROE 7
